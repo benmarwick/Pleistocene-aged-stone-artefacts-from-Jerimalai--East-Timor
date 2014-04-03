@@ -1,0 +1,13 @@
+.Rproj.user
+.Rhistory
+.RData
+.Renviron
+.Rprofile
+packrat.lock
+/.Rproj.user
+/figures
+/library
+/packrat.sources
+/data
+/paper
+
