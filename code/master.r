@@ -874,7 +874,7 @@ ggsave("figures/Jeremalai-flake-retouchedflake-mass-phase.png")
 # flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
 
-### Lithics: retouch locations
+### Lithics: retouch location
 
 ```{r lithics_retouch_location}
 
@@ -895,6 +895,32 @@ ggplot(rt_sum_m, aes(variable, value)) +
 # save plot
 ggsave("figures/Jeremalai-flake-retouched-flake-location-phase.png")
 ```
+
+### Lithics: retouch indices
+
+
+```{r lithics_retouch_indices}
+retouch_indices[is.na(retouch_indices)] <- 0
+retouch_indices$GIUR <- with(retouch_indices, t1/T1 + t2/T2 + t3/T3)/3
+retouch_indices$perimeter_perc <- with(retouch_indices, length/perimeter * 100)
+retouch_indices$II <- with(retouch_indices, ((X0.5 * 0.5) + (X1 * 1))/16)
+# get mean and standard deviation for each index
+retouch_indices_subset <- retouch_indices %>% select(GIUR, perimeter_perc, II) 
+# sweep over the columns to compute mean and standard deviation
+retouch_indices_means <- data.frame(t(round(apply(retouch_indices_subset, 2, mean, na.rm = TRUE),2)))
+retouch_indices_sds <- data.frame(t(round(apply(retouch_indices_subset, 2, sd, na.rm = TRUE),2)))
+
+
+GIUR = 0.41 ± 0.26, % perimeter retouched = 29 ± 14, II = 0.16 ± 0.13).
+
+```
+
+The retouch intensity can be summarised with the following metrics:
+GIUR = `r retouch_indices_means$GIUR` +/- `r retouch_indices_sds$GIUR`
+perimeter = `r retouch_indices_means$perimeter_perc` +/- `r retouch_indices_sds$ perimeter_perc`%
+II = `r retouch_indices_means$II` +/- `r retouch_indices_sds$II`
+
+
 
 ### Lithics: technological types
 
@@ -1060,7 +1086,7 @@ ggplot(df_m, aes(as.factor(phase), value, fill = variable)) +
   geom_bar(stat="identity") +
   facet_grid(. ~ .id) +
   theme_minimal() +
-  xlab("Depositional unit") +
+  xlab("Depositional phase") +
   ylab("Proportion of spits") +
   scale_fill_discrete(name="")
 ggsave("figures/Jeremalai-techno-types.png")
@@ -1112,11 +1138,15 @@ summaryt <- (t(cbind(
   ddply(cores[,2:(ncol(cores))], "phase", numcolwise(sum, na.rm = TRUE))
 )))
 summaryt <- summaryt[!(row.names(summaryt) %in% c("depth", "phase")),]
+# compute proportions so we have the proportion of spits in each phase 
+# that contains at least one of each class. 
+spits_per_phase <- aggregate(Spit ~ phase, data = cores, length)
+summaryt_props <- round(t(t(summaryt) / spits_per_phase$Spit),2)
+
 # write table to csv to put into word doc
-write.csv(summaryt, "techno_types_table.csv")
+write.csv(summaryt_props, "techno_types_table.csv")
 # this is table 5
 
-### -- change to proportion of spits rather than counts -- ### 
 ```
 
 #########################################################################

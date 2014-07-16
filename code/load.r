@@ -24,6 +24,9 @@ retouch <- read.csv("data/Jerimalai_tech_table_retouch.csv")
 features <- read.csv("data/Jerimalai_tech_table_features.csv")
 ground <- read.csv("data/Jerimalai_tech_table_ground.csv")
 
+# retouch indices
+retouch_indices <- read.csv("data/Jerimalai_retouch_indices.csv")
+
 
 # Below here refer to the original locations of these files on my computer,
 # which might be good to know if I have conflicting versions
