@@ -803,6 +803,30 @@ write.csv(t(cbind(ag_fl, ag_co[,-1], ohr[,-1])), "table.csv")
 ### come back to this ###
 ```
 
+### Lithics: core mass by type
+
+```{r lithic_core_mass}
+core_types$Type_long <- with(core_types, ifelse(Type == "SPC", "Single plaform",
+                                     ifelse(Type == "RC", "Radial",
+                                      ifelse(Type == "BDC", "Bidirectional",
+                                       ifelse(Type == "BiC", "Bipolar",
+                                        ifelse(Type == "MPC", "Multi-platform",
+                                         ifelse(Type == "LLC", "Levallois-like",
+                                          ifelse(Type == "FFC", "Faceted flake", NA))))))) )
+
+# plot
+ggplot(core_types, aes(reorder(Type_long, -Mass,  FUN=median), Mass)) +
+  geom_boxplot() +
+  ylim(0,30) +
+  theme_minimal() +
+  xlab("Core type") +
+  ylab("Core mass (g)")
+# save
+ggsave("figures/Jeremalai-core-by-type.png")
+
+aggregate(Mass ~ Type_long, data = core_types, median)
+
+```
 
 ### Lithics: retouch
 

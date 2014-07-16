@@ -8,6 +8,9 @@ dates <- read.csv("data/Jeremalai_dates.csv", as.is = TRUE)
 # complete flake data
 flakes <- read.csv("data/JB_Chert_Flakes_and_Retouch.csv")
 
+# core type data
+core_types <- read.csv("data/Jerimalai_cores_techno_metrics.csv")
+
 # spit depths
 depths <- read.csv("data/Jeremalai_spit_depths.csv")
 
