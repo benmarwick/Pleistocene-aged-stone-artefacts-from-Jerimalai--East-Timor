@@ -5,28 +5,35 @@
 # ---
 
 
+```{r setup_environment, message=FALSE, echo=FALSE}
+# This is necessary to direct knitr to find the 
+# 'code', 'data', and other directories that contain
+# files needed to execute this document
+knitr::opts_knit$set(root.dir=normalizePath('../'))
+```
 
 
-########################################################################
-### Setup environment
+```{r load_libraries_and_data}
 
 
 # check that dependencies are locally available
 # source("code/packrat.r")
 
-source("code/libraries.r") 
+suppressMessages(source("code/libraries.r"))
 
 # get versions of everything
-sessionInfo()
+# sessionInfo()
 
-########################################################################
 ## load data
 
 source("code/load.r") 
-ls() # get list of data objects
+```
 
-########################################################################
+
 ### Site chronology: analysing the dates
+
+
+```{r chronology}
 
 # plot dates and label with phases
 
@@ -36,21 +43,21 @@ dates$mid <- with(dates, cal_age_min + ((cal_age_max - cal_age_min) /2) )
 ggplot(dates, aes(mid, depth_bs)) +
   geom_point() +
   scale_y_reverse() + 
-  geom_errorbarh(aes(xmin=cal_age_min,xmax=cal_age_max)) +
+  geom_errorbarh(aes(xmin=cal_age_min,xmax=cal_age_max,  height = 0)) +
   theme_minimal() +
   #geom_smooth(span = 0.19, se = FALSE) +
   ylab("depth below surface (m)") +
   xlab("calibrated age (BP)") +
   geom_vline(xintercept = 42000, colour = 'grey') +
-  annotate("text", x = 40000, y = 0.5, label = "Phase I") + 
+  annotate("text", x = 40000, y = 0.25, label = "Phase I", angle = 90) + 
   geom_vline(xintercept = 38000, colour = 'grey') +
   geom_vline(xintercept = 17000, colour = 'grey') +
-  annotate("text", x = 13000, y = 0.5, label = "Phase II") + 
+  annotate("text", x = 13000, y = 0.25, label = "Phase II", angle = 90) + 
   geom_vline(xintercept = 9000, colour = 'grey') +
   geom_vline(xintercept = 6500, colour = 'grey') +
   annotate("text", x = 5900, y = 0.25, label = "Phase III", angle = 90) + 
   geom_vline(xintercept = 5500,colour = 'grey') +
-  annotate("text", x = 1000, y = 0.5, label = "Phase IV") +
+  annotate("text", x = 1000, y = 0.25, label = "Phase IV", angle = 90) +
   theme( # remove the vertical grid lines
     panel.grid.major.x = element_blank() ,
     # explicitly set the horizontal lines (or they will disappear too)
@@ -67,11 +74,12 @@ ggplot(dates, aes(mid, depth_bs)) +
 # My Q: why omit 17-38 ky BP? 
  
 ggsave("figures/Jeremalai-dates.png")
+```
 
                  
-########################################################################
 ### Site chronology: analysing the lithic distribution over time
 
+```{r lithis_over_time}
 # omit rows with blanks or NAs
 flakes <- flakes[!(flakes$Weight == "" | is.na(flakes$Weight)), ]
 
@@ -120,11 +128,13 @@ phases <- data.frame(phase = 1:5,
                      start = c(42, 38, 17, 6.5, 5.5),
                      end =   c(38, 17, 9,  5.5, 0 ))
 phases$duration <- with(phases, start - end)
+```
 
 
-########################################################################
 ### Lithics: analysing the raw material proportions and change over time
 
+
+```{r lithics_raw_material_over_time}
 # raw material
 raw <- dcast(flakes, Material ~ phase) # change group to depth for hi res
 # remove row with no raw material
@@ -213,10 +223,12 @@ ggplot(all_tab_m, aes(variable, value, fill = raw_type)) +
   scale_fill_discrete(name="Raw material")
 # save plot
 ggsave("figures/Jeremalai-raw-materials-group.png")
+```
 
-########################################################################
 ### Lithics: analysing discard rates and change over time
 
+
+```{r lithics_discard_over_time}
 # discard rates
 discard <- aggregate(Weight ~ depth + Spit, flakes, length)
 
@@ -325,11 +337,13 @@ ggplot(discard_agg, (aes(phase, sedvolky))) +
   xlab("Depositional phase") +
   ylab("Mean number of chert flakes \n per kg of deposit per 1000 yrs") 
 ggsave("figures/Jeremalai-flake-discard-phase-kg.png")
+```
 
 
-########################################################################
 ### Lithics: artefact taphonomy
 
+
+```{r lithic_taphonomy}
 allchert <- all[all$Material == 'Chert', ]
 allchert$phase <- makephases(allchert$Spit)
 # make Artclass that is long and transv breaks
@@ -422,10 +436,11 @@ ggplot(data, aes(phase, Freq, fill = breakt)) +
                                "trans. broken flakes",
                                "long. broken flakes"))
 ggsave("figures/Jeremalai-flake-broken-phase.png")
+```
 
-########################################################################
 ### Lithics: heat treatment
 
+```{r lithics_heat_treatment}
 sum(flakes$Heat, na.rm = TRUE) / nrow(flakes)
 heat <- aggregate(Heat ~ phase, flakes, length)
 total <- aggregate(Spit ~ phase, flakes, length)
@@ -457,11 +472,11 @@ ggplot(data, aes(phase, Freq, fill = heat)) +
                       labels=c("heat treated", 
                                "unheated"))
 ggsave("figures/Jeremalai-flake-heat-phase.png")
+```
 
-
-########################################################################
 ### Lithics: chert flake metrics 
 
+```{r lithics_chert_metrics}
 metrics <- flakes %.% group_by(phase) %.% summarise(mean(Weight), mean(Length), mean(Width), mean(Thick))
 
 ggplot(flakes, aes(as.factor(Spit), Weight) ) +
@@ -493,15 +508,15 @@ data <- data[data$mass != 0,] # zeros break the model
 # source("code/BensANOVAonewayJagsSTZ.R")
 
 # core mass
-cores <- allchert[allchert$Artclas == "core", ]
-core_metrics <- cores %.% group_by(phase) %.% summarise(mean(Weight), mean(Length), mean(Width), mean(Thick))
+cores_mass <- allchert[allchert$Artclas == "core", ]
+core_metrics <- cores_mass %.% group_by(phase) %.% summarise(mean(Weight), mean(Length), mean(Width), mean(Thick))
 
-ggplot(cores, aes(as.factor(Spit), Weight) ) +
+ggplot(cores_mass, aes(as.factor(Spit), Weight) ) +
   geom_point() +
   scale_y_log10() 
   #ggsave("figures/Jeremalai-mass-spit.png")
   
-ggplot(cores, aes(as.factor(phase), Weight) ) +
+ggplot(cores_mass, aes(as.factor(phase), Weight) ) +
   geom_boxplot() +
   scale_y_log10() +
   theme_minimal() +
@@ -510,13 +525,13 @@ ggplot(cores, aes(as.factor(phase), Weight) ) +
 ggsave("figures/Jeremalai-core-mass-phase.png")
 
 # ANOVA with Tukey's HSD
-fit <- aov(Weight ~ as.factor(phase), cores)
+fit <- aov(Weight ~ as.factor(phase), cores_mass)
 summary(fit)
 tuk <- TukeyHSD(fit)
 plot(tuk, las = 2, cex = 0.1)
 
 # do bayesian ANOVA
-data <- data.frame(phase = cores$phase, mass = cores$Weight)
+data <- data.frame(phase = cores_mass$phase, mass = cores_mass$Weight)
 data <- data[data$mass != 0,] # zeros break the model)
 # This script is in the same folder as the current script
 # and generates plots and a lot of data objects. The only 
@@ -538,11 +553,11 @@ ggplot(flakes_cores_weight, aes( fill = Artclas, as.factor(phase), Weight)) +
                       values = c("black", "white"))
 # save plot
 ggsave("figures/Jeremalai-flake-core-mass-phase.png")
+```
 
-########################################################################
-### Lithics: chert flake metrics 
+### Lithics: chert flake platform metrics 
 
-
+```{r chert_flake_platform}
 # flake platform
 plat <- dcast(flakes, Plat ~ depth) 
 rownames(plat) <- plat[,1]
@@ -688,6 +703,11 @@ summary(fit)
 tuk <- TukeyHSD(fit)
 par(mar=c(5, 7, 5, 5))
 plot(tuk, las = 2, cex = 0.1)
+```
+
+### Lithics: chert flake cortex  
+
+```{r lithics_chert_cortex}
 
 # dorsal cortex on flakes
 ggplot(flakes, aes(as.factor(phase), Cortex)) + 
@@ -709,9 +729,15 @@ data <- data[data$cortex != 0,] # zeros break the model)
 
 # Frequentist test also output from that script.
 # no credible interactions under expectation of not independant 
+```
+
+
+### Lithics: chert flake and core cortex  
+
+```{r lithics_core_cortex}
 
 # dorsal cortex on cores
-ggplot(cores, aes(as.factor(phase), Cortex)) + 
+ggplot(cores_mass, aes(as.factor(phase), Cortex)) + 
   geom_boxplot() +
   theme_minimal() +
   scale_y_log10() +
@@ -720,7 +746,7 @@ ggplot(cores, aes(as.factor(phase), Cortex)) +
 ggsave("figures/Jeremalai-core-cortex-phase.png")
 
 # do bayesian ANOVA
-data <- data.frame(phase = cores$phase, cortex = cores$Cortex)
+data <- data.frame(phase = cores_mass$phase, cortex = cores_mass$Cortex)
 data <- na.omit(data[data$cortex != 0 ,]) # zeros break the model)
 # This script is in the same folder as the current script
 # and generates plots and a lot of data objects. The only 
@@ -745,7 +771,11 @@ ggplot(flakes_cores_cortex, aes( fill = Artclas, as.factor(phase), Cortex)) +
                     values = c("black", "white"))
 # save plot
 ggsave("figures/Jeremalai-flake-core-cortex-phase.png")
+```
 
+### Lithics: chert flake scars
+
+```{r lithics_flake_scars}
 
 # number of flake scars per flake
 # remove outliers
@@ -762,17 +792,21 @@ ggsave("figures/Jeremalai-dorsal-cortex-group.png")
 # tables of core and flake metrics, etc
 # flake cortex, dorsal flake scars and OHR together
 ag_fl <- aggregate(NoDS ~ phase, flakes, function(x) c(fl_mean = mean(x), fl_sd = sd(x)))
-ag_co <- aggregate(NoDS ~ phase, cores, function(x) c(co_mean = mean(x), co_sd = sd(x)))
+ag_co <- aggregate(NoDS ~ phase, cores_mass, function(x) c(co_mean = mean(x), co_sd = sd(x)))
 # get proportion of all flakes with OHR in each phase
 flakes$ohr <- ifelse(flakes$Overhang == 'Yes', 1, 0)
 ohr <- aggregate(ohr ~ phase, flakes, function(x) c(ohr_mean = sum(x)/length(x)))
 # output to format for doc
 write.csv(t(cbind(ag_fl, ag_co[,-1], ohr[,-1])), "table.csv")
 
-### come back to this ###
 
-########################################################################
+### come back to this ###
+```
+
+
 ### Lithics: retouch
+
+```{r lithics_retouch}
 
 # frequency of flakes with retouch per phase
 rt <- flakes[flakes$Rtch == "Yes", ]
@@ -838,6 +872,11 @@ ggsave("figures/Jeremalai-flake-retouchedflake-mass-phase.png")
 # any difference between mass of retouched and unretouched, in total?
 # Bayesian t-test of the mass of all retouched vs all unretouched flakes
 # flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
+```
+
+### Lithics: retouch locations
+
+```{r lithics_retouch_location}
 
 # retouch locations
 rt_loc <- data.frame(phase = rt$phase, rt_loc = rt$Retloc)
@@ -855,27 +894,21 @@ ggplot(rt_sum_m, aes(variable, value)) +
   facet_wrap(~phase, ncol = 3)
 # save plot
 ggsave("figures/Jeremalai-flake-retouched-flake-location-phase.png")
+```
 
-
-# proportion of retouched flakes in each phase
-
-
-########################################################################
 ### Lithics: technological types
+
+```{r lithics_technological_types}
 
 # all 
 
 # combine
+
 techno <- data.frame(cores, types, retouch, features, ground,  stringsAsFactors = FALSE)
 # remove extra Spit cols (is those called 'Spit.1' etc)
 techno <- techno[,-grep("Spit\\.", colnames(techno)) ]
 # put depths on 
 techno$depth <- depths$Depth.bs..m[match(techno$Spit,depths$Spit.no)]
-
-
-#
-
-
 # put phases on 
 techno$phase <- flakes$phase[match(techno$Spit,flakes$Spit)]
 
@@ -1018,7 +1051,7 @@ chisq.test(dc_gr, simulate.p.value=T, B=9999)
 # put them together
 lst <- list(cores = dc_core,  retouch = dc_retouch, types = dc_types, features = dc_feat,  ground = dc_gr)
 df <- ldply(lst, data.frame)
-df$phase <- rep(seq_along(unique(flakes$phase)), length(lst))
+df$phase <- rep(seq_along(unique(na.omit(flakes$phase))), length(lst))
 
 # plot proportion of spits having a techno-type present
 df_m <- melt(df, id.var = c('phase', '.id'))
@@ -1036,24 +1069,38 @@ ggsave("figures/Jeremalai-techno-types.png")
 # what are the counts of each class in each phase?
 
 # more about features
-lapply(features[,2:(ncol(features)-2)], function(i)  aggregate( i ~ phase, features, sum, na.rm = TRUE))
+l <- lapply(features[,2:(ncol(features)-2)], function(i)  aggregate( i ~ phase, features, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about ground
-lapply(ground[,2:(ncol(ground)-2)], function(i)  aggregate( i ~ phase, ground, sum, na.rm = TRUE))
+l <- lapply(ground[,2:(ncol(ground)-2)], function(i)  aggregate( i ~ phase, ground, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about retouch
-lapply(retouch[,2:(ncol(retouch)-2)], function(i)  aggregate( i ~ phase, retouch, sum, na.rm = TRUE))
+l <- lapply(retouch[,2:(ncol(retouch)-2)], function(i)  aggregate( i ~ phase, retouch, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about types
-lapply(types[,2:(ncol(types)-2)], function(i)  aggregate( i ~ phase, types, sum, na.rm = TRUE))
+l <- lapply(types[,2:(ncol(types)-2)], function(i)  aggregate( i ~ phase, types, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about cores
-lapply(cores[,2:(ncol(cores)-2)], function(i)  aggregate( i ~ phase, cores, sum, na.rm = TRUE))
+l <- lapply(cores[,2:(ncol(cores)-2)], function(i)  aggregate( i ~ phase, cores, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+dcast(phase ~ name, value.var = 'i', data = df)
 
 # obsidian?
 all$phase <- makephases(all$Spit)
 table(data.frame(phase = all$phase, rm = all$Material))
-aggregate(Material ~ phase, all)
 
 # summary table of all techno-types. This will give a count of spits
 # in each phase that contain at least one artefact in the category.
@@ -1068,6 +1115,9 @@ summaryt <- summaryt[!(row.names(summaryt) %in% c("depth", "phase")),]
 # write table to csv to put into word doc
 write.csv(summaryt, "techno_types_table.csv")
 # this is table 5
+
+### -- change to proportion of spits rather than counts -- ### 
+```
 
 #########################################################################
 ### summary tables by phase
