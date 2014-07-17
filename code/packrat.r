@@ -4,7 +4,7 @@
 # More details: http://rstudio.github.io/packrat/
 
 # just do this once when starting the project
-# packrat::bootstrap()
+# packrat::init()
 
 # do this periodically to see if I've added any packages that haven't
 # been locally stored. Want to do this each time I work on the project.

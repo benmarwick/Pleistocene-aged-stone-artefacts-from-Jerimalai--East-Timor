@@ -11,3 +11,4 @@ packrat.lock
 /data
 /paper
 
+packrat/lib*/
