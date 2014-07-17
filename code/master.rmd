@@ -317,7 +317,23 @@ Here is the code for the plot "Frequencies of complete flakes, transversely brok
 ```{r artefact_taphonomy_fig_5}
 allchert <- all[all$Material == 'Chert', ]
 allchert$phase <- makephases(allchert$Spit)
-# get transverse and longitude breaks
+# make Artclass that is long and transv breaks
+allchert$Artclas <- ifelse(allchert$Breaks == "", 
+       as.character(allchert$Artclas), 
+       paste(allchert$Artclas, allchert$Breaks, sep = "-"))
+
+taph <- data.frame(table(allchert$Artclas))
+
+# use regex to get broken flakes -b- 
+broken <- allchert[grep("-b", allchert$Artclas), ]
+
+
+# get counts of broken to complete per phase
+# flake to -b-
+
+breaks <- dcast(allchert, Artclas ~ phase)[-1,]
+breaks <- breaks[breaks$Artclas =="Flake" | grepl("-b-", breaks$Artclas), ]
+
 allchert$Artclas <- tolower(allchert$Artclas)
 allchert$breakt <- "" # create variable to fill
 
