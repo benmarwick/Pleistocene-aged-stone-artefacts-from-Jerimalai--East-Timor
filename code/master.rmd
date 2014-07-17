@@ -355,11 +355,7 @@ freq_test <- assocstats(as.matrix(breakt))
 colnames(breakt) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
 data <- melt(as.matrix(breakt),  varnames=c("breakt", "phase"), value.name="Freq")
 data <- data[data$Freq != 0,] # zeros break the model
-# This script is in the same folder as the current script
-# and generates plots and a lot of data objects. The only 
-# input is a long data.frame called 'data' that has a last
-# column called 'Freq'
-# source("code/BensPoissonExponentialJagsSTZ.R")
+
 
 # plot 
 data$phase <- gsub("[[:alpha:]]*", "", data$phase)
@@ -375,7 +371,20 @@ ggplot(data, aes(phase, Freq, fill = breakt)) +
 ggsave("figures/Jeremalai-flake-broken-phase.png")
 ```
 
-### Lithics: heat treatment
+Here is the code that will compute the test of credible interaction between flake breakage by phase, and also draw the plot "Posterior of Poisson exponential model applied to frequencies of complete and broken flakes in each phase. In phase 1 there are less complete flakes and more transversely broken flakes than expected, and in phase 4, more complete and transversely broken flakes than expected, and less longitudinally broken flakes. In phase 5 there are fewer transversely broken flakes and more complete flakes than expected."
+
+
+```{r artefact_taphonomy_test_fig_6}
+# This script is in the same folder as the current script
+# and generates plots and a lot of data objects. The only 
+# input is a long data.frame called 'data' that has a last
+# column called 'Freq'
+# source("code/BensPoissonExponentialJagsSTZ.R")
+
+```
+
+
+Here is the code to summarise heat treatment.
 
 ```{r lithics_heat_treatment}
 sum(flakes$Heat, na.rm = TRUE) / nrow(flakes)
@@ -383,11 +392,12 @@ heat <- aggregate(Heat ~ phase, flakes, length)
 total <- aggregate(Spit ~ phase, flakes, length)
 heat$notheat <- total$Spit - heat$Heat
 # show proportions that are heat-treated
-heat$Heat / total$Spit
+max_heat <- max(heat$Heat / total$Spit)
+min_heat <- min(heat$Heat / total$Spit)
 heat <- t(heat)
 
 # frequentist stat test
-assocstats(as.matrix(heat))
+freq_test <- assocstats(as.matrix(heat))
 
 # do bayesian contingency table test
 colnames(heat) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
@@ -411,29 +421,60 @@ ggplot(data, aes(phase, Freq, fill = heat)) +
 ggsave("figures/Jeremalai-flake-heat-phase.png")
 ```
 
-### Lithics: chert flake metrics 
 
-```{r lithics_chert_metrics}
-metrics <- flakes %.% group_by(phase) %.% summarise(mean(Weight), mean(Length), mean(Width), mean(Thick))
+Between `r round(min_heat, 2)*100`% and `r round(max_heat, 2)*100`% of chert artefacts in each depositional phase show signs of having been heated, such as crenation, potlid scars or surface crazing. 
 
-ggplot(flakes, aes(as.factor(Spit), Weight) ) +
-  geom_point() +
-  scale_y_log10() 
-#ggsave("figures/Jeremalai-mass-spit.png")
+### Metric and technological characteristics of cores and unretouched flakes
 
-ggplot(flakes, aes(as.factor(phase), Weight) ) +
-  geom_boxplot() +
-  scale_y_log10() +
-  theme_minimal() +
-  xlab("depositional phase") +
-  ylab("mass (g)")
-ggsave("figures/Jeremalai-flake-mass-phase.png")
+Here is the code for the table "Summary of attributes of chert complete flakes from Jerimalai square B. Each cell contains mean ± standard deviation unless otherwise indicated."
+
+```{r chert_flake_metrics_summary_table_3}
+# the table has been rearranged by hand for the paper
+metrics <- flakes %.% 
+  group_by(phase) %.% 
+  summarise(mean(Length, na.rm = TRUE),  
+            mean(Width, na.rm = TRUE), 
+            mean(Thick, na.rm = TRUE),
+            mean(Weight, na.rm = TRUE),
+            mean(Length, na.rm = TRUE),
+            mean(Platwid, na.rm = TRUE),
+            mean(Platthic, na.rm = TRUE),
+            mean(NoDS, na.rm = TRUE),
+            mean(Cortex, na.rm = TRUE),
+            sd(Length, na.rm = TRUE),  
+            sd(Width, na.rm = TRUE), 
+            sd(Thick, na.rm = TRUE),
+            sd(Weight, na.rm = TRUE),
+            sd(Length, na.rm = TRUE),
+            sd(Platwid, na.rm = TRUE),
+            sd(Platthic, na.rm = TRUE),
+            sd(NoDS, na.rm = TRUE),
+            sd(Cortex, na.rm = TRUE),
+            n = length(Weight))
+
+# get overhang removal data also
+ohr <- filter(flakes, Overhang == "Yes") %>%
+       group_by(phase) %>%
+       summarise(OHR_n = length(Overhang))
+# get percentages of OHR per phase
+ohr$OHR_perc <- ohr$OHR_n/metrics$n * 100
+
+# combine
+metrics <- cbind(metrics, ohr[,c("OHR_n", "OHR_perc")])
+metrics <- t(round(metrics,2))
+# show
+metrics
+```
+
+Here is the code for the test of credible differences of flake mass by phase.
+
+```{r chert_flake_metrics_summary_test}
 
 # ANOVA with Tukey's HSD
 fit <- aov(Weight ~ as.factor(phase), flakes)
-summary(fit)
+# summary(fit)
 tuk <- TukeyHSD(fit)
-plot(tuk, las = 2, cex = 0.1)
+# plot(tuk, las = 2, cex = 0.1)
 
 # do bayesian ANOVA
 data <- data.frame(phase = flakes$phase, mass = flakes$Weight)
@@ -443,39 +484,30 @@ data <- data[data$mass != 0,] # zeros break the model
 # input is a long data.frame called 'data' that has col1
 # as numbers indicating groups and col2 as the measurement
 # source("code/BensANOVAonewayJagsSTZ.R")
+```
 
-# core mass
+Here is the code for the table "Summary of metric attributes of chert complete cores from Jerimalai square B"
+
+```{r chert_core_metrics_summary}
 cores_mass <- allchert[allchert$Artclas == "core", ]
-core_metrics <- cores_mass %.% group_by(phase) %.% summarise(mean(Weight), mean(Length), mean(Width), mean(Thick))
+core_metrics <- cores_mass %.% 
+  group_by(phase) %.% 
+  summarise(mean(Weight), 
+            mean(Length), 
+            mean(Width), 
+            mean(Thick),
+            sd(Weight), 
+            sd(Length), 
+            sd(Width), 
+            sd(Thick),
+            n = length(Weight))
+t(round(core_metrics,2))
 
-ggplot(cores_mass, aes(as.factor(Spit), Weight) ) +
-  geom_point() +
-  scale_y_log10() 
-  #ggsave("figures/Jeremalai-mass-spit.png")
-  
-ggplot(cores_mass, aes(as.factor(phase), Weight) ) +
-  geom_boxplot() +
-  scale_y_log10() +
-  theme_minimal() +
-  xlab("depositional phase") +
-  ylab("mass (g)")
-ggsave("figures/Jeremalai-core-mass-phase.png")
+```
 
-# ANOVA with Tukey's HSD
-fit <- aov(Weight ~ as.factor(phase), cores_mass)
-summary(fit)
-tuk <- TukeyHSD(fit)
-plot(tuk, las = 2, cex = 0.1)
+Here is the code for the figure "Distribution of core and complete flake mass by depositional phases"
 
-# do bayesian ANOVA
-data <- data.frame(phase = cores_mass$phase, mass = cores_mass$Weight)
-data <- data[data$mass != 0,] # zeros break the model)
-# This script is in the same folder as the current script
-# and generates plots and a lot of data objects. The only 
-# input is a long data.frame called 'data' that has col1
-# as numbers indicating groups and col2 as the measurement
-# source("code/BensANOVAonewayJagsSTZ.R")
-
+```{r flake_and_core_mass_by_phase_fig_7}
 # plot flake and core mass by phase in one box plot
 flakes_cores_weight <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "core"), c('Artclas', 'Weight', 'phase') ]
 
@@ -492,9 +524,30 @@ ggplot(flakes_cores_weight, aes( fill = Artclas, as.factor(phase), Weight)) +
 ggsave("figures/Jeremalai-flake-core-mass-phase.png")
 ```
 
-### Lithics: chert flake platform metrics 
 
-```{r chert_flake_platform}
+Here is the code for tests of credible difference in core mass by phase
+
+```{r core_mass_by_phase_test}
+
+# ANOVA with Tukey's HSD
+fit <- aov(Weight ~ as.factor(phase), cores_mass)
+summary(fit)
+tuk <- TukeyHSD(fit)
+plot(tuk, las = 2, cex = 0.1)
+
+# do bayesian ANOVA
+data <- data.frame(phase = cores_mass$phase, mass = cores_mass$Weight)
+data <- data[data$mass != 0,] # zeros break the model)
+# This script is in the same folder as the current script
+# and generates plots and a lot of data objects. The only 
+# input is a long data.frame called 'data' that has col1
+# as numbers indicating groups and col2 as the measurement
+# source("code/BensANOVAonewayJagsSTZ.R")
+```
+
+This is the code for the figures that make up "Frequency of flake platform category for chert complete flakes at Jerimalai square B. subplot: distribution of platform area by category." The final version of the figure is generated as a png file when the code is executed but does not show in this document.
+
+```{r chert_flake_platform_fig_8}
 # flake platform
 plat <- dcast(flakes, Plat ~ depth) 
 rownames(plat) <- plat[,1]
@@ -503,11 +556,11 @@ plat <- plat[rownames(plat) != "",]
 plat <- plat[,-1]
 # stat test on all
 # frequentist stat test
-assocstats(as.matrix(plat))
-chisq.test(plat, simulate.p.value=T, B=999)
+freq_test <- assocstats(as.matrix(plat))
+chisq <- chisq.test(plat, simulate.p.value=T, B=999)
 # stat test on just dominant plats
-chisq.test(plat[rowSums(plat) > 70,], simulate.p.value=T, B=999)
-assocstats(as.matrix(plat[rowSums(plat) > 70,]))
+chisq <-chisq.test(plat[rowSums(plat) > 70,], simulate.p.value=T, B=999)
+freq_test <-assocstats(as.matrix(plat[rowSums(plat) > 70,]))
 plat_freqs <- data.frame(plat_types = rownames(plat), Freq = rowSums(plat))
 plat_freqs <- plat_freqs[plat_freqs$Freq > 90,]
 plat_freqs$plat_types <- c('2-scars', '3-scars', 'cortical', 'focalised', 'single')
@@ -521,6 +574,7 @@ main <- ggplot(plat_freqs, aes(reorder(plat_types, Freq), Freq)) +
   theme_update(panel.background = element_blank(),
                panel.grid.major = element_blank(),
                panel.grid.minor = element_blank())
+main
 
 # raw materials by spit
 # compute proportions per layer (col props)
@@ -541,17 +595,11 @@ all_tab <- all_tab[which(rowSums(all_tab[,1:ncol(all_tab)-1]) > 1.5) , ]
 # get rid of NA column
 all_tab <- all_tab[,names(all_tab) != 'NA']
 # stat test
-chisq.test(all_tab[,-ncol(all_tab)])
-assocstats(as.matrix(all_tab[,-ncol(all_tab)]))
+chisq <- chisq.test(all_tab[,-ncol(all_tab)])
+freq_test <- assocstats(as.matrix(all_tab[,-ncol(all_tab)]))
 # plot
 all_tab_m <- melt(all_tab, id.var = 'plat_type')
-ggplot(all_tab_m, aes(variable, value, fill = plat_type)) + 
-  geom_bar(stat="identity") +
-  theme_minimal() +
-  xlab("Depth below surface (m)") +
-  ylab("Proportion of spit") +
-  scale_fill_discrete(name="Platform condition")
-#ggsave("F:/My Documents/My Papers/conferences/IPPA14/Jeremalai/figures/Jeremalai-platform-depth.png")
+
 
 # by phase
 plat <- dcast(flakes, Plat ~ phase)
@@ -564,8 +612,8 @@ plat <- plat[,-1]
 assocstats(as.matrix(plat))
 chisq.test(plat, simulate.p.value=T, B=999)
 # stat test on just dominant plats
-chisq.test(plat[rowSums(plat) > 20,], simulate.p.value=T, B=999)
-assocstats(as.matrix(plat[rowSums(plat) > 20,]))
+chisq <- chisq.test(plat[rowSums(plat) > 20,], simulate.p.value=T, B=999)
+freq_test <- assocstats(as.matrix(plat[rowSums(plat) > 20,]))
 
 # raw materials by site
 # compute proportions per phase (col props)
@@ -576,9 +624,9 @@ for(i in seq(ncol(plat))){
   }
 }
 # check 
-colSums(all_tab) # should == 1
-colnames(all_tab) <- colnames(plat) 
-rowSums(all_tab) # should be various
+# colSums(all_tab) # should == 1
+# colnames(all_tab) <- colnames(plat) 
+# rowSums(all_tab) # should be various
 all_tab$plat_type <- rownames(plat) 
 # get rid of raw materials that are not very abundant
 all_tab <- all_tab[which(rowSums(all_tab[,1:ncol(all_tab)-1]) > 0.15) , ]
@@ -586,7 +634,7 @@ all_tab <- all_tab[which(rowSums(all_tab[,1:ncol(all_tab)-1]) > 0.15) , ]
 # get rid of NA column
 all_tab <- all_tab[,names(all_tab) != 'NA']
 # stat test
-chisq.test(all_tab[,-ncol(all_tab)])
+chi_sq <- chisq.test(all_tab[,-ncol(all_tab)])
 # plot
 all_tab_m <- melt(all_tab, id.var = 'plat_type')
 ggplot(all_tab_m, aes(variable, value, fill = plat_type)) + 
@@ -618,6 +666,7 @@ sub <- ggplot(plat_area_type, aes(Plat, Platarea)) +
   xlab("") +
   theme_minimal()
 ggsave("figures/Jeremalai-platform-area-by-phase.png")
+sub
 
 # plot freq of plat type and platform area together in one plot
   
@@ -638,62 +687,13 @@ plat_type_area_test <- na.omit(flakes[flakes$Plat %in% c("Single", "Focal", "2-s
 fit <- aov(Platarea ~ as.factor(Plat), plat_type_area_test)
 summary(fit)
 tuk <- TukeyHSD(fit)
-par(mar=c(5, 7, 5, 5))
-plot(tuk, las = 2, cex = 0.1)
+# par(mar=c(5, 7, 5, 5))
+# plot(tuk, las = 2, cex = 0.1)
 ```
 
-### Lithics: chert flake cortex  
+This code draws the figure "Distributions of core and flake cortex by depositional phase at Jerimalai square B."  
 
-```{r lithics_chert_cortex}
-
-# dorsal cortex on flakes
-ggplot(flakes, aes(as.factor(phase), Cortex)) + 
-  geom_boxplot() +
-  theme_minimal() +
-  scale_y_log10() +
-  xlab("depositional phase") +
-  ylab("Percent of dorsal cortex")
-ggsave("figures/Jeremalai-flake-dorsal-cortex-phase.png")
-
-# do bayesian ANOVA
-data <- data.frame(phase = flakes$phase, cortex = flakes$Cortex)
-data <- data[data$cortex != 0,] # zeros break the model)
-# This script is in the same folder as the current script
-# and generates plots and a lot of data objects. The only 
-# input is a long data.frame called 'data' that has col1
-# as numbers indicating groups and col2 as the measurement
-# source("code/BensANOVAonewayJagsSTZ.R")
-
-# Frequentist test also output from that script.
-# no credible interactions under expectation of not independant 
-```
-
-
-### Lithics: chert flake and core cortex  
-
-```{r lithics_core_cortex_plot}
-
-# dorsal cortex on cores
-ggplot(cores_mass, aes(as.factor(phase), Cortex)) + 
-  geom_boxplot() +
-  theme_minimal() +
-  scale_y_log10() +
-  xlab("depositional phase") +
-  ylab("Percent of dorsal cortex")
-ggsave("figures/Jeremalai-core-cortex-phase.png")
-
-# do bayesian ANOVA
-data <- data.frame(phase = cores_mass$phase, cortex = cores_mass$Cortex)
-data <- na.omit(data[data$cortex != 0 ,]) # zeros break the model)
-# This script is in the same folder as the current script
-# and generates plots and a lot of data objects. The only 
-# input is a long data.frame called 'data' that has col1
-# as numbers indicating groups and col2 as the measurement
-# source("code/BensANOVAonewayJagsSTZ.R")
-
-# Frequentist test also output from that script.
-# no credible interactions under expectation of not independant 
-
+```{r lithics_chert_cortex_fig_9}
 # plot flake and core cortex by phase in one box plot
 flakes_cores_cortex <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "core"), c('Artclas', 'Cortex', 'phase') ]
 
@@ -710,37 +710,39 @@ ggplot(flakes_cores_cortex, aes( fill = Artclas, as.factor(phase), Cortex)) +
 ggsave("figures/Jeremalai-flake-core-cortex-phase.png")
 ```
 
-### Lithics: chert flake scars
+This code computes the test for credible differences in the amount of cortex on flakes and cores by phase.
 
-```{r lithics_flake_scars}
+```{r flake_core_cortex_test}
+### Flakes first
+# do bayesian ANOVA
+data <- data.frame(phase = flakes$phase, cortex = flakes$Cortex)
+data <- data[data$cortex != 0,] # zeros break the model)
+# This script is in the same folder as the current script
+# and generates plots and a lot of data objects. The only 
+# input is a long data.frame called 'data' that has col1
+# as numbers indicating groups and col2 as the measurement
+# source("code/BensANOVAonewayJagsSTZ.R")
 
-# number of flake scars per flake
-# remove outliers
-flakes <- flakes[flakes$NoDS < 20 & !(is.na(flakes$phase)), ]
-ggplot(flakes, aes(as.factor(phase), NoDS)) + 
-  geom_boxplot() +
-  theme_minimal() +
-  scale_y_log10() +
-  xlab("Depth below surface (m)") +
-  ylab("Number of dorsal flake scars")
-# save
-ggsave("figures/Jeremalai-dorsal-cortex-group.png")
+# Frequentist test also output from that script.
+# no credible interactions under expectation of not independant 
 
-# tables of core and flake metrics, etc
-# flake cortex, dorsal flake scars and OHR together
-ag_fl <- aggregate(NoDS ~ phase, flakes, function(x) c(fl_mean = mean(x), fl_sd = sd(x)))
-ag_co <- aggregate(NoDS ~ phase, cores_mass, function(x) c(co_mean = mean(x), co_sd = sd(x)))
-# get proportion of all flakes with OHR in each phase
-flakes$ohr <- ifelse(flakes$Overhang == 'Yes', 1, 0)
-ohr <- aggregate(ohr ~ phase, flakes, function(x) c(ohr_mean = sum(x)/length(x)))
-# output to format for doc
-write.csv(t(cbind(ag_fl, ag_co[,-1], ohr[,-1])), "table.csv")
+### Cores second
+# do bayesian ANOVA
+data <- data.frame(phase = cores_mass$phase, cortex = cores_mass$Cortex)
+data <- na.omit(data[data$cortex != 0 ,]) # zeros break the model)
+# This script is in the same folder as the current script
+# and generates plots and a lot of data objects. The only 
+# input is a long data.frame called 'data' that has col1
+# as numbers indicating groups and col2 as the measurement
+# source("code/BensANOVAonewayJagsSTZ.R")
 
-
-### come back to this ###
+# Frequentist test also output from that script.
+# no credible interactions under expectation of not independant 
 ```
 
-### Lithics: core mass by type
+### Core technology
+
+This code draws the plot "Cores recovered from Jerimalai. Differences in core mass by type."
 
 ```{r lithic_core_mass}
 core_types$Type_long <- with(core_types, ifelse(Type == "SPC", "Single plaform",
@@ -760,14 +762,11 @@ ggplot(core_types, aes(reorder(Type_long, -Mass,  FUN=median), Mass)) +
   ylab("Core mass (g)")
 # save
 ggsave("figures/Jeremalai-core-by-type.png")
-
-aggregate(Mass ~ Type_long, data = core_types, median)
-
 ```
 
-Correlation of maximum core dimension with mass
+This code computes the linear model coefficients for the the relationship between core maximum dimension and core mass. 
 
-```{r lithics_core_max_dim}
+```{r core_max_dim_by_mass_regression}
 # compute linear model
 m <-lm(Mass ~ Length, core_types)
 # extract coefs into data frame
@@ -777,24 +776,27 @@ out <- round(data.frame(a = coef(m)[1],
                        p =  anova(m)$'Pr(>F)'[1],
                        n = nrow(core_types) ), 3)
 
+
 ```
 
 The maximum dimension of cores is strongly correlated with mass (r2 = `r out$r2`).
 
-Core cortex
+This code computes the amount of cortex for each core type.
 
 ```{r lithics_core_cortex}
 core_cortex <- aggregate( X..Cortex ~ Type, data = core_types, mean)
 # what is the average amount of cortex for each core type?
 core_cortex_means <- arrange(core_cortex, -X..Cortex)
-
+names(core_cortex_means) <- c("Type", "Cortex percentage")
+core_cortex_means[,2] <- round(core_cortex_means[,2],1)
+core_cortex_means
 ```
 
 Consistent with overall size, single platform cores retain the most cortex on average (`r filter(core_cortex_means, Type == 'SPC')$X..Cortex`%), followed by radial cores (`r filter(core_cortex_means, Type == 'RC')$X..Cortex`%), multiplatform cores (`r filter(core_cortex_means, Type == 'MPC')$X..Cortex`%) and faceted flake cores (`r filter(core_cortex_means, Type == 'FFC')$X..Cortex`%). Levallois-like cores and bipolar cores exhibit the least cortex (<4%). 
 
-Flake scars on cores
+This code computes the numbers of flake scars by each core type.
 
-```{r lithics_core_flake_scars}
+```{r core_flake_scars_by_type}
 core_scars <- core_types %>%
   group_by(Type) %>%
   summarize(means = round(mean(Number.of.Scars, na.rm = TRUE),0),
@@ -805,11 +807,59 @@ core_scars <- core_types %>%
 
 Levallois-like cores exhibit almost twice the number of flake scars on average as other cores in the assemblage (mean = `r filter(core_scars, Type == "LLC")$means`±`r filter(core_scars, Type == "LLC")$sds` scars versus `r round(mean(core_scars$means),0)`±`r round(mean(core_scars$sds, na.rm = TRUE),0)` on average). Single platform cores have the least scars on average (`r filter(core_scars, Type == "SPC")$means`±`r filter(core_scars, Type == "SPC")$sds`).
 
+### Retouched artefacts 
+
+### Lithics: retouch location
 
 
-### Lithics: retouch
 
-```{r lithics_retouch}
+This code draws the plot "Locations of retouch on chert flakes by depositional unit at Jerimalai square B"
+
+```{r lithics_retouch_location_fig_16}
+
+# retouch locations
+rt_loc <- data.frame(phase = rt$phase, rt_loc = rt$Retloc)
+rt_loc <- rt_loc[!(is.na(rt_loc$phase)), ]
+rt_sum <- as.data.frame.matrix(table(rt_loc))[,-1]
+rt_sum$phase <- paste0("phase ", row.names(rt_sum))
+colnames(rt_sum) <- c("Both margins", "Distal", "Perimeter", "Left lateral", "Medial", "Proximal", "Right lateral", "phase")
+rt_sum_m <- melt(rt_sum)
+# plot
+ggplot(rt_sum_m, aes(variable, value)) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5, size=12)) +
+  ylab("frequency") +
+  xlab("retouch location") +
+  facet_wrap(~phase, ncol = 5)
+# save plot
+ggsave("figures/Jeremalai-flake-retouched-flake-location-phase.png")
+```
+
+This code draws the plot "Distribution of flake lengths for retouched and unretouched flakes by depositional unit at Jerimalai square B"
+
+```{r flake_lengths_retouch_by_phase_fig_17}
+# plot retouch flake size and complete unretouch flake size
+#  in one box plot
+flakes_retouch_size <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "retf"), c('Artclas', 'Weight', 'Length', 'phase') ]
+
+ggplot(flakes_retouch_size, aes( fill = Artclas, as.factor(phase), Weight)) +
+  geom_boxplot() +
+  scale_y_log10() +
+  theme_minimal() +
+  xlab('depostional phase') +
+  ylab("mass (g)") +
+  scale_fill_manual(name="artefact type",
+                    labels=c("unretouched flake", "retouched flake"), 
+                    values = c("black", "white"))
+# save plot
+ggsave("figures/Jeremalai-flake-retouchedflake-mass-phase.png")
+
+```
+
+This code computes the tests for credible difference in retouch flake lengths by phase
+
+
+```{r retouch_flake_lengths_test}
 
 # frequency of flakes with retouch per phase
 rt <- flakes[flakes$Rtch == "Yes", ]
@@ -828,7 +878,7 @@ data <- data[data$Freq != 0 | !is.numeric(data$Freq),] # zeros break the model
 # source("code/BensPoissonExponentialJagsSTZ.R")
 
 # nothing from bayes, nothing from freq.
-assocstats(as.matrix(rt_tab))
+freq_test <- assocstats(as.matrix(rt_tab))
 
 # get proportion
 rt_tab <- data.frame(t(rt_tab))
@@ -839,11 +889,9 @@ rt_tab$prop <- with(rt_tab, (rt.Retype/flakes))
 rt_len <- data.frame(phase = rt$phase, rt_len = rt$Retlen)
 # omit NAs
 rt_len <- rt_len[!(is.na(rt_len$rt_len)), ]
-ggplot(rt_len, aes(as.factor(phase), rt_len)) +
-  scale_y_log10() + 
-  geom_boxplot()
+
 # get mean lengths
-aggregate(rt_len ~ phase, rt_len, mean)
+mean_lengths <- aggregate(rt_len ~ phase, rt_len, mean)
 
 # do bayesian ANOVA
 data <- rt_len
@@ -856,53 +904,16 @@ data <- na.omit(data[data$rt_len != 0 ,]) # zeros break the model)
 
 # no credible differences
 
-# plot retouch flake size and complete unretouch flake size
-#  in one box plot
-flakes_retouch_size <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "retf"), c('Artclas', 'Weight', 'Length', 'phase') ]
 
-ggplot(flakes_retouch_size, aes( fill = Artclas, as.factor(phase), Weight)) +
-  geom_boxplot() +
-  scale_y_log10() +
-  theme_minimal() +
-  xlab('depostional phase') +
-  ylab("mass (g)") +
-  scale_fill_manual(name="artefact type",
-                    labels=c("unretouched flake", "retouched flake"), 
-                    values = c("black", "white"))
-# save plot
-ggsave("figures/Jeremalai-flake-retouchedflake-mass-phase.png")
 
 # any difference between mass of retouched and unretouched, in total?
 # Bayesian t-test of the mass of all retouched vs all unretouched flakes
 # flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
 
-### Lithics: retouch location
+This code makes the table "Summary of retouch indices for retouched pieces recovered from Jerimalai. GIUR = Geometric Index of Unifacial Retouch, II = Index of Invasiveness, % = percent of perimeter with retouch"
 
-```{r lithics_retouch_location}
-
-# retouch locations
-rt_loc <- data.frame(phase = rt$phase, rt_loc = rt$Retloc)
-rt_loc <- rt_loc[!(is.na(rt_loc$phase)), ]
-rt_sum <- as.data.frame.matrix(table(rt_loc))[,-1]
-rt_sum$phase <- paste0("phase ", row.names(rt_sum))
-colnames(rt_sum) <- c("Both margins", "Distal", "Perimeter", "Left lateral", "Medial", "Proximal", "Right lateral", "phase")
-rt_sum_m <- melt(rt_sum)
-# plot
-ggplot(rt_sum_m, aes(variable, value)) +
-  geom_bar(stat="identity") +
-  theme(axis.text.x  = element_text(angle=90, vjust=0.5, size=12)) +
-  ylab("frequency") +
-  xlab("retouch location") +
-  facet_wrap(~phase, ncol = 3)
-# save plot
-ggsave("figures/Jeremalai-flake-retouched-flake-location-phase.png")
-```
-
-### Lithics: retouch indices
-
-
-```{r lithics_retouch_indices}
+```{r retouch_indices_table_5}
 retouch_indices[is.na(retouch_indices)] <- 0
 retouch_indices$GIUR <- with(retouch_indices, t1/T1 + t2/T2 + t3/T3)/3
 retouch_indices$perimeter_perc <- with(retouch_indices, length/perimeter * 100)
@@ -929,11 +940,11 @@ GIUR = `r retouch_indices_means$GIUR` +/- `r retouch_indices_sds$GIUR`
 perimeter = `r retouch_indices_means$perimeter_perc` +/- `r retouch_indices_sds$ perimeter_perc`%
 II = `r retouch_indices_means$II` +/- `r retouch_indices_sds$II`
 
+### Technological types
 
+This code makes the table "Summary of counts and classes. Counts refers to the count of spits in each depositional phase containing a given class."
 
-### Lithics: technological types
-
-```{r lithics_technological_types}
+```{r technological_types_table_6}
 
 # all 
 
@@ -958,11 +969,11 @@ rs <- rowSums(techno[,2:32], na.rm = TRUE )
 rs_phase <- data.frame(rs, phase = techno$phase)
 # % that have a type present
 # phases with no types at all
-rs_phase[rs_phase$rs == 0,]
+check <- rs_phase[rs_phase$rs == 0,]
 # set 1 or above to 1
 rs_phase$rs <- ifelse(rs_phase$rs == 0, 0, 1)
-aggregate(rs ~ phase, rs_phase[rs_phase$rs == 0,], length) # counts
-t(apply(table(rs_phase), 2, function(x) x/sum(x))) # props
+check <- aggregate(rs ~ phase, rs_phase[rs_phase$rs == 0,], length) # counts
+check <- t(apply(table(rs_phase), 2, function(x) x/sum(x))) # props
 # just three spits with zero types... let's do it by class
 
 ## cores ##
@@ -979,14 +990,14 @@ rs <- rowSums(cores[,2:(ncol(cores)-2)], na.rm = TRUE )
 rs_phase <- data.frame(rs, group = cores$phase)
 # % that have a type present
 # groups with no types at all
-rs_phase[rs_phase$rs == 0,]
+check <- rs_phase[rs_phase$rs == 0,]
 # set any non-zero to 1
 rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
 # yes, more with zero here...
 dc_core <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
 dc_core <- prop.table(as.matrix(dc_core), 1)
 # chi-square test
-chisq.test(dc_core, simulate.p.value=T, B=9999)
+csq <- chisq.test(dc_core, simulate.p.value=T, B=9999)
 
 
 ## types ##
@@ -1003,14 +1014,14 @@ rs <- rowSums(types[,2:(ncol(types)-2)], na.rm = TRUE )
 rs_phase <- data.frame(rs, phase = types$phase)
 # % that have a type present
 # groups with no types at all
-rs_phase[rs_phase$rs == 0,]
+check <- rs_phase[rs_phase$rs == 0,]
 # set any non-zero to 1
 rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
 # yes, more with zero here...
 dc_types <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
 dc_types <- prop.table(as.matrix(dc_types), 1)
 # chi-square test
-chisq.test(dc_types, simulate.p.value=T, B=9999)
+csq <- chisq.test(dc_types, simulate.p.value=T, B=9999)
 
 
 ## retouch ##
@@ -1027,14 +1038,14 @@ rs <- rowSums(retouch[,2:(ncol(retouch)-2)], na.rm = TRUE )
 rs_phase <- data.frame(rs, phase = retouch$phase)
 # % that have a type present
 # groups with no types at all
-rs_phase[rs_phase$rs == 0,]
+check <- rs_phase[rs_phase$rs == 0,]
 # set any non-zero to 1
 rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
 # yes, more with zero here...
 dc_retouch <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
 dc_retouch <- prop.table(as.matrix(dc_retouch), 1)
 # chi-square test
-chisq.test(dc_retouch, simulate.p.value=T, B=9999)
+csq <- chisq.test(dc_retouch, simulate.p.value=T, B=9999)
 
 
 ## features ##
@@ -1051,14 +1062,14 @@ rs <- rowSums(features[,2:(ncol(features)-2)], na.rm = TRUE )
 rs_phase <- data.frame(rs, phase = features$phase)
 # % that have a type present
 # groups with no types at all
-rs_phase[rs_phase$rs == 0,]
+check <- rs_phase[rs_phase$rs == 0,]
 # set any non-zero to 1
 rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
 # yes, more with zero here...
 dc_feat <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
 dc_feat <- prop.table(as.matrix(dc_feat), 1)
 # chi-square test
-chisq.test(dc_feat, simulate.p.value=T, B=9999)
+csq <- chisq.test(dc_feat, simulate.p.value=T, B=9999)
 
 ## ground ##
 # put depths on 
@@ -1074,14 +1085,14 @@ rs <- rowSums(ground[,2:(ncol(ground)-2)], na.rm = TRUE )
 rs_phase <- data.frame(rs, phase = ground$phase)
 # % that have a type present
 # phases with no types at all
-rs_phase[rs_phase$rs == 0,]
+check <- rs_phase[rs_phase$rs == 0,]
 # set any non-zero to 1
 rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
 # yes, more with zero here...
 dc_gr <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
 dc_gr <- prop.table(as.matrix(dc_gr), 1)
 # chi-square test
-chisq.test(dc_gr, simulate.p.value=T, B=9999)
+csq <- chisq.test(dc_gr, simulate.p.value=T, B=9999)
 
 # put them together
 lst <- list(cores = dc_core,  retouch = dc_retouch, types = dc_types, features = dc_feat,  ground = dc_gr)
@@ -1107,35 +1118,35 @@ ggsave("figures/Jeremalai-techno-types.png")
 l <- lapply(features[,2:(ncol(features)-2)], function(i)  aggregate( i ~ phase, features, sum, na.rm = TRUE))
 df <- do.call(rbind.data.frame, l)
 df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
-dcast(phase ~ name, value.var = 'i', data = df)
+feat <- dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about ground
 l <- lapply(ground[,2:(ncol(ground)-2)], function(i)  aggregate( i ~ phase, ground, sum, na.rm = TRUE))
 df <- do.call(rbind.data.frame, l)
 df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
-dcast(phase ~ name, value.var = 'i', data = df)
+grou <- dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about retouch
 l <- lapply(retouch[,2:(ncol(retouch)-2)], function(i)  aggregate( i ~ phase, retouch, sum, na.rm = TRUE))
 df <- do.call(rbind.data.frame, l)
 df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
-dcast(phase ~ name, value.var = 'i', data = df)
+reto <- dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about types
 l <- lapply(types[,2:(ncol(types)-2)], function(i)  aggregate( i ~ phase, types, sum, na.rm = TRUE))
 df <- do.call(rbind.data.frame, l)
 df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
-dcast(phase ~ name, value.var = 'i', data = df)
+type <- dcast(phase ~ name, value.var = 'i', data = df)
 
 # more about cores
 l <- lapply(cores[,2:(ncol(cores)-2)], function(i)  aggregate( i ~ phase, cores, sum, na.rm = TRUE))
 df <- do.call(rbind.data.frame, l)
 df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
-dcast(phase ~ name, value.var = 'i', data = df)
+core <- dcast(phase ~ name, value.var = 'i', data = df)
 
 # obsidian?
 all$phase <- makephases(all$Spit)
-table(data.frame(phase = all$phase, rm = all$Material))
+obsidian <- table(data.frame(phase = all$phase, rm = all$Material))
 
 # summary table of all techno-types. This will give a count of spits
 # in each phase that contain at least one artefact in the category.
@@ -1154,7 +1165,8 @@ summaryt_props <- round(t(t(summaryt) / spits_per_phase$Spit),2)
 
 # write table to csv to put into word doc
 write.csv(summaryt_props, "techno_types_table.csv")
-# this is table 5
+# this is table 6
+summaryt_props
 
 ```
 
