@@ -3,7 +3,7 @@
 .RData
 .Renviron
 .Rprofile
-.csv
+*.csv
 packrat.lock
 /.Rproj.user
 /library
