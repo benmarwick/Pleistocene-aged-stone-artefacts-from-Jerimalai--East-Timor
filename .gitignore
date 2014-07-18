@@ -3,6 +3,7 @@
 .RData
 .Renviron
 .Rprofile
+.csv
 packrat.lock
 /.Rproj.user
 figures
