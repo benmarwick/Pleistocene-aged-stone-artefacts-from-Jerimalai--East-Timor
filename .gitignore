@@ -6,10 +6,8 @@
 .csv
 packrat.lock
 /.Rproj.user
-figures
 /library
 /packrat.sources
-data
 /paper
 
 packrat/lib*/
