@@ -1,8 +1,10 @@
-# ---
-# title: "Supplementary Materials"
-# author: Ben Marwick
-# date: Saturday, March 22, 2014
-# ---
+# Supplementary materials supporting the analysis of stone artefacts from Jerimalai rockshelter, East Timor
+
+Ben Marwick
+
+This document contains the code to accompany the analysis of stone artefacts from Jerimalai rockshelter reported in Marwick et al. This document is organised with the same structure as the manuscript and will produce all of the quantitative results, data visualisations and tables found in the manuscript.
+
+Please see the readme.md file for details on how to execute the code in this document. 
 
 
 ```{r setup_environment, message=FALSE, echo=FALSE}
@@ -102,7 +104,7 @@ flakes$phase <- ifelse(flakes$Spit > 0 & flakes$Spit <= 20, 4,
                               ifelse(flakes$Spit >= 40 & flakes$Spit <= 49, 2,
                                      ifelse(flakes$Spit >= 50 & flakes$Spit <= 69, 1, NA))))
 # check if any NA
-unique(flakes$phase)
+check <- unique(flakes$phase)
 
 # My version after Sue's comment
 # The chronological divisions are: 
@@ -387,7 +389,7 @@ Here is the code that will compute the test of credible interaction between flak
 Here is the code to summarise heat treatment.
 
 ```{r lithics_heat_treatment}
-sum(flakes$Heat, na.rm = TRUE) / nrow(flakes)
+check <- sum(flakes$Heat, na.rm = TRUE) / nrow(flakes)
 heat <- aggregate(Heat ~ phase, flakes, length)
 total <- aggregate(Spit ~ phase, flakes, length)
 heat$notheat <- total$Spit - heat$Heat
@@ -426,7 +428,7 @@ Between `r round(min_heat, 2)*100`% and `r round(max_heat, 2)*100`% of chert art
 
 ### Metric and technological characteristics of cores and unretouched flakes
 
-Here is the code for the table "Summary of attributes of chert complete flakes from Jerimalai square B. Each cell contains mean ± standard deviation unless otherwise indicated."
+Here is the code for the table "Summary of attributes of chert complete flakes from Jerimalai square B. Each cell contains mean ± standard deviation unless otherwise indicated." The table produced here has been rearranged by hand for the paper.
 
 ```{r chert_flake_metrics_summary_table_3}
 # the table has been rearranged by hand for the paper
@@ -531,9 +533,9 @@ Here is the code for tests of credible difference in core mass by phase
 
 # ANOVA with Tukey's HSD
 fit <- aov(Weight ~ as.factor(phase), cores_mass)
-summary(fit)
+summry <- summary(fit)
 tuk <- TukeyHSD(fit)
-plot(tuk, las = 2, cex = 0.1)
+# plot(tuk, las = 2, cex = 0.1)
 
 # do bayesian ANOVA
 data <- data.frame(phase = cores_mass$phase, mass = cores_mass$Weight)
@@ -574,8 +576,7 @@ main <- ggplot(plat_freqs, aes(reorder(plat_types, Freq), Freq)) +
   theme_update(panel.background = element_blank(),
                panel.grid.major = element_blank(),
                panel.grid.minor = element_blank())
-main
-
+main + theme_minimal()
 # raw materials by spit
 # compute proportions per layer (col props)
 all_tab <- data.frame()
@@ -585,9 +586,9 @@ for(i in seq(ncol(plat))){
   }
 }
 # check 
-colSums(all_tab) # should == 1
+check <- colSums(all_tab) # should == 1
 colnames(all_tab) <- colnames(plat) 
-rowSums(all_tab) # should be various
+check <- rowSums(all_tab) # should be various
 all_tab$plat_type <- rownames(plat) 
 # get rid of raw materials that are not very abundant
 all_tab <- all_tab[which(rowSums(all_tab[,1:ncol(all_tab)-1]) > 1.5) , ]
@@ -609,8 +610,8 @@ plat <- plat[rownames(plat) != "",]
 plat <- plat[,-1]
 # stat test on all
 # frequentist stat test
-assocstats(as.matrix(plat))
-chisq.test(plat, simulate.p.value=T, B=999)
+freq_test <- assocstats(as.matrix(plat))
+ch_sq <- chisq.test(plat, simulate.p.value=T, B=999)
 # stat test on just dominant plats
 chisq <- chisq.test(plat[rowSums(plat) > 20,], simulate.p.value=T, B=999)
 freq_test <- assocstats(as.matrix(plat[rowSums(plat) > 20,]))
@@ -1168,113 +1169,6 @@ write.csv(summaryt_props, "techno_types_table.csv")
 summaryt_props
 
 ```
-
-#########################################################################
-### summary tables by phase
-
-# complete chert flakes
-Mean±Standard deviation
-Length (mm)
-Width (mm)
-Thickness (mm)
-Mass (g)
-dorsal flake scars
-dorsal cortex
-retouched (%)
-retouch length
-
-
-DT <- data.table(flakes)
-fl_means <- DT[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Length', 'Width', 'Thick', 'Weight')] 
-fl_sds <- DT[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Length', 'Width', 'Thick', 'Weight') ]
-dfs_means <- DT[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('NoDS')]
-dfs_sds <- DT[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('NoDS')]
-ctx_means <- DT[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Cortex')]
-ctx_sds <- DT[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Cortex')]
-rt_means <- DT[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Retlen')]
-rt_sds <- DT[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Retlen')]
-rt_count <- aggregate(Retlen ~ phase, flakes, length)
-rt_prop <- matrix(rt_tab['prop',], ncol = ncol(rt_tab))
-
-# get proportion of all flakes with OHR in each phase
-flakes$ohr <- ifelse(flakes$Overhang == 'Yes', 1, 0)
-oh_count <- aggregate(ohr ~ phase, flakes, function(x) sum(x))
-oh_prop <- aggregate(ohr ~ phase, flakes, function(x) c(ohr_mean = sum(x)/length(x)))
-
-# platform dimensions
-pw_means <- DT[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Platwid')]
-pw_sds <- DT[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Platwid')]
-pth_means <- DT[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Platthic')]
-pth_sds <- DT[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Platthic')]
-
-summary_flakes <- list(
-t(fl_means),
-t(fl_sds),
-t(pw_means),
-t(pw_sds),
-t(pth_means),
-t(pth_sds),
-t(dfs_means),
-t(dfs_sds),
-t(ctx_means),
-t(ctx_sds),
-t(rt_means),
-t(rt_sds),
-t(rt_count)  ,
-rt_prop, 
-t(oh_count),
-t(oh_prop)
-)
-
-# total n of flakes per phase
-aggregate(Spit ~ phase, flakes, length)
-
-
-# make one big table
-flakes_table <- data.table(ldply(summary_flakes, data.frame))
-flakes_table <- data.frame(sapply(flakes_table, as.character))
-# write csv
-write.csv(flakes_table, "flakes_table.csv")
-
-# cores
-all$phase <- makephases(all$Spit)
-DTc <- data.table(all[all$Artclas == 'Core', ])
-co_means <- DTc[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Length', 'Width', 'Thick', 'Weight')] 
-co_sds <- DTc[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Length', 'Width', 'Thick', 'Weight') ]
-coscrs_means <- DTc[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('NoDS')]
-coscrs_sds <- DTc[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('NoDS')]
-coctx_means <- DTc[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Cortex')]
-coctx_sds <- DTc[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Cortex')]
-corot_means <- DTc[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Corerot')]
-corot_sds <- DTc[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Corerot')]
-# platform dimensions
-copw_means <- DTc[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Platwid')]
-copw_sds <- DTc[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Platwid')]
-copth_means <- DTc[order(phase), lapply(.SD, mean, na.rm=TRUE), by=phase, .SDcols=c('Platthic')]
-copth_sds <- DTc[order(phase), lapply(.SD, sd, na.rm=TRUE), by=phase, .SDcols=c('Platthic')]
-
-summary_cores <- list(
-  t(co_means),
-  t(co_sds),
-  t(coscrs_means),
-  t(coscrs_sds),
-  t(coctx_means),
-  t(coctx_sds),
-  t(corot_means),
-  t(corot_sds),
-  t(copw_means),
-  t(copw_sds),
-  t(copth_means),
-  t(copth_sds)
-)
-# make one big table
-cores_table <- ldply(summary_cores, data.frame)
-write.csv(cores_table, "core_table.csv")
-
-
-# total n of flakes per phase
-aggregate(Spit ~ phase, DTc, length)
-
 
 
 

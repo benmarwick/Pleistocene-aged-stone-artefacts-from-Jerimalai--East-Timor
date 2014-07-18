@@ -53,7 +53,8 @@ lapply(github_pkgs, ipak_github)
 # }
 # ipak_github_reshape("reshape", "reshape2")
 
-
+require(knitr)
+require(rmarkdown)
 require(ggplot2)
 require(reshape2)
 require(plyr)
