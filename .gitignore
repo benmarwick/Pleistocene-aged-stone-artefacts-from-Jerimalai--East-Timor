@@ -5,10 +5,10 @@
 .Rprofile
 packrat.lock
 /.Rproj.user
-/figures
+figures
 /library
 /packrat.sources
-/data
+data
 /paper
 
 packrat/lib*/

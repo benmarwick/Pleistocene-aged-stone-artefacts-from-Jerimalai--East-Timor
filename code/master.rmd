@@ -809,13 +809,12 @@ Levallois-like cores exhibit almost twice the number of flake scars on average a
 
 ### Retouched artefacts 
 
-### Lithics: retouch location
-
-
-
 This code draws the plot "Locations of retouch on chert flakes by depositional unit at Jerimalai square B"
 
 ```{r lithics_retouch_location_fig_16}
+# frequency of flakes with retouch per phase
+rt <- flakes[flakes$Rtch == "Yes", ]
+rt_tab <- t(data.frame(rt = aggregate(Retype ~ phase, rt, function(x) rt_count = length(x)), flakes =  aggregate(Retype ~ phase, flakes, function(x) fk_count = length(x))[,2] ))
 
 # retouch locations
 rt_loc <- data.frame(phase = rt$phase, rt_loc = rt$Retloc)
@@ -838,6 +837,8 @@ ggsave("figures/Jeremalai-flake-retouched-flake-location-phase.png")
 This code draws the plot "Distribution of flake lengths for retouched and unretouched flakes by depositional unit at Jerimalai square B"
 
 ```{r flake_lengths_retouch_by_phase_fig_17}
+
+
 # plot retouch flake size and complete unretouch flake size
 #  in one box plot
 flakes_retouch_size <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "retf"), c('Artclas', 'Weight', 'Length', 'phase') ]
@@ -861,9 +862,7 @@ This code computes the tests for credible difference in retouch flake lengths by
 
 ```{r retouch_flake_lengths_test}
 
-# frequency of flakes with retouch per phase
-rt <- flakes[flakes$Rtch == "Yes", ]
-rt_tab <- t(data.frame(rt = aggregate(Retype ~ phase, rt, function(x) rt_count = length(x)), flakes =  aggregate(Retype ~ phase, flakes, function(x) fk_count = length(x))[,2] ))
+
 
 # send out for bayesian contingency table test...
 # reshape and give meaningful names...
