@@ -104,7 +104,7 @@ loaded via a namespace (and not attached):
 [17] stringr_0.6.2    
 [18] tools_3.1.1  
 
-All of these are included in this repository using [packrat](http://rstudio.github.io/packrat/), a dependency management system that takes a snapshot of the libraries needed for this project and saves it in the project directory so that you can recreate those exact same libraries on another machine. 
+All of these are included in this repository using [packrat](http://rstudio.github.io/packrat/), a dependency management system that takes a snapshot of the libraries needed for this project and saves it in the project directory so that you can recreate those exact same libraries on another machine. To use this system, open the Rproj file in RStudio, then open the Rmd file and knit that. 
 
 Other system dependencies identified using `dependencies::needs()` (https://github.com/ropensci/dependencies): 
 
