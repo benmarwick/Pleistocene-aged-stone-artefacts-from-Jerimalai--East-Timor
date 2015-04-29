@@ -2,9 +2,14 @@
 
 Ben Marwick
 
-This document contains the code to accompany the analysis of stone artefacts from Jerimalai rockshelter reported in Marwick et al. This document is organised with the same structure as the manuscript and will produce all of the quantitative results, data visualisations and tables found in the manuscript.
+## Introduction
 
-Please see the readme.md file for details on how to execute the code in this document. 
+This document contains the code to accompany the analysis of stone artefacts from Jerimalai rockshelter reported in Marwick et al. ""Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia". This document is organised with the same structure as the manuscript and will produce all of the quantitative results, data visualisations and tables found in the manuscript.
+
+This document is an R markdown document, which means that it is a plain text file that contains marked up text (such as this paragraph), and chunks of R code in between the text. This file may be opneing in any text editorm and the R can be executed frim any version of R >3.2.0
+
+
+Please see the readme.md file in this repository for details on how to execute the code in this document. 
 
 
 ```{r setup_environment, message=FALSE, echo=FALSE}
@@ -28,7 +33,7 @@ source("code/load.r")
 
 ### Chronology of the excavated deposit
 
-In this section we analyse the dates to determine the ages of each phase
+In this section we analyse the dates to determine the ages of each phase. 
 
 
 ```{r chronology}
@@ -211,7 +216,7 @@ Here is the table "Counts of major raw materials of complete flakes per depositi
 raw[!(row.names(raw) %in% c('Brecchert', 'Cortical', 'Unknown')),]
 ```
 
-Here is the code to compute a test of credible differences of raw material coutns and phases:
+Here is the code to compute a test of credible differences of raw material counts and phases:
 
 ```{r raw_material_by_phase_test}
 # bayesian contingency table test...
@@ -219,6 +224,7 @@ Here is the code to compute a test of credible differences of raw material coutn
 
 data <- melt(as.matrix(dom),  varnames=c("raw_material", "phase"), value.name="Freq")
 data <- data[data$Freq != 0 | !is.numeric(data$Freq),] # zeros break the model
+
 # This script is in the same folder as the current script
 # and generates plots and a lot of data objects. The only 
 # input is a long data.frame called 'data' that has a last
@@ -227,10 +233,57 @@ data <- data[data$Freq != 0 | !is.numeric(data$Freq),] # zeros break the model
 # uncomment this next line to run test (it will take a few minutes)
 # source("code/BensPoissonExponentialJagsSTZ.R")
 
+# 2nd edition
+# source("code/Jags-Ycount-Xnom2fac-MpoissonExp.R")
+
+myDataFrame = data
+
+yName=names(myDataFrame)[1] # raw material
+x1Name=names(myDataFrame)[2]  # phase
+x2Name=names(myDataFrame)[3]  # Freq
+x1contrasts = list( 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("phase 2")  , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
+  list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
+  list( c("phase 4")  , c("phase 5") , compVal=0.0 , ROPE=c(-0.1,0.1))
+  )
+
+numSavedSteps = 12000
+thinSteps = 10
+
+mcmcCoda = genMCMC( datFrm=myDataFrame , 
+                    yName=yName , x1Name=x1Name , x2Name=x2Name ,
+                    numSavedSteps=numSavedSteps , thinSteps=thinSteps , 
+                    )
+#------------------------------------------------------------------------------- 
+# Display diagnostics of chain, for specified parameters:
+parameterNames = varnames(mcmcCoda) 
+show( parameterNames ) # show all parameter names, for reference
+for ( parName in c("b0","b1[1]","b2[1]","b1b2[1,1]","ppx1x2p[1,1]",
+                   "a1SD","a1a2SD") ) {
+  diagMCMC( codaObject=mcmcCoda , parName=parName  )
+}
+#------------------------------------------------------------------------------- 
+# Get summary statistics of chain:
+summaryInfo = smryMCMC( mcmcCoda , 
+                        datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
+                        x1contrasts=x1contrasts 
+                         )
+show(summaryInfo)
+# Display posterior information:
+plotMCMC( mcmcCoda , 
+          datFrm=myDataFrame , 
+          yName=yName , 
+
+          x1contrasts=x1contrasts )
+
 # all interactions include zero in the HDI, so no credible differences 
 # in raw materials between phases. 
+```
 
-# here is the frequentist equivalent for skeptics:
+```{r }
+
+# here is the frequentist equivalent 
 
 results <- chisq.test(raw, simulate.p.value=T, B=9999)
 # a few diagnostics

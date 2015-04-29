@@ -10,7 +10,7 @@ Ben Marwick (benmarwick@gmail.com)
 
 ### Published in: 
 
- Marwick, B, C. Clarkson, S. O'Connor & S. Collins under review "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" _Journal of Human Evolution_
+Marwick, B, C. Clarkson, S. O'Connor & S. Collins under review "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" _Journal of Human Evolution_
 
 ### Contents:
 
