@@ -1,0 +1,6 @@
+^notes$
+^\.travis\.yml$
+^.*\.Rproj$
+^\.Rproj\.user$
+^README\.Rmd$
+^README-*\.png$

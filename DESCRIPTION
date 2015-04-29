@@ -1,0 +1,13 @@
+Package: JerimalaiStoneArtefacts
+Title: R package to accompy a study of stone artefacts from Jerimalai, East Timor
+Version: 0.0.0.9000
+Authors@R: person("Ben", "Marwick", , "benmarwick@gmail.com", role = c("aut", "cre"))
+Description: Uses code from John K. Kruschke's Doing Bayesian Data Analysis: A Tutorial with R and BUGS
+Depends: R (>= 3.2.0)
+License: MIT
+LazyData: true
+Imports:
+    rjags,
+    coda,
+    runjags
+Suggests: testthat

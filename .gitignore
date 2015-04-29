@@ -1,12 +1,3 @@
 .Rproj.user
 .Rhistory
 .RData
-.Renviron
-*.csv
-packrat.lock
-/.Rproj.user
-/library
-/packrat.sources
-/paper
-
-packrat/lib*/
