@@ -407,7 +407,7 @@ ggplot(data, aes(phase, Freq, fill = breakt_)) +
 jhe_90mm_ggsave("figures/fig_5_Jeremalai-flake-broken-phase.png", height = 90/2)
 ```
 
-The code chunk below summarises the frequencies of heat-treated flakes and computes a The code chunk below computes a Bayesian Poisson exponential ANOVA to investigate differences in heat treatment by phase. 
+The code chunk below summarises the frequencies of heat-treated flakes at Jerimalai square B
 
 ```{r lithics_heat_treatment}
 check <- sum(flakes$Heat, na.rm = TRUE) / nrow(flakes)
@@ -421,6 +421,13 @@ heat <- t(heat)
 # do bayesian contingency table test
 colnames(heat) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
 heat <- heat[-1,]
+```
+
+Between `r round(min_heat, 2)*100`% and `r round(max_heat, 2)*100`% of chert artefacts in each depositional phase show signs of having been heated, such as crenation, potlid scars or surface crazing. 
+
+The code chunk below computes a Bayesian Poisson exponential ANOVA to investigate differences in heat treatment by phase. 
+
+```{r lithics_heat_treatment_bayes}
 data <- melt(as.matrix(heat),  varnames=c("heat", "phase"), value.name="Freq")
 myDataFrame = data
 yName=names(myDataFrame)[3]   # Freq 
@@ -470,10 +477,76 @@ chert_artefacts_heat_nhst <- assocstats(as.matrix(heat))
 The code chunk above returns a chi-squared value of `r chert_artefacts_heat_nhst$chisq_tests[2,1]` and a p-value of `r chert_artefacts_heat_nhst$chisq_tests[2,3]`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r chert_artefacts_heat_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of breakage types by phase.
 
 
-
-
-
 # Results: Metric and technological characteristics of cores and unretouched flakes 
+
+The code chunk below produces the table "summarizing the attributes of chert complete flakes from Jerimalai square B. Each cell contains mean ± standard deviation unless otherwise indicated. The table produced here has been rearranged by hand for the paper.
+
+```{r chert_flake_metrics_summary_table_6}
+# the table has been rearranged by hand for the paper
+metrics <- flakes %>% 
+  group_by(phase) %>% 
+  summarise(mean(Length, na.rm = TRUE),  
+            mean(Width, na.rm = TRUE), 
+            mean(Thick, na.rm = TRUE),
+            mean(Weight, na.rm = TRUE),
+            mean(Length, na.rm = TRUE),
+            mean(Platwid, na.rm = TRUE),
+            mean(Platthic, na.rm = TRUE),
+            mean(NoDS, na.rm = TRUE),
+            mean(Cortex, na.rm = TRUE),
+            sd(Length, na.rm = TRUE),  
+            sd(Width, na.rm = TRUE), 
+            sd(Thick, na.rm = TRUE),
+            sd(Weight, na.rm = TRUE),
+            sd(Length, na.rm = TRUE),
+            sd(Platwid, na.rm = TRUE),
+            sd(Platthic, na.rm = TRUE),
+            sd(NoDS, na.rm = TRUE),
+            sd(Cortex, na.rm = TRUE),
+            n = length(Weight))
+
+# get overhang removal data also
+ohr <- filter(flakes, Overhang == "Yes") %>%
+       group_by(phase) %>%
+       summarise(OHR_n = length(Overhang))
+# get percentages of OHR per phase
+ohr$OHR_perc <- ohr$OHR_n/metrics$n * 100
+
+# combine
+metrics <- cbind(metrics, ohr[,c("OHR_n", "OHR_perc")])
+metrics <- t(round(metrics,2))
+# save as CSV to tidy up, there is no simple way to make the table
+# that appears in the paper
+write.csv(metrics, "figures/table_6_flake_metrics.csv")
+```
+
+The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake mass by depostitional phase. 
+
+```{r chert_flake_metrics_summary_test_bayes}
+myDataFrame <- data.frame(phase = flakes$phase, mass = flakes$Weight)
+yName = names(myDataFrame)[2] # mass
+xName = names(myDataFrame)[1] # phase
+contrasts = list( 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("phase 2")  , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
+  list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
+  list( c("phase 4")  , c("phase 5") , compVal=0.0 , ROPE=c(-0.1,0.1))
+  )
+  # Generate the MCMC chain:
+  mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
+                      numSavedSteps=11000 , thinSteps=10 )
+
+
+```
+
+```{r}
+# ANOVA with Tukey's HSD
+fit <- aov(Weight ~ as.factor(phase), flakes)
+# summary(fit)
+tuk <- TukeyHSD(fit)
+# plot(tuk, las = 2, cex = 0.1)
+
+```
 
 # Results: Core technology
 
