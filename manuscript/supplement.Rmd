@@ -41,10 +41,13 @@ opts_chunk$set(fig.width=4, fig.height=3, echo=FALSE)
 theme_set(theme_bw(base_size=12))
 toggle = "hide" # results argument
 
-# custom function to save figures at JHE size & resolution
+# custom functions to save figures at JHE size & resolution
 # cf http://www.elsevier.com/author-schemas/artwork-and-media-instructions/artwork-sizing
-jhe_190mm_ggsave <- function(filename = default_name(plot), width= 190, dpi= 1000, ...) {
-ggsave(filename=filename, height=height, width=width, dpi=dpi, ...)
+jhe_190mm_ggsave <- function(filename = default_name(plot), width= 190, units = "mm", dpi= 1000, ...) {
+ ggsave(filename=filename, width=width, dpi=dpi, units=units,  ...)
+}
+jhe_90mm_ggsave <- function(filename = default_name(plot), width= 90, units = "mm", dpi= 1000, ...) {
+ ggsave(filename=filename, width=width, dpi=dpi, units=units, ...)
 }
 
 ```
@@ -135,17 +138,8 @@ ggplot(dates, aes(mid, depth_bs)) +
     # explicitly set the horizontal lines (or they will disappear too)
     panel.grid.major.y = element_blank()  
   )
-
-# From Science paper - four chonological divisions
-# The chronological divisions are: 
-# Phase I (spits 69-50) dated ~42 to 38 ka; 
-# Phase II (spits 49-40) # dated between ~ 17 to 9 ka, 
-# Phase III (spits 39-21) dated between 6.5 and 5.5 ka, 
-# Phase IV (spits 20-3) dated ~5.5 - modern.
-
-# I have chosen not to omit 17-38 ky BP here 
- 
-ggsave(units = "mm", width = 190, dpi = 1000, "figures/fig_2-Jeremalai-dates.png")
+# save to png file 
+jhe_190mm_ggsave("figures/fig_2-Jeremalai-dates.png")
 ```
 
 # Results: Raw materials

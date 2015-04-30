@@ -5,6 +5,7 @@ MAINTAINER Ben Marwick <benmarwick@gmail.com>
 ## Install software dependencies
 RUN apt-get update \
   && apt-get install -y \
+    git \
     r-cran-rjags \
     r-cran-coda \
     r-cran-runjags \
