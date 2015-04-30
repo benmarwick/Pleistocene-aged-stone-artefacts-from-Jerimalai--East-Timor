@@ -41,6 +41,12 @@ opts_chunk$set(fig.width=4, fig.height=3, echo=FALSE)
 theme_set(theme_bw(base_size=12))
 toggle = "hide" # results argument
 
+# custom function to save figures at JHE size & resolution
+# cf http://www.elsevier.com/author-schemas/artwork-and-media-instructions/artwork-sizing
+jhe_190mm_ggsave <- function(filename = default_name(plot), width= 190, dpi= 1000, ...) {
+ggsave(filename=filename, height=height, width=width, dpi=dpi, ...)
+}
+
 ```
 
 # Introduction
@@ -67,7 +73,7 @@ Once logged in, the Files pane (bottom right) will show the `manuscript/` direct
 
 ## Data
 
-All of the data needed to reproduce the results presented in the paper are included in this compendium as CSV files (ie. plain text comma separated variables, readable in any text editor). They can be found in the `data/` directory and are made available with a [CC-0 licence](https://creativecommons.org/publicdomain/zero/1.0/). The code chunk below loads all of the data files into the R working environment. 
+All of the data needed to reproduce the results presented in the paper are included in this compendium as CSV files (ie. plain text comma separated variables, readable in any text editor). They can be found in the `data/` directory and are made available with a [CC-0 licence](https://creativecommons.org/publicdomain/zero/1.0/). The code chunk below loads all of the data files into the R working environment (assuming you have the working directory set to the location of this supplement file). 
 
 
 ```{r load_data}
@@ -139,7 +145,7 @@ ggplot(dates, aes(mid, depth_bs)) +
 
 # I have chosen not to omit 17-38 ky BP here 
  
-ggsave("figures/fig_2-Jeremalai-dates.png")
+ggsave(units = "mm", width = 190, dpi = 1000, "figures/fig_2-Jeremalai-dates.png")
 ```
 
 # Results: Raw materials
