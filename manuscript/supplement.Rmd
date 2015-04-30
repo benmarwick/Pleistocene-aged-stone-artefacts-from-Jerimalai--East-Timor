@@ -29,11 +29,13 @@ require(plyr)
 require(dplyr)
 require(vcd)
 require(rjags)
+require(runjags)
 require(coda)
 require(BEST)
 require(lattice)
 require(xtable)
 require(data.table)
+require(JerimalaiStoneArtefacts)
 
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
                comment = NA, verbose = TRUE, echo=TRUE)
@@ -79,7 +81,6 @@ Once logged in, the Files pane (bottom right) will show the `manuscript/` direct
 
 All of the data needed to reproduce the results presented in the paper are included in this compendium as CSV files (ie. plain text comma separated variables, readable in any text editor). They can be found in the `data/` directory and are made available with a [CC-0 licence](https://creativecommons.org/publicdomain/zero/1.0/). The code chunk below loads all of the data files into the R working environment (assuming you have the working directory set to the location of this supplement file). 
 
-
 ```{r load_data}
 # dates
 dates <- read.csv("data/Jeremalai_dates.csv", as.is = TRUE)
@@ -102,7 +103,6 @@ ground <- read.csv("data/Jerimalai_tech_table_ground.csv")
 # retouch indices
 retouch_indices <- read.csv("data/Jerimalai_retouch_indices.csv")
 ```
-
 
 # Chronology of the excavated deposit
 
@@ -193,8 +193,7 @@ phases <- data.frame(phase = 1:5,
 phases$duration <- with(phases, start - end)
 ```
 
-
-The code chunk below 
+The code chunk below generates a table that summarises the frequencies of the main raw materials in each depositional phase. A raw material is considered dominant here if there are more than ten peices in a phase. 
 
 ```{r lithics_raw_material_over_time}
 # raw material
@@ -210,83 +209,16 @@ raw <- raw[,-1]
 # subset dominant raw materials
 dom <- raw[rowSums(raw) > 10,]
 colnames(dom) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
+kable(dom, caption = "Frequencies of dominant raw materials by depositional phase")
 ```
 
+The code chunk below uses the Bayesian Poisson exponential ANOVA to compute the probabilities of any credible interactions between raw material frequencies and depositional phase. The goal is to determine if there are any significant changes in the use of raw materials for stone artefacts over time.
 
-dom_m <- dom
-dom_m$raw_type <- rownames(dom_m) 
-dom_m <- melt(dom_m)
-ggplot(dom_m, aes(variable, value, fill = raw_type)) + 
-  geom_bar(stat="identity") +
-  theme_minimal() +
-  xlab("Depositional phase") +
-  ylab("Artefact frequency") +
-  scale_fill_discrete(name="Raw material")
-# save plot
-ggsave("figures/Jeremalai-raw-materials-group-counts.png")
-
-# table: subset raw materials with more than 10 pieces per phase, 
-# include obsidian ouot of interest
-dom_obs <- raw[rowSums(raw) > 10 | row.names(raw) == 'Obsidian',]
-#print(xtable(dom_obs), type = 'html', html.table.attributes = (border=0), file = "raw_tab.html")
-
-raw_freqs <- data.frame(raw_types = rownames(raw), Freq = rowSums(raw))
-ggplot(raw_freqs, aes(reorder(raw_types, Freq), Freq)) + 
-  geom_bar(stat="identity")
-# raw materials by site
-# compute proportions per layer (col props)
-all_tab <- data.frame()
-for(i in seq(ncol(raw))){
-  for(j in seq(nrow(raw))){
-    all_tab[j,i] <- raw[j,i]/colSums(raw)[i]
-  }
-}
-# check 
-# colSums(all_tab) # should == 1
-# colnames(all_tab) <- colnames(raw) 
-# rowSums(all_tab) # should be various
-all_tab$raw_type <- rownames(raw) 
-# get rid of raw materials that are not very abundant
-all_tab <- all_tab[which(rowSums(all_tab[,1:ncol(all_tab)-1]) > 0.02) , ]
-
-# get rid of NA column
-all_tab <- all_tab[,names(all_tab) != 'NA']
-# set column names
-colnames(all_tab) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5", "raw_type" )
-
-# plot
-all_tab_m <- melt(all_tab, id.var = 'raw_type')
-ggplot(all_tab_m, aes(variable, value, fill = raw_type)) + 
-  geom_bar(stat="identity") +
-  theme_minimal() +
-  xlab("Depth below surface (m)") +
-  ylab("Proportion of depositional phase") +
-  scale_fill_discrete(name="Raw material")
-# save plot
-ggsave("figures/Jeremalai-raw-materials-group.png")
-```
-
-```{r raw_material_by_phase_test}
-# bayesian contingency table test...
-# reshape and give meaningful names...
-
+```{r raw_material_by_phase_test_bayes}
 data <- melt(as.matrix(dom),  varnames=c("raw_material", "phase"), value.name="Freq")
 data <- data[data$Freq != 0 | !is.numeric(data$Freq),] # zeros break the model
-
-# This script is in the same folder as the current script
-# and generates plots and a lot of data objects. The only 
-# input is a long data.frame called 'data' that has a last
-# column called 'Freq'
-
-# uncomment this next line to run test (it will take a few minutes)
-# source("code/BensPoissonExponentialJagsSTZ.R")
-
-# 2nd edition
-# source("code/Jags-Ycount-Xnom2fac-MpoissonExp.R")
-
 myDataFrame = data
-
-yName=names(myDataFrame)[1] # raw material
+yName=names(myDataFrame)[1]  # raw material
 x1Name=names(myDataFrame)[2]  # phase
 x2Name=names(myDataFrame)[3]  # Freq
 x1contrasts = list( 
@@ -295,60 +227,39 @@ x1contrasts = list(
   list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
   list( c("phase 4")  , c("phase 5") , compVal=0.0 , ROPE=c(-0.1,0.1))
   )
+numSavedSteps = 12000 # MCMC parameters
+thinSteps = 10        # MCMC parameters
 
-numSavedSteps = 12000
-thinSteps = 10
-
-mcmcCoda = genMCMC( datFrm=myDataFrame , 
+mcmcCoda = genMCMC_cont_table( datFrm=myDataFrame , 
                     yName=yName , x1Name=x1Name , x2Name=x2Name ,
                     numSavedSteps=numSavedSteps , thinSteps=thinSteps , 
                     )
-#------------------------------------------------------------------------------- 
-# Display diagnostics of chain, for specified parameters:
-parameterNames = varnames(mcmcCoda) 
-show( parameterNames ) # show all parameter names, for reference
-for ( parName in c("b0","b1[1]","b2[1]","b1b2[1,1]","ppx1x2p[1,1]",
-                   "a1SD","a1a2SD") ) {
-  diagMCMC( codaObject=mcmcCoda , parName=parName  )
-}
-#------------------------------------------------------------------------------- 
+
 # Get summary statistics of chain:
-summaryInfo = smryMCMC( mcmcCoda , 
+summaryInfo = smryMCMC_cont_table( mcmcCoda , 
                         datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
                         x1contrasts=x1contrasts 
                          )
-show(summaryInfo)
-# Display posterior information:
-plotMCMC( mcmcCoda , 
-          datFrm=myDataFrame , 
-          yName=yName , 
 
-          x1contrasts=x1contrasts )
-
-# all interactions include zero in the HDI, so no credible differences 
-# in raw materials between phases. 
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo[321:324, c("HDIlow", "HDIhigh")]
+kable(HDI_intervals_for_interactions, caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and raw material frequencies. All HDIs include zero indicating that the phases are practically equivalent in the frequencies of raw materials")
 ```
 
-```{r }
+The code chunk above indicated no credible difference in raw material frequences over time.
 
+The code chunk below computes a NHST equivalent to the above Bayesian test, in this case a chi-square test. We also compute Cramer's V, a measure of association for nominal variables that ranges from 0 (no association between the variables) to 1 (strong association between the variables)
+
+```{r raw_material_by_phase_test_nhst}
 # here is the frequentist equivalent 
+raw_material_by_phase_nhst <- chisq.test(dom)
+cramers_V <- assocstats(as.matrix(dom)) # very small V
+```
 
-results <- chisq.test(raw, simulate.p.value=T, B=9999)
-# a few diagnostics
-# results$expected
-# prop.table(raw)
-# colSums(prop.table(raw))
-# rowSums(prop.table(raw))
-# stat test on just dominant materials
-tab <- prop.table(as.matrix(raw[rowSums(raw) > 20,]), 2)
-# a slight decrease in chert in Holocene
-result <- chisq.test(dom, simulate.p.value=FALSE, B=999)
+The code chunk above returns a chi-squared value of `r raw_material_by_phase_nhst$statistic` and a p-value of `r raw_material_by_phase_nhst$p.value`, indicating a signficant difference in raw material frequencies by phase. Looking at the table of frequencies above, it appears tha the increase in chert in phase four and five might be responsible for this result. However, the Cramer's V value of `r cramers_V$cramer` indicates that the effect size is extremely small, and of no substantial significance. 
 
 # so it's significant in the frequentist system, but what's the strength?
 # Cramer's V: is a measure of association for nominal variables. Effectively it is the Pearson chi-square statistic rescaled to have values between 0 and 1,
-cramers_V <- assocstats(as.matrix(dom)) # very small V
-
-```
 
 # Results: Discard rates
 

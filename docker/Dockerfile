@@ -12,3 +12,6 @@ RUN apt-get update \
 && installGithub.r --deps TRUE \
     benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
     
+## Copy the manuscript/ dir ('.' is relative to Dockerfile location) onto the container.
+COPY ../manuscript /home/rstudio/manuscript
+WORKDIR /home/rstudio/manuscript
