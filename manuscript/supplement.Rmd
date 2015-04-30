@@ -253,7 +253,7 @@ The code chunk below computes a NHST equivalent to the above Bayesian test, in t
 ```{r raw_material_by_phase_test_nhst}
 # here is the frequentist equivalent 
 raw_material_by_phase_nhst <- chisq.test(dom)
-cramers_V <- assocstats(as.matrix(dom)) # very small V
+cramers_V <- assocstats(as.matrix(dom)) 
 ```
 
 The code chunk above returns a chi-squared value of `r raw_material_by_phase_nhst$statistic` and a p-value of `r raw_material_by_phase_nhst$p.value`, indicating a signficant difference in raw material frequencies by phase. Looking at the table of frequencies above, it appears tha the increase in chert in phase four and five might be responsible for this result. However, the Cramer's V value of `r cramers_V$cramer` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in raw materials frequencies by phase. 
@@ -303,7 +303,7 @@ ggplot(discard_agg, (aes(phase, cubmetperkyr))) +
   xlab("Depositional phase") +
   ylab("Mean number of chert flakes per \ncubic meter of deposit per thousand years") 
 # save plot
-jhe_190mm_ggsave("figures/fig_4_Jeremalai-flake-discard-phase-m3.png")
+jhe_90mm_ggsave("figures/fig_4_Jeremalai-flake-discard-phase-m3.png")
 ```
 
 # Results: Artefact taphonomy

@@ -66,12 +66,12 @@ test_that("genMCMC_cont_table works", {
                           saveName=fileNameRoot )
   # show(summaryInfo)
   # Display posterior information:
-#   plotMCMC_cont_table( mcmcCoda , 
-#             datFrm=myDataFrame , yName=yName , x1Name=x1Name , x2Name=x2Name ,
-#             x1contrasts=x1contrasts , 
-#             x2contrasts=x2contrasts , 
-#             x1x2contrasts=x1x2contrasts ,
-#             saveName=fileNameRoot , saveType=graphFileType )
+  plotMCMC_cont_table( mcmcCoda , 
+            datFrm=myDataFrame , yName=yName , x1Name=x1Name , x2Name=x2Name ,
+            x1contrasts=x1contrasts , 
+            x2contrasts=x2contrasts , 
+            x1x2contrasts=x1x2contrasts ,
+            saveName=fileNameRoot , saveType=graphFileType )
   #------------------------------------------------------------------------------- 
   # Other specific comparisons of cells:
 #   if ( substr(fileNameRoot,1,12) == "HairEyeColor" ) {
