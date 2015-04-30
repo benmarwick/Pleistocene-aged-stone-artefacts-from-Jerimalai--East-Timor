@@ -13,10 +13,10 @@ RUN apt-get update \
     benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor 
 
 ## get full copy of my package & compendium   
-&& git clone benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
+RUN git clone benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
 
 ## navigate to it...
-&& cd Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+RUN cd Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
 
 ## move manuscaript directory to home so it's easy to interact with
 && mv manuscript /home/rstudio/manuscript
