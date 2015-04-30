@@ -19,7 +19,7 @@ address:
 output: html_document
 ---
 
-```{r setup, include=FALSE, eval=FALSE}
+```{r setup, include=FALSE, echo=FALSE}
 require(knitr)
 require(rmarkdown)
 require(ggplot2)
@@ -34,9 +34,8 @@ require(lattice)
 require(xtable)
 require(data.table)
 
-opts_chunk$set(fig.path = paste("figure/", basename, "-", sep=""))
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
-               comment = NA, verbose = TRUE, echo=FALSE)
+               comment = NA, verbose = TRUE, echo=TRUE)
 
 opts_chunk$set(fig.width=4, fig.height=3, echo=FALSE)
 theme_set(theme_bw(base_size=12))
@@ -46,48 +45,50 @@ toggle = "hide" # results argument
 
 # Introduction
 
-This document contains the R code to accompany the analysis of stone artefacts from Jerimalai rockshelter reported in Marwick et al. "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia". This document is organised with the same structure as the manuscript and will produce all of the quantitative results, data visualisations and tables found in the manuscript. This document is an R markdown document, which means that it is a plain text file that contains marked-up text (such as this paragraph), and chunks of R code in between the text. This file may be viewed in any text editor, and executed to run the code with R v3.2.0. The purpose of providing this supplement is to enable the reader to more thoroughly evaluate the reliability of our work through close inspection the quantitiative methods we used in the paper, and to enable computational reproduciblity of our methods to facailite their application to other research projects. Note that the code presented here has been developed and tested specifically for this analysis and is not yet intended as a general purpose tool. 
+This document is part of a research compendium that accompaies the analysis of stone artefacts from Jerimalai rockshelter reported in Marwick et al. "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia". This document is organised with the same structure as the manuscript and will produce all of the quantitative results, data visualisations and tables found in the manuscript. This document is an R markdown document, which means that it is a plain text file that contains marked-up text (such as this paragraph), and chunks of the R programming language in between paragraphs of plain text. This file may be viewed in any text editor, and executed to run the code using R version 3.2.0. 
 
-## Code
+The purpose of providing this supplement is to enable the reader to more thoroughly evaluate the reliability of our work through close inspection the quantitiative methods we used in the paper, and to enable computational reproduciblity of our methods to facailite their application to other research projects. Note that the code presented here has been developed and tested specifically for this analysis, and is not yet intended as a general purpose tool. 
 
-The exact version of the code that produced the data and figures in the published paper is archived at [http://dx.doi.org/10.6084/m9.figshare.985406](http://dx.doi.org/10.6084/m9.figshare.985406). The development version of this code can be found at [https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor](https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor). The code in the development version may have changed since publication and may not produce exactly the same output as found in the published paper. 
+## Code and Dependencies 
+
+The exact version of the code that produced the data and figures in the published paper is archived at [http://dx.doi.org/10.6084/m9.figshare.985406](http://dx.doi.org/10.6084/m9.figshare.985406). The development version of this code can be found at [https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor](https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor). Note that the code in the development version on github may have changed since publication and may not produce exactly the same output as found in the published paper. 
  
-The code should run on a typical personal computer (Windows/OSX/Linux) that can run R and can install R packages from the internet. The specific software dependencies for the code included here are listed in the DESCRIPTION file of the R package that this supplement is contained in (JerimalaiStoneArtefacts).  
+The code should run on a typical personal computer (Windows/OSX/Linux) that can run R and can install R packages from the internet. The specific software dependencies for the code included here are listed in the DESCRIPTION file of the R package that this supplement file is contained in (the R package name isJerimalaiStoneArtefacts). Managing the dependencies can be tedious, and we have no control over how they will change in the future. In an effort to capture the entire computational environment that this analysis was developed and conducted in, and protect against changes in the dependant software packages, we provide a Docker image as a lightweight virtual machine that is the actual environment in which we developed, tested and ran the code. The Docker image contains all the necessary software already installed, so no further configuration is required. We also include a Dockerfile as a record of the instructions used to build the Docker image, this can be found in the `docker/` directory in the research compendium. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/), then run Docker and at the Docker prompt, enter:
+
+
+  docker run -dp 8787:8787 sje30/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+
+Then open a web broswer at the following URL to access RStudio (username and password are "rstudio"):
+
+    http://localhost:8787/        ## Linux users
+    http://192.168.59.103:8787/   ## OSX, Windows users
+
+Once logged in, the Files pane (bottom right) will show the `manuscript/` directory where you can find this document and execute it. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
 
 ## Data
 
-The data are contained with this R package.... 
+All of the data needed to reproduce the results presented in the paper are included in this compendium as CSV files (ie. plain text comma separated variables, readable in any text editor). They can be found in the `data/` directory and are made available with a [CC-0 licence](https://creativecommons.org/publicdomain/zero/1.0/). The code chunk below loads all of the data files into the R working environment. 
 
 
 ```{r load_data}
-
-# load data
- 
 # dates
 dates <- read.csv("data/Jeremalai_dates.csv", as.is = TRUE)
-
 # complete flake data
 flakes <- read.csv("data/JB_Chert_Flakes_and_Retouch.csv")
-
 # core type data
 core_types <- read.csv("data/Jerimalai_cores_techno_metrics.csv")
-
 # spit depths
 depths <- read.csv("data/Jeremalai_spit_depths.csv")
-
 # sediment volumes
 vols <- read.csv("data/Artefact densities with soil volumes Sq B.csv", skip = 1)
-
 # all artefacts
 all <- read.csv("data/Jerimalai_All_Artefacts.csv")
-
 # techno types
 cores <- read.csv("data/Jerimalai_tech_table_cores.csv")
 types <-  na.omit(read.csv("data/Jerimalai_tech_table_types.csv"))
 retouch <- read.csv("data/Jerimalai_tech_table_retouch.csv")
 features <- read.csv("data/Jerimalai_tech_table_features.csv")
 ground <- read.csv("data/Jerimalai_tech_table_ground.csv")
-
 # retouch indices
 retouch_indices <- read.csv("data/Jerimalai_retouch_indices.csv")
 ```
@@ -95,12 +96,11 @@ retouch_indices <- read.csv("data/Jerimalai_retouch_indices.csv")
 
 # Chronology of the excavated deposit
 
+The code chunk below reproduces Figure 2, the depth-age distribution for radiocarbon dates from Jerimalai. 
 
 
-```{r chronology}
-
+```{r fig_2_chronology}
 # plot dates and label with phases
-
 dates$cal_age_min <- as.numeric(gsub("\\D", "", dates$cal_age_min))
 dates$cal_age_max <- as.numeric(gsub("\\D", "", dates$cal_age_max))
 dates$mid <- with(dates, cal_age_min + ((cal_age_max - cal_age_min) /2) )
@@ -139,7 +139,7 @@ ggplot(dates, aes(mid, depth_bs)) +
 
 # I have chosen not to omit 17-38 ky BP here 
  
-ggsave("figures/Jeremalai-dates.png")
+ggsave("figures/fig_2-Jeremalai-dates.png")
 ```
 
 # Results: Raw materials
