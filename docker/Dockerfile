@@ -10,7 +10,7 @@ RUN apt-get update \
     r-cran-runjags \
     
 && installGithub.r --deps TRUE \
-    benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
+    benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor 
     
 ## Copy the manuscript/ dir ('.' is relative to Dockerfile location) onto the container.
 COPY ../manuscript /home/rstudio/manuscript

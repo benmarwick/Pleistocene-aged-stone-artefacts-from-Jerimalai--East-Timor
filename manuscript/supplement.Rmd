@@ -248,7 +248,7 @@ kable(HDI_intervals_for_interactions, caption = "Highest density intervals (95%)
 
 The code chunk above indicated no credible difference in raw material frequences over time.
 
-The code chunk below computes a NHST equivalent to the above Bayesian test, in this case a chi-square test. We also compute Cramer's V, a measure of association for nominal variables that ranges from 0 (no association between the variables) to 1 (strong association between the variables)
+The code chunk below computes a NHST equivalent to the above Bayesian test, in this case a chi-square test. We also compute Cramer's V, a measure of association for nominal variables that ranges from 0 (no association between the variables) to 1 (strong association between the variables).
 
 ```{r raw_material_by_phase_test_nhst}
 # here is the frequentist equivalent 
@@ -256,12 +256,56 @@ raw_material_by_phase_nhst <- chisq.test(dom)
 cramers_V <- assocstats(as.matrix(dom)) # very small V
 ```
 
-The code chunk above returns a chi-squared value of `r raw_material_by_phase_nhst$statistic` and a p-value of `r raw_material_by_phase_nhst$p.value`, indicating a signficant difference in raw material frequencies by phase. Looking at the table of frequencies above, it appears tha the increase in chert in phase four and five might be responsible for this result. However, the Cramer's V value of `r cramers_V$cramer` indicates that the effect size is extremely small, and of no substantial significance. 
-
-# so it's significant in the frequentist system, but what's the strength?
-# Cramer's V: is a measure of association for nominal variables. Effectively it is the Pearson chi-square statistic rescaled to have values between 0 and 1,
+The code chunk above returns a chi-squared value of `r raw_material_by_phase_nhst$statistic` and a p-value of `r raw_material_by_phase_nhst$p.value`, indicating a signficant difference in raw material frequencies by phase. Looking at the table of frequencies above, it appears tha the increase in chert in phase four and five might be responsible for this result. However, the Cramer's V value of `r cramers_V$cramer` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in raw materials frequencies by phase. 
 
 # Results: Discard rates
+
+The code chunk below generates the figure that shows discard rates of chert artefacts over time at Jerimalai square B. Each point is an excavation unit. The blue line is a locally weighted regression line (span = 0.4) to aid in visualising the trend of increased discard in the upper part of the deposit.
+
+```{r discard_over_time_fig_3}
+# discard rates
+discard <- aggregate(Weight ~ depth + Spit, flakes, length)
+# sediment volumes: put volumes on
+discard$sedvol <- vols$Soil[match(discard$Spit, vols$X)]
+# put spit thickesses on
+discard$thick <- c(0.018, diff(discard$depth)) # add first value from depth_and_dates.xsl
+# compute artefacts per kg of sediment
+discard$kgsed <- with(discard, Weight / sedvol) # weight is count of artefacts that have a weight
+# compute artefact per cubic meter (spit thickess)
+discard$cubmet <- with(discard, Weight / thick)
+# seems we have an unusually extreme value in spit 34
+# omit - perhaps a data collection typo
+discard <- discard[discard$Spit != 34, ]
+# Plot
+ggplot(discard, (aes(depth, cubmet))) +
+  geom_point() +
+  theme_minimal() +
+  stat_smooth(span = 0.5, se = FALSE) +
+  xlab("Depth below surface (m)") +
+  ylab("Number of chert flakes per cubic meter of deposit") +
+  coord_flip() +
+  scale_x_reverse()
+# save plot
+jhe_90mm_ggsave("figures/fig_3_Jeremalai-flake-discard.png")
+```
+
+
+The code chunk below the generates the figure showing discard rates of chert artefacts per depositional phase at Jerimalai square B. This aggregates the individual excavation units.
+
+```{r discard_by_phase_fig_4}
+# plot artefacts/cubic meter/1000 years by phase, get phase number for each spit
+# this is the most sensible option
+discard$phase <- makephases(discard$Spit)
+discard_agg <- aggregate(cubmet ~ phase, discard, mean)
+discard_agg$cubmetperkyr <- discard_agg$cubmet / phases$duration
+ggplot(discard_agg, (aes(phase, cubmetperkyr))) +
+  geom_bar(stat="identity") +
+  theme_minimal() +
+  xlab("Depositional phase") +
+  ylab("Mean number of chert flakes per \ncubic meter of deposit per thousand years") 
+# save plot
+jhe_190mm_ggsave("figures/fig_4_Jeremalai-flake-discard-phase-m3.png")
+```
 
 # Results: Artefact taphonomy 
 
