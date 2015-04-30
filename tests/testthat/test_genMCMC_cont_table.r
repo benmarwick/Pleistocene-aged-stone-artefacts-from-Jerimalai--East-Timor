@@ -25,15 +25,15 @@ test_that("genMCMC_cont_table works", {
     list( c("Green") , c("Hazel") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
     list( c("Blue")  , c("Green") , compVal=0.0 , ROPE=c(-0.1,0.1) )  
   )
-  x2contrasts = list( 
-    list( c("Black") , c("Blond") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
-    list( c("Brown") , c("Red")   , compVal=0.0 , ROPE=c(-0.1,0.1) )  
-  )
-  x1x2contrasts = list( 
-    list( list( c("Blue") , c("Brown") ) ,
-          list( c("Black") , c("Blond") ) ,
-          compVal=0.0 , ROPE=c(-0.1,0.1) ) 
-  ) 
+#   x2contrasts = list( 
+#     list( c("Black") , c("Blond") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+#     list( c("Brown") , c("Red")   , compVal=0.0 , ROPE=c(-0.1,0.1) )  
+#   )
+#   x1x2contrasts = list( 
+#     list( list( c("Blue") , c("Brown") ) ,
+#           list( c("Black") , c("Blond") ) ,
+#           compVal=0.0 , ROPE=c(-0.1,0.1) ) 
+#   ) 
   numSavedSteps = 12000
   thinSteps = 10
   
@@ -61,17 +61,17 @@ test_that("genMCMC_cont_table works", {
   summaryInfo_cont_table = smryMCMC_cont_table( codaSamples = mcmcCoda_cont_table , 
                           datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
                           x1contrasts=x1contrasts , 
-                          x2contrasts=x2contrasts , 
-                          x1x2contrasts=x1x2contrasts ,
+                        #  x2contrasts=x2contrasts , 
+                        #  x1x2contrasts=x1x2contrasts ,
                           saveName=fileNameRoot )
   # show(summaryInfo)
   # Display posterior information:
-#   plotMCMC_cont_table( mcmcCoda , 
-#             datFrm=myDataFrame , yName=yName , x1Name=x1Name , x2Name=x2Name ,
-#             x1contrasts=x1contrasts , 
-#             x2contrasts=x2contrasts , 
-#             x1x2contrasts=x1x2contrasts ,
-#             saveName=fileNameRoot , saveType=graphFileType )
+     plotMCMC_cont_table( mcmcCoda , 
+               datFrm=myDataFrame , yName=yName , x1Name=x1Name , x2Name=x2Name ,
+               x1contrasts=x1contrasts , 
+  #             x2contrasts=x2contrasts , 
+  #             x1x2contrasts=x1x2contrasts ,
+               saveName=fileNameRoot , saveType=graphFileType )
   #------------------------------------------------------------------------------- 
   # Other specific comparisons of cells:
 #   if ( substr(fileNameRoot,1,12) == "HairEyeColor" ) {
