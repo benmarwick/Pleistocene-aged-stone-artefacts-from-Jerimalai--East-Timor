@@ -144,6 +144,43 @@ jhe_190mm_ggsave("figures/fig_2-Jeremalai-dates.png")
 
 # Results: Raw materials
 
+The code chunk below subsets the stone artefact data so that we only include flakes without any missing mass data. We then assign each flake to a depositional phase based on the spit it was recovered from. 
+
+```{r lithics_subset_and_assign_to_phase}
+# omit rows with blanks or NAs
+flakes <- flakes[!(flakes$Weight == "" | is.na(flakes$Weight)), ]
+
+# put depths on lithic data
+flakes$depth <- depths$Depth.bs..m[match(flakes$Spit,depths$Spit.no)]
+
+# omit rows with blanks or NAs... again
+flakes <- flakes[!(flakes$depth == "" | is.na(flakes$depth)), ]
+
+flakes$phase <- ifelse(flakes$Spit > 0 & flakes$Spit <= 20, 4,
+                       ifelse(flakes$Spit >= 21 & flakes$Spit <= 39, 3,
+                              ifelse(flakes$Spit >= 40 & flakes$Spit <= 49, 2,
+                                     ifelse(flakes$Spit >= 50 & flakes$Spit <= 69, 1, NA))))
+# check if any NA
+check <- unique(flakes$phase)
+
+# here's a function to assign phases based on spit numbers
+  makephases <- function(x) {ifelse(x > 0 & x <= 20, 5,
+                       ifelse(x >= 21 & x <= 39, 4,
+                              ifelse(x >= 40 & x <= 48, 3,
+                                     ifelse(x >= 49 & x <= 55, 2,
+                                            ifelse(x >= 56 & x <= 69, 1, NA)))))}
+
+flakes <- flakes[!(is.na(flakes$Spit)),]
+flakes$phase  <- makephases(flakes$Spit)
+# check if any NA, don't want any, should return all TRUE
+# is.na(unique(flakes$phase)) %in% FALSE
+# get phase durations
+phases <- data.frame(phase = 1:5,
+                     start = c(42, 38, 17, 6.5, 5.5),
+                     end =   c(38, 17, 9,  5.5, 0 ))
+phases$duration <- with(phases, start - end)
+```
+
 # Results: Discard rates
 
 # Results: Artefact taphonomy 
