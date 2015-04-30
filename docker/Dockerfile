@@ -10,10 +10,15 @@ RUN apt-get update \
     r-cran-runjags \
     
 && installGithub.r --deps TRUE \
-    benmarwick \    
+    benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \    
 
 ## Copy the manuscripts/ dir ('.' is relative to Dockerfile location) onto the container.
 
 COPY . /home/rstudio/manuscript
 WORKDIR /home/rstudio/manuscript
 
+## Uncomment to build manuscript + cache as part of container build, first step.
+# RUN Rscript -e 'rmarkdown::render("/home/rstudio/manuscripts/manuscript.Rmd")'
+
+## Uncomment to build docker image
+## docker build -t benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor https://raw.githubusercontent.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/master/docker/Dockerfile

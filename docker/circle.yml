@@ -5,10 +5,11 @@ machine:
 dependencies:
   override:
     - docker info
-    - docker build -t benmarwick/??? https://raw.githubusercontent.com/benmarwick/???/master/Dockerfile
+    - docker build -t benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor https://raw.githubusercontent.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/master/docker/Dockerfile
+
 test:
   override:
-    - docker run -d -p 8787:8787 benmarwick/???; sleep 10
+    - docker run -d -p 8787:8787 benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor; sleep 10
     - curl --retry 10 --retry-delay 5 -v http://localhost:8787
 
 deployment:
@@ -16,5 +17,5 @@ deployment:
     branch: master
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-      - docker push benmarwick/???
+      - docker push benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
 
