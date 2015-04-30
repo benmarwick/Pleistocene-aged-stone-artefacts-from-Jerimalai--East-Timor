@@ -41,7 +41,7 @@ opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE,
                comment = NA, verbose = TRUE, echo=TRUE)
 
 opts_chunk$set(fig.width=4, fig.height=3, echo=FALSE)
-theme_set(theme_bw(base_size=12))
+theme_set(theme_bw(base_size=14))
 toggle = "hide" # results argument
 
 # custom functions to save figures at JHE size & resolution
@@ -118,7 +118,6 @@ ggplot(dates, aes(mid, depth_bs)) +
   geom_point() +
   scale_y_reverse() + 
   geom_errorbarh(aes(xmin=cal_age_min,xmax=cal_age_max,  height = 0)) +
-  theme_minimal() +
   #geom_smooth(span = 0.19, se = FALSE) +
   ylab("depth below surface (m)") +
   xlab("calibrated age (BP)") +

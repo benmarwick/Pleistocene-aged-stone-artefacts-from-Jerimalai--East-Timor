@@ -45,7 +45,7 @@ genMCMC_cont_table = function( datFrm , yName="y" , x1Name="x1" , x2Name="x2" ,
   
   if ( showSDprior ) {
     show( agammaShRa )
-    openGraph(height=5,width=7)
+    # openGraph(height=5,width=7)
     xv = seq(0,yLogSD/2+2*2*yLogSD,length=501)
     plot( xv , dgamma( xv , shape=agammaShRa[1] , rate=agammaShRa[2] ) ,
           xlab="SD" , ylab="p(SD)" , main="Prior on SD parameters" , type="l" ,
@@ -322,7 +322,7 @@ plotMCMC_cont_table = function( codaSamples ,
   x2levels = levels(as.factor(datFrm[,x2Name]))
   Nx2levels = length(x2levels)
   # Display data with posterior predictive distributions
-  openGraph(width=2.25*Nx2levels,height=1.5*Nx1levels)
+  # openGraph(width=2.25*Nx2levels,height=1.5*Nx1levels)
   par( mar=c(3.5,2.5,3.0,1.5) , mgp=c(2,0.7,0) )
   layout(matrix(1:(Nx1levels*Nx2levels),nrow=Nx1levels,byrow=TRUE))
   xLim = range(mcmcMat[,grep("^ppx1x2p",colnames(mcmcMat))])
@@ -341,7 +341,7 @@ plotMCMC_cont_table = function( codaSamples ,
     }
   }
   if ( !is.null(saveName) ) {
-    saveGraph( file=paste0(saveName,"PostPred"), type=saveType)
+  #  saveGraph( file=paste0(saveName,"PostPred"), type=saveType)
   }
   
   # plot contrasts:
@@ -369,7 +369,7 @@ plotMCMC_cont_table = function( codaSamples ,
           contrastCoef = matrix( left-right , ncol=1 )
           postContrast = ( mcmcMat[,paste("b1[",1:length(x1levels),"]",sep="")] 
                            %*% contrastCoef )
-          openGraph(height=4,width=4)
+          # openGraph(height=4,width=4)
           compInfo = plotPost( postContrast , xlab="Beta Deflect. Diff." ,
                                main=paste0( 
                                  paste(thisContrast[[1]],collapse="."), 
@@ -377,11 +377,11 @@ plotMCMC_cont_table = function( codaSamples ,
                                  paste(thisContrast[[2]],collapse=".") ),
                                compVal=thisContrast$compVal ,
                                ROPE=thisContrast$ROPE )
-          saveGraph(file=paste0(fileNameRoot,
-                                paste(thisContrast[[1]],collapse="."), 
-                                "-vs-",
-                                paste(thisContrast[[2]],collapse=".")),
-                    type=graphFileType)
+         # saveGraph(file=paste0(fileNameRoot,
+         #                      paste(thisContrast[[1]],collapse="."), 
+         #                       "-vs-",
+         #                      paste(thisContrast[[2]],collapse=".")),
+         #         type=graphFileType)
         }
       }
       # x2 contrasts:
@@ -400,7 +400,7 @@ plotMCMC_cont_table = function( codaSamples ,
           contrastCoef = matrix( left-right , ncol=1 )
           postContrast = ( mcmcMat[,paste("b2[",1:length(x2levels),"]",sep="")] 
                            %*% contrastCoef )
-          openGraph(height=4,width=4)
+          # openGraph(height=4,width=4)
           compInfo = plotPost( postContrast , xlab="Beta Deflect. Diff." ,
                                main=paste0( 
                                  paste(thisContrast[[1]],collapse="."), 
@@ -408,11 +408,11 @@ plotMCMC_cont_table = function( codaSamples ,
                                  paste(thisContrast[[2]],collapse=".") ),
                                compVal=thisContrast$compVal ,
                                ROPE=thisContrast$ROPE )
-          saveGraph(file=paste0(fileNameRoot,
-                                paste(thisContrast[[1]],collapse="."), 
-                                "-vs-",
-                                paste(thisContrast[[2]],collapse=".")),
-                    type=graphFileType)
+#           saveGraph(file=paste0(fileNameRoot,
+#                                 paste(thisContrast[[1]],collapse="."), 
+#                                 "-vs-",
+#                                 paste(thisContrast[[2]],collapse=".")),
+#                     type=graphFileType)
         }
       }
       # interaction contrasts:
@@ -460,7 +460,7 @@ plotMCMC_cont_table = function( codaSamples ,
             paste0(paste(thisContrast[[2]][[1]],collapse="."), 
                    ".v.",
                    paste(thisContrast[[2]][[2]],collapse=".")))
-          openGraph(height=4,width=4)
+          # openGraph(height=4,width=4)
           compInfo = plotPost( postContrast , xlab="Beta Deflect. Diff. of Diff." ,
                                main=mainName ,
                                compVal=thisContrast$compVal ,
@@ -473,8 +473,8 @@ plotMCMC_cont_table = function( codaSamples ,
             paste0(paste(thisContrast[[2]][[1]],collapse="."), 
                    ".v.",
                    paste(thisContrast[[2]][[2]],collapse=".")))
-          saveGraph(file=paste0(fileNameRoot,fileNameSuffix),
-                    type=graphFileType)
+#           saveGraph(file=paste0(fileNameRoot,fileNameSuffix),
+#                     type=graphFileType)
         }
       } # end of interaction contrasts
     }  
