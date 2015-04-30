@@ -11,7 +11,16 @@ RUN apt-get update \
     
 && installGithub.r --deps TRUE \
     benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor 
-    
-## Copy the manuscript/ dir ('.' is relative to Dockerfile location) onto the container.
-COPY ~/manuscript /home/rstudio/manuscript
+
+## get full copy of my package & compendium   
+&& git clone benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
+
+## navigate to it...
+&& cd Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+
+## move manuscaript directory to home so it's easy to interact with
+&& mv manuscript /home/rstudio/manuscript
+
+## put the user at this mansuscript directory, ready to inspect, run, etc.
 WORKDIR /home/rstudio/manuscript
+    

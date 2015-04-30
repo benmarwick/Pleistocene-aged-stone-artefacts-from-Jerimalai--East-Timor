@@ -289,7 +289,6 @@ ggplot(discard, (aes(depth, cubmet))) +
 jhe_90mm_ggsave("figures/fig_3_Jeremalai-flake-discard.png")
 ```
 
-
 The code chunk below the generates the figure showing discard rates of chert artefacts per depositional phase at Jerimalai square B. This aggregates the individual excavation units.
 
 ```{r discard_by_phase_fig_4}
@@ -307,7 +306,94 @@ ggplot(discard_agg, (aes(phase, cubmetperkyr))) +
 jhe_190mm_ggsave("figures/fig_4_Jeremalai-flake-discard-phase-m3.png")
 ```
 
-# Results: Artefact taphonomy 
+# Results: Artefact taphonomy
+
+The code chunk below generates a plot of frequencies of complete flakes, transversely broken flakes and longitudinally broken flakes made from chert in each depositional unit at Jerimalai square B.
+
+```{r artefact_taphonomy_bayes}
+allchert <- all[all$Material == 'Chert', ]
+allchert$phase <- makephases(allchert$Spit)
+# make Artclass that is long and transv breaks
+allchert$Artclas <- ifelse(allchert$Breaks == "", 
+       as.character(allchert$Artclas), 
+       paste(allchert$Artclas, allchert$Breaks, sep = "-"))
+taph <- data.frame(table(allchert$Artclas))
+# use regex to get broken flakes -b- 
+broken <- allchert[grep("-b", allchert$Artclas), ]
+# get counts of broken to complete per phase
+# flake to -b-
+breaks <- dcast(allchert, Artclas ~ phase)[-1,]
+breaks <- breaks[breaks$Artclas =="Flake" | grepl("-b-", breaks$Artclas), ]
+allchert$Artclas <- tolower(allchert$Artclas)
+allchert$breakt <- "" # create variable to fill
+allchert$breakt[grep("trans", allchert$Artclas)] <- "trans"
+allchert$breakt[grep("long", allchert$Artclas)] <- "long"
+# per depositional phase
+breakt <- dcast(allchert, breakt ~ phase)[-1,]
+# add complete flake counts
+breakt <- rbind( breakt , setNames( breaks[1, ] , names( breakt ) ) )
+# shift rownames out and delete them
+rownames(breakt) <- breakt[,1]
+breakt <- breakt[,-1]
+# do bayesian contingency table test
+colnames(breakt) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
+data <- melt(as.matrix(breakt),  varnames=c("breakt", "phase"), value.name="Freq")
+data <- data[data$Freq != 0,] # zeros break the model
+myDataFrame = data
+yName=names(myDataFrame)[1]   # break type
+x1Name=names(myDataFrame)[2]  # phase
+x2Name=names(myDataFrame)[3]  # Freq
+x1contrasts = list( 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("phase 2")  , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
+  list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
+  list( c("phase 4")  , c("phase 5") , compVal=0.0 , ROPE=c(-0.1,0.1))
+  )
+numSavedSteps = 12000 # MCMC parameters
+thinSteps = 10        # MCMC parameters
+
+mcmcCoda = genMCMC_cont_table( datFrm=myDataFrame , 
+                    yName=yName , x1Name=x1Name , x2Name=x2Name ,
+                    numSavedSteps=numSavedSteps , thinSteps=thinSteps , 
+                    )
+
+# Get summary statistics of chain:
+summaryInfo = smryMCMC_cont_table( mcmcCoda , 
+                        datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
+                        x1contrasts=x1contrasts 
+                         )
+
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo[236:239, c("HDIlow", "HDIhigh")]
+kable(HDI_intervals_for_interactions, caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake breakage classes. All HDIs include zero indicating that the phases are practically equivalent in the frequencies of breakage classes")
+```
+
+The above code chunk returns results that indicate not credible difference in the frequences of flake breakage types by phase. 
+
+The code chunk below computes the frequentist equivalent, the chi-square test and the Cramer's V for effect size. 
+
+```{r artefact_taphonomy_nhst}
+artefact_taphonomy_nhst <- assocstats(as.matrix(breakt))
+```
+
+The code chunk above returns a chi-squared value of `r artefact_taphonomy_nhst$chisq_tests[2,1]` and a p-value of `r artefact_taphonomy_nhst$chisq_tests[2,3]`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r artefact_taphonomy_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in frequencies of breakage types by phase. 
+
+```{r}
+
+
+# plot 
+data$phase <- gsub("[[:alpha:]]*", "", data$phase)
+# recode break type for pretty legend
+data$breakt <- with(data, ifelse(breakt == 'long', 'long. broken flakes',
+        ifelse(breakt == "trans", "trans. broken flakes",
+               ifelse(breakt == "Flake", "complete flakes", NA))))
+ggplot(data, aes(phase, Freq, fill = breakt)) +
+  ylab("Frequency") +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  scale_fill_discrete(name="flake type")
+ggsave("figures/Jeremalai-flake-broken-phase.png")
+```
 
 # Results: Metric and technological characteristics of cores and unretouched flakes 
 
