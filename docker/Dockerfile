@@ -10,7 +10,8 @@ RUN apt-get update \
     r-cran-runjags \
     
 && installGithub.r --deps TRUE \
-    benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor 
+    benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
+    mikemeredith/BEST
 
 ## get full copy of my package & compendium   
 RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
@@ -19,8 +20,8 @@ RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-fro
 RUN cd Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 
 ## move manuscaript directory to home so it's easy to interact with
-&& mv manuscript /home/rstudio/manuscript \
+&& mv manuscript /home/rstudio/manuscript/ \
 
 ## put the user at this mansuscript directory, ready to inspect, run, etc.
-&& cd /home/rstudio/manuscript
+&& cd /home/rstudio/manuscript/
     

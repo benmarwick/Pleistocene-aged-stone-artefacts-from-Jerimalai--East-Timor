@@ -534,8 +534,13 @@ contrasts = list(
   )
   # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
-                      numSavedSteps=11000 , thinSteps=10 )
-
+                      numSavedSteps=11000 , thinSteps=10 
+                      )
+  # Get summary statistics of chain:
+  summaryInfo_ANOVA = smryMCMC_ANOVA( mcmcCoda_ANOVA , 
+                          datFrm=myDataFrame , xName=xName ,
+                          contrasts=contrasts 
+                          )
 
 ```
 
