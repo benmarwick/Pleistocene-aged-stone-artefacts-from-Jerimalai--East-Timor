@@ -600,7 +600,7 @@ flakes_cores_weight <- allchert[(allchert$Artclas == "flake" | allchert$Artclas 
 
 ggplot(flakes_cores_weight, aes(fill = Artclas, as.factor(phase), Weight)) +
   geom_jitter(aes(colour = Artclas), size = 0.85, alpha = 0.9, shape = 1) + 
-  geom_boxplot() +
+  geom_boxplot(alpha = 0.5) +
   scale_y_log10() +
   #theme_minimal(base_size = 4) +
   xlab('depostional phase') +
@@ -638,11 +638,11 @@ contrasts = list(
                           contrasts=contrasts 
                           )
   
-#  Display posterior information (not easy to read unless using interactively):
-    plotMCMC_ANOVA( mcmcCoda_ANOVA , 
-              datFrm=myDataFrame , yName=yName , xName=xName , 
-              contrasts=contrasts  )
-  
+# #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_ANOVA( mcmcCoda_ANOVA , 
+#               datFrm=myDataFrame , yName=yName , xName=xName , 
+#               contrasts=contrasts  )
+#   
 # subset summaryInfo to show HDI interval for interactions
 HDI_intervals_for_interactions <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and core mass.")
@@ -759,6 +759,69 @@ vp <- viewport(width = 0.45, height = 0.54,
 ```
 ![](figures/fig_7_Jeremalai-platform-area-by-plat-type.png)
 
+
+The code chunk below creates a plot showing the distributions of core and flake cortex by depositional phase at Jerimalai square B.  
+
+```{r lithics_chert_cortex_fig_8}
+flakes_cores_cortex <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "core"), c('Artclas', 'Cortex', 'phase') ]
+ggplot(flakes_cores_cortex, aes( fill = Artclas, as.factor(phase), Cortex)) +
+  geom_jitter(aes(colour = Artclas), alpha = 0.9, shape = 1) + 
+  geom_boxplot(alpha = 0.5) +
+  scale_y_log10() +
+  xlab('depostional phase') +
+  ylab("percent cortex") +
+  scale_fill_manual(name="artefact type",
+                      labels=c("core", "complete flake"), 
+                     values = c("grey10", "grey80")) +
+  scale_colour_manual(name="artefact type",
+                      labels=c("core", "complete flake"), 
+                      values = c("grey10", "grey80")) 
+# save plot
+jhe_190mm_ggsave("figures/fig_8_Jeremalai-flake-core-cortex-phase.png", height = 190/2)
+```
+
+The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake cortex by depostitional phase. 
+
+```{r chert_flake_cortex_test_bayes}
+myDataFrame <- data.frame(phase = flakes$phase, cortex = flakes$Cortex)
+yName = names(myDataFrame)[2] # cortex
+xName = names(myDataFrame)[1] # phase
+contrasts = list(
+  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("2")  , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
+  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
+  list( c("4")  , c("5") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
+# Generate the MCMC chain:
+  mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
+                      numSavedSteps=11000 , thinSteps=10 
+                      )
+  # Get summary statistics of chain:
+  summaryInfo_ANOVA = smryMCMC_ANOVA( mcmcCoda_ANOVA , 
+                          datFrm=myDataFrame , xName=xName ,
+                          contrasts=contrasts 
+                          )
+  # #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_ANOVA( mcmcCoda_ANOVA , 
+#               datFrm=myDataFrame , yName=yName , xName=xName , 
+#               contrasts=contrasts  )
+#   
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+kable(round(HDI_intervals_for_interactions,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake cortex")
+```
+
+The code chunk above produced results that indicate that the HDIs for all phases include zero, which we interpret as no credible difference. In the code chunk below we repeat the same investigation using a frequentist ANOVA. 
+
+```{r chert_core_metrics_summary_test_nhst}
+# ANOVA with Tukey's HSD
+fit <- aov(cortex ~ as.factor(phase), myDataFrame)
+fit_summary <-  summary(fit)
+tuk <- TukeyHSD(fit)
+# plot(tuk, las = 2, cex = 0.1)
+kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake cortex")
+```
+
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake cortex. 
 
 # Results: Retouched artefacts 
 
