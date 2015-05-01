@@ -1,7 +1,7 @@
 ---
 layout: 12pt,review
 linenumbers: true
-title: "Supplement for: "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia""
+title: "Supplement for: "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia"
 author: 
   - name: Ben Marwick
     affiliation: uw
@@ -32,18 +32,16 @@ require(rjags)
 require(runjags)
 require(coda)
 require(BEST)
+require(BayesianFirstAid)
 require(lattice)
 require(xtable)
 require(data.table)
 require(JerimalaiStoneArtefacts)
-
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
                comment = NA, verbose = TRUE, echo=TRUE)
-
 opts_chunk$set(fig.width=4, fig.height=3, echo=FALSE)
 theme_set(theme_bw(base_size=14))
-toggle = "hide" # results argument
-
+runjags.options( inits.warning=FALSE , rng.warning=FALSE )
 # custom functions to save figures at JHE size & resolution
 # cf http://www.elsevier.com/author-schemas/artwork-and-media-instructions/artwork-sizing
 jhe_190mm_ggsave <- function(filename = default_name(plot), 
@@ -72,10 +70,10 @@ The purpose of providing this supplement is to enable the reader to more thoroug
 
 The exact version of the code that produced the data and figures in the published paper is archived at [http://dx.doi.org/10.6084/m9.figshare.985406](http://dx.doi.org/10.6084/m9.figshare.985406). The development version of this code can be found at [https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor](https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor). Note that the code in the development version on github may have changed since publication and may not produce exactly the same output as found in the published paper. 
  
-The code should run on a typical personal computer (Windows/OSX/Linux) that can run R and can install R packages from the internet. The specific software dependencies for the code included here are listed in the DESCRIPTION file of the R package that this supplement file is contained in (the R package name isJerimalaiStoneArtefacts). Managing the dependencies can be tedious, and we have no control over how they will change in the future. In an effort to capture the entire computational environment that this analysis was developed and conducted in, and protect against changes in the dependant software packages, we provide a Docker image as a lightweight virtual machine that is the actual environment in which we developed, tested and ran the code. The Docker image contains all the necessary software already installed, so no further configuration is required. We also include a Dockerfile as a record of the instructions used to build the Docker image, this can be found in the `docker/` directory in the research compendium. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/), then run Docker and at the Docker prompt, enter:
+The code should run on a typical personal computer (Windows/OSX/Linux) that can run R and can install R packages from the internet. The specific software dependencies for the code included here are listed in the code chunk above this text and the DESCRIPTION file of the R package that this supplement file is contained in (the R package name is JerimalaiStoneArtefacts). Managing the dependencies can be tedious, and we have no control over how they will change in the future. In an effort to capture the entire computational environment that this analysis was developed and conducted in, and protect against changes in the dependant software packages, we provide a Docker image as a lightweight virtual machine that is the actual environment in which we developed, tested and ran the code. The Docker image contains all the necessary software already installed, so no further configuration is required. We also include a Dockerfile as a record of the instructions used to build the Docker image, this can be found in the `docker/` directory in the research compendium. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/), then run Docker and at the Docker prompt, enter:
 
 
-  docker run -dp 8787:8787 sje30/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+  docker run -dp 8787:8787 benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
 
 Then open a web broswer at the following URL to access RStudio (username and password are "rstudio"):
 
@@ -257,7 +255,7 @@ HDI_intervals_for_interactions <- summaryInfo[117:120, c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and raw material frequencies.")
 ```
 
-The code chunk above povides psoterior distributions to evaluate the credibility of differences in raw material frequences over time. The posterior distributions for the phase interactions are close to zero, indicating a small effect. Among the contrast of the phases, all HDIs exclude zero except for phase 4 v. phase 5. This indicates that there are credibly different frequencies of raw material between each phase except for four and five. This is likely are result of small changes in the low frequencies of quartz, quartzite and silcrete in the earlier phases, as shown in the phase by raw material table above. 
+The code chunk above provides psoterior distributions to evaluate the credibility of differences in raw material frequences over time. The posterior distributions for the phase interactions are close to zero, indicating a small effect. Among the contrast of the phases, all HDIs exclude zero except for phase 4 v. phase 5. This indicates that there are credibly different frequencies of raw material between each phase except for four and five. This is likely are result of small changes in the low frequencies of quartz, quartzite and silcrete in the earlier phases, as shown in the phase by raw material table above. 
 
 The code chunk below computes a NHST equivalent to the above Bayesian test, in this case a chi-square test. We also compute Cramer's V, a measure of association for nominal variables that ranges from 0 (no association between the variables) to 1 (strong association between the variables).
 
@@ -526,7 +524,7 @@ metrics <- t(round(metrics,2))
 write.csv(metrics, "figures/table_6_flake_metrics.csv")
 ```
 
-The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake mass by depostitional phase. 
+The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake mass by depositional phase. 
 
 ```{r chert_flake_metrics_summary_test_bayes}
 myDataFrame <- data.frame(phase = flakes$phase, mass = flakes$Weight)
@@ -570,8 +568,6 @@ kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Dif
 
 In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. When the interval includes zero, the difference is considered not significant. In this case we see that phase five differs from phase four, equivalent to what we see in the Bayesian HDI intervals. 
 
-# Results: Core technology
-
 The code chunk below produces a summary table of metric attributes of chert complete cores from Jerimalai square B.
 
 ```{r chert_core_metrics_summary}
@@ -599,25 +595,26 @@ The code chunk below creates a figure that shows the distribution of core and co
 flakes_cores_weight <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "core"), c('Artclas', 'Weight', 'phase') ]
 
 ggplot(flakes_cores_weight, aes(fill = Artclas, as.factor(phase), Weight)) +
-  geom_jitter(aes(colour = Artclas), size = 0.85, alpha = 0.9, shape = 1) + 
+  geom_point(aes(colour = Artclas), size = 0.5, alpha = 0.9, shape = 1, 
+             position=position_jitterdodge(dodge.width=0.9)) +
   geom_boxplot(alpha = 0.5) +
   scale_y_log10() +
   #theme_minimal(base_size = 4) +
-  xlab('depostional phase') +
+  xlab('depositional phase') +
   ylab("mass (g)") +
   scale_fill_manual(name="artefact type",
                       labels=c("core", "complete flake"), 
                      values = c("grey10", "grey80")) +
   scale_colour_manual(name="artefact type",
                       labels=c("core", "complete flake"), 
-                      values = c("grey10", "grey80")) 
+                      values = c("grey10", "grey15")) 
   
 # save plot
 jhe_190mm_ggsave("figures/fig_6_Jeremalai-flake-core-mass-phase.png", 
                 height = (190/2))
 ```
 
-The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert core mass by depostitional phase. 
+The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert core mass by depositional phase. 
 
 ```{r chert_core_metrics_summary_test_bayes}
 myDataFrame <- data.frame(phase = cores_mass$phase, mass = cores_mass$Weight)
@@ -765,22 +762,23 @@ The code chunk below creates a plot showing the distributions of core and flake 
 ```{r lithics_chert_cortex_fig_8}
 flakes_cores_cortex <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "core"), c('Artclas', 'Cortex', 'phase') ]
 ggplot(flakes_cores_cortex, aes( fill = Artclas, as.factor(phase), Cortex)) +
-  geom_jitter(aes(colour = Artclas), alpha = 0.9, shape = 1) + 
-  geom_boxplot(alpha = 0.5) +
+  geom_point(aes(colour = Artclas), size = 0.5, alpha = 0.9, shape = 1, 
+             position=position_jitterdodge(dodge.width=0.9)) +
+  geom_boxplot(alpha = 0.4) +
   scale_y_log10() +
-  xlab('depostional phase') +
+  xlab('depositional phase') +
   ylab("percent cortex") +
   scale_fill_manual(name="artefact type",
                       labels=c("core", "complete flake"), 
                      values = c("grey10", "grey80")) +
   scale_colour_manual(name="artefact type",
                       labels=c("core", "complete flake"), 
-                      values = c("grey10", "grey80")) 
+                      values = c("grey10", "grey20")) 
 # save plot
 jhe_190mm_ggsave("figures/fig_8_Jeremalai-flake-core-cortex-phase.png", height = 190/2)
 ```
 
-The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake cortex by depostitional phase. 
+The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake cortex by depositional phase. 
 
 ```{r chert_flake_cortex_test_bayes}
 myDataFrame <- data.frame(phase = flakes$phase, cortex = flakes$Cortex)
@@ -806,13 +804,13 @@ contrasts = list(
 #               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
-kable(round(HDI_intervals_for_interactions,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake cortex")
+HDI_intervals_for_interactions_f <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+kable(round(HDI_intervals_for_interactions_f,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake cortex")
 ```
 
 The code chunk above produced results that indicate that the HDIs for all phases include zero, which we interpret as no credible difference. In the code chunk below we repeat the same investigation using a frequentist ANOVA. 
 
-```{r chert_core_metrics_summary_test_nhst}
+```{r chert_flake_metrics_summary_test_nhst}
 # ANOVA with Tukey's HSD
 fit <- aov(cortex ~ as.factor(phase), myDataFrame)
 fit_summary <-  summary(fit)
@@ -823,7 +821,268 @@ kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Dif
 
 In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake cortex. 
 
+In the two code chunks below we repeat the statistical tests above for core cortex.
+
+```{r chert_core_cortex_test_bayes}
+myDataFrame <- data.frame(phase = cores_mass$phase, cortex = cores_mass$Cortex)
+myDataFrame <- myDataFrame[complete.cases(myDataFrame),] # omit NAs
+yName = names(myDataFrame)[2] # cortex
+xName = names(myDataFrame)[1] # phase
+contrasts = list(
+  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("2")  , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
+  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
+  list( c("4")  , c("5") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
+# Generate the MCMC chain:
+  mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
+                      numSavedSteps=11000 , thinSteps=10 
+                      )
+  # Get summary statistics of chain:
+  summaryInfo_ANOVA = smryMCMC_ANOVA( mcmcCoda_ANOVA , 
+                          datFrm=myDataFrame , xName=xName ,
+                          contrasts=contrasts 
+                          )
+  # #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_ANOVA( mcmcCoda_ANOVA , 
+#               datFrm=myDataFrame , yName=yName , xName=xName , 
+#               contrasts=contrasts  )
+#   
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions_c <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+kable(round(HDI_intervals_for_interactions_c,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and core cortex")
+# combine core and flake HDIs into one table
+HDIs_for_cores_and_flakes <- round(cbind(HDI_intervals_for_interactions_c, HDI_intervals_for_interactions_f),3)
+```
+
+The code chunk above produced results that indicate that the HDIs for all phases include zero, which we interpret as no credible difference. In the code chunk below we repeat the same investigation using a frequentist ANOVA. 
+
+```{r chert_core_cortex_summary_test_nhst}
+# ANOVA with Tukey's HSD
+fit <- aov(cortex ~ as.factor(phase), myDataFrame)
+fit_summary <-  summary(fit)
+tuk <- TukeyHSD(fit)
+# plot(tuk, las = 2, cex = 0.1)
+kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake cortex")
+```
+
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in core cortex.
+
+# Results: Core technology
+
+This code draws a plot of differences in the mass of cores recovered from Jerimalai by core type.
+
+```{r lithic_core_mass_by_type_fig_9}
+core_types$Type_long <- with(core_types, ifelse(Type == "SPC", "Single plaform",
+                                     ifelse(Type == "RC", "Radial",
+                                      ifelse(Type == "BDC", "Bidirectional",
+                                       ifelse(Type == "BiC", "Bipolar",
+                                        ifelse(Type == "MPC", "Multi-platform",
+                                         ifelse(Type == "LLC", "Levallois-like",
+                                          ifelse(Type == "FFC", "Faceted flake", NA))))))) )
+# plot
+ggplot(core_types, aes(reorder(Type_long, -Mass,  FUN=median), Mass)) +
+   geom_jitter(alpha = 0.9, shape = 1) + 
+  geom_boxplot(alpha = 0.1, fill = "white", colour = "black") +
+  ylim(0,20) +
+  xlab("Core type") +
+  ylab("Core mass (g)") +
+  theme_minimal(base_size = 10)
+# save
+jhe_190mm_ggsave("figures/fig_9_Jeremalai-core-by-type.png", height = 190/1.6)
+```
+
+The code chunk below computes the amount of cortex for each core type.
+
+```{r lithics_core_cortex}
+core_cortex <- aggregate( X..Cortex ~ Type, data = core_types, mean)
+# what is the average amount of cortex for each core type?
+core_cortex_means <- arrange(core_cortex, -X..Cortex)
+names(core_cortex_means) <- c("Type", "Cortex percentage")
+core_cortex_means[,2] <- round(core_cortex_means[,2],1)
+```
+
+Consistent with overall size, single platform cores retain the most cortex on average (`r filter(core_cortex_means, Type == 'SPC')$`Cortex percentage``%), followed by radial cores (`r filter(core_cortex_means, Type == 'RC')$`Cortex percentage``%), multiplatform cores (`r filter(core_cortex_means, Type == 'MPC')$`Cortex percentage``%) and faceted flake cores (`r filter(core_cortex_means, Type == 'FFC')$`Cortex percentage``%). Levallois-like cores and bipolar cores exhibit the least cortex (<4%). 
+
+The code chunk below computes the numbers of flake scars by each core type.
+
+```{r core_flake_scars_by_type}
+core_scars <- core_types %>%
+  group_by(Type) %>%
+  summarize(means = round(mean(Number.of.Scars, na.rm = TRUE),0),
+            sds = round(sd(Number.of.Scars,  na.rm = TRUE)),0) %>%
+  arrange(means)
+```
+
+Levallois-like cores exhibit almost twice the number of flake scars on average as other cores in the assemblage (mean = `r filter(core_scars, Type == "LLC")$means`±`r filter(core_scars, Type == "LLC")$sds` scars versus `r round(mean(core_scars$means),0)`±`r round(mean(core_scars$sds, na.rm = TRUE),0)` on average). Single platform cores have the least scars on average (`r filter(core_scars, Type == "SPC")$means`±`r filter(core_scars, Type == "SPC")$sds`).
+
 # Results: Retouched artefacts 
+
+The code chunk below draws a plot showing locations of retouch on chert flakes by depositional unit at Jerimalai square B.
+
+```{r lithics_retouch_location_fig_15}
+# frequency of flakes with retouch per phase
+rt <- flakes[flakes$Rtch == "Yes", ]
+rt_tab <- t(data.frame(rt = aggregate(Retype ~ phase, rt, function(x) rt_count = length(x)), flakes =  aggregate(Retype ~ phase, flakes, function(x) fk_count = length(x))[,2] ))
+
+# retouch locations
+rt_loc <- data.frame(phase = rt$phase, rt_loc = rt$Retloc)
+rt_loc <- rt_loc[!(is.na(rt_loc$phase)), ]
+rt_sum <- as.data.frame.matrix(table(rt_loc))[,-1]
+rt_sum$phase <- paste0("phase ", row.names(rt_sum))
+colnames(rt_sum) <- c("Both margins", "Distal", "Perimeter", "Left lateral", "Medial", "Proximal", "Right lateral", "phase")
+rt_sum_m <- melt(rt_sum)
+# plot
+ggplot(rt_sum_m, aes(variable, value)) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5, size=12)) +
+  ylab("frequency") +
+  xlab("retouch location") +
+  facet_wrap(~phase, ncol = 5)
+# save plot
+jhe_190mm_ggsave("figures/fig_15_Jeremalai-flake-retouched-flake-location-phase.png", height = 190/1.6)
+```
+
+The code chunk below draws a plot of the distribution of flake lengths for retouched and unretouched flakes by depositional unit at Jerimalai square B.
+
+```{r flake_lengths_retouch_by_phase_fig_16}
+flakes_retouch_size <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "retf"), c('Artclas', 'Weight', 'Length', 'phase') ]
+ggplot(flakes_retouch_size, aes( fill = Artclas, as.factor(phase), Weight)) +
+  geom_point(aes(colour = Artclas), size = 0.5, alpha = 0.9, shape = 1, 
+             position=position_jitterdodge(dodge.width=0.9)) + 
+  geom_boxplot(alpha = 0.4) +
+  scale_y_log10() +
+  xlab('depositional phase') +
+  ylab("mass (g)") +
+  scale_fill_manual(name="artefact type",
+                    labels=c("unretouched flake", "retouched flake"), 
+                    values = c("grey10", "grey80")) +
+  scale_colour_manual(name="artefact type",
+                    labels=c("unretouched flake", "retouched flake"), 
+                    values = c("grey10", "grey15")) 
+# save plot
+jhe_190mm_ggsave("figures/fig_16_Jeremalai-flake-retouchedflake-mass-phase.png", height = 190/1.6)
+```
+
+The code chunk below computes the tests for credible difference in retouch flake frequency by phase.
+
+
+```{r retouch_flake_freq_test_bayes}
+colnames(rt_tab) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
+rt_tab <- rt_tab[-1,]
+myDataFrame <- melt(as.matrix(rt_tab),  varnames=c("retouch", "phase"), value.name="Freq")
+yName=names(myDataFrame)[3]   # Freq 
+x1Name=names(myDataFrame)[2]  # phase
+x2Name=names(myDataFrame)[1]  # retouch
+x1contrasts = list( 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("phase 2")  , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
+  list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
+  list( c("phase 4")  , c("phase 5") , compVal=0.0 , ROPE=c(-0.1,0.1))
+  )
+numSavedSteps = 12000 # MCMC parameters
+thinSteps = 10        # MCMC parameters
+
+mcmcCoda = genMCMC_cont_table( datFrm=myDataFrame , 
+                    yName=yName , x1Name=x1Name , x2Name=x2Name ,
+                    numSavedSteps=numSavedSteps , thinSteps=thinSteps , 
+                    )
+
+# Get summary statistics of chain:
+summaryInfo = smryMCMC_cont_table( mcmcCoda , 
+                        datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
+                        x1contrasts=x1contrasts
+                         )
+
+# # #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_cont_table( mcmcCoda , 
+#               datFrm=myDataFrame , yName=yName , x1Name=x1Name , 
+#                x2Name=x2Name ,
+#               x1contrasts=x1contrasts  )
+
+# table of retouch artefact counts
+kable(rt_tab, caption = "Table of frequencies of retouched flakes by phase")
+
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions_fr <- summaryInfo[49:52, c("HDIlow", "HDIhigh")]
+kable(round(HDI_intervals_for_interactions_fr,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and retouched flake frequency.")
+```
+
+The results of the code chunk above indicates that there are credible differences in the frequencies of retouched artefacts during phase two to three (altough this interval is very close to zero), and during phase three to four. A look at the raw counts shows that from phase three to four there is a decrease in the proportion of retouched pieces, but that the overall count is still low.   
+
+```{r chert_artefacts_retouch_nhst}
+chert_artefacts_retouch_nhst <- assocstats(as.matrix(rt_tab))
+```
+
+The code chunk above returns a chi-squared value of `r chert_artefacts_retouch_nhst$chisq_tests[2,1]` and a p-value of `r chert_artefacts_retouch_nhst$chisq_tests[2,3]`, indicating a nonsignficant difference in frequencies of breakage classes by phase. The Cramer's V value of `r chert_artefacts_retouch_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in frequencies of retouched flakes by phase.
+
+The code chunk below investigates changes in the length of the retouched margin of artefacts over time. 
+
+```{r chert_flakes_retouch_length_bayes}
+rt_len <- data.frame(phase = rt$phase, rt_len = rt$Retlen)
+# omit NAs
+rt_len <- rt_len[!(is.na(rt_len$rt_len)), ]
+# get mean lengths
+mean_lengths <- aggregate(rt_len ~ phase, rt_len, mean)
+# do bayesian ANOVA
+myDataFrame <- rt_len
+yName = names(myDataFrame)[2] # retouch length
+xName = names(myDataFrame)[1] # phase
+contrasts = list(
+  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("2")  , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
+  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
+  list( c("4")  , c("5") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
+# Generate the MCMC chain:
+  mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
+                      numSavedSteps=11000 , thinSteps=10 
+                      )
+  # Get summary statistics of chain:
+  summaryInfo_ANOVA = smryMCMC_ANOVA( mcmcCoda_ANOVA , 
+                          datFrm=myDataFrame , xName=xName ,
+                          contrasts=contrasts 
+                          )
+  # #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_ANOVA( mcmcCoda_ANOVA , 
+#               datFrm=myDataFrame , yName=yName , xName=xName , 
+#               contrasts=contrasts  )
+#   
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions_l <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+kable(round(HDI_intervals_for_interactions_l ,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and retouch length")
+# combine retouch freq and length into one table
+HDIs_flake_retouch_freq_and_length <- round(cbind(HDI_intervals_for_interactions_fr, HDI_intervals_for_interactions_l),3)
+```
+
+The results of the code chunk above show that the HDIs for all interactions include zero. This indicates no credible difference in retouch lenght by phase.
+
+The code chunk below repeats this analysis using a frequentist test.
+
+```{r chert_flake_retouch_length_test_nhst}
+# ANOVA with Tukey's HSD
+fit <- aov(rt_len ~ as.factor(phase), myDataFrame)
+fit_summary <-  summary(fit)
+tuk <- TukeyHSD(fit)
+# plot(tuk, las = 2, cex = 0.1)
+kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake retouch length")
+```
+
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact retouch length of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake retouch length.
+
+In the code chunk below we compute a Bayesian t-test to investigate differences in the mass of retouched and non-retouched flakes.
+
+```{r retouch_nonretouch_flake_mass_bayes}
+# any difference between mass of retouched and unretouched, in total?
+# Bayesian t-test of the mass of all retouched vs all unretouched flakes
+flakes_retouch_size_t_test <- bayes.t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
+# flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
+```
+  
+
+In the code chunk below we perform a frequentist t-test on flake mass of retouched and non-retouched flakes
+
+```{r retouch_nonretouch_flake_mass_nhst}
+t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight))
+```
 
 # Results: Technological types
 
