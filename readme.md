@@ -8,6 +8,8 @@ Supplementary materials for a report on the stone artefacts from Jerimalai, East
 
 <http://dx.doi.org/10.6084/m9.figshare.985406>
 
+The files at the URL above will generate the results as found in the publication. The files hosted at github.com are the development versions and may have changed since the report was published
+
 ### Author of this repository:
 
 Ben Marwick (<benmarwick@gmail.com>)
@@ -18,9 +20,9 @@ Marwick, B, C. Clarkson, S. O'Connor & S. Collins under review "Pleistocene-aged
 
 ### Contents:
 
-This repository contains the code and data for our analysis of the stone artefacts from Sue O'Connor's excavations at Jeremalai, East Timor.
+This repository contains the code and data for our analysis of the stone artefacts from Sue O'Connor's excavations at Jerimalai, East Timor. The `supplement.Rmd` file in the `manuscript` directory contains details of how all the analyses reported in the paper were conducted, as well as instructions on how to rerun the analysis to reproduce the results.
 
-In the /code directory:
+In the `/code` directory:
 
 One Rmarkdown file that can be executed in R. This files contains sections of the narrative found in the published paper and R code used to analyse the data, compute statistics, and generate the data visualisations and tables. To execute these files, ensure all the files are together in a directory in the same structure as they are in this repository, then open R and run `knitr::knit2html("XXX")` where XXX is the name of the Rmd, including the .Rmd suffix and the quotation marks. There are many dependencies on non-core R packages and other software, see the dependencies section below for more details.
 

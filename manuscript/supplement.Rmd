@@ -1,10 +1,9 @@
 ---
 layout: 12pt,review
 linenumbers: true
-title: "Supplement for: "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia"
+title: "Supplement for: Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia"
 author: 
   - name: Ben Marwick
-    affiliation: uw
     email: bmarwick@uw.edu
     footnote: Corresponding author
 
@@ -37,8 +36,8 @@ require(xtable)
 require(data.table)
 require(JerimalaiStoneArtefacts)
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
-               comment = NA, verbose = TRUE, echo=TRUE)
-opts_chunk$set(fig.width=4, fig.height=3, echo=FALSE)
+               comment = NA, verbose = TRUE, echo=TRUE,
+               cache = TRUE)
 theme_set(theme_bw(base_size=14))
 runjags.options( inits.warning=FALSE , rng.warning=FALSE )
 # custom functions to save figures at JHE size & resolution
@@ -72,7 +71,7 @@ The exact version of the code that produced the data and figures in the publishe
 The code should run on a typical personal computer (Windows/OSX/Linux) that can run R and can install R packages from the internet. The specific software dependencies for the code included here are listed in the code chunk above this text and the DESCRIPTION file of the R package that this supplement file is contained in (the R package name is JerimalaiStoneArtefacts). Managing the dependencies can be tedious, and we have no control over how they will change in the future. In an effort to capture the entire computational environment that this analysis was developed and conducted in, and protect against changes in the dependant software packages, we provide a Docker image as a lightweight virtual machine that is the actual environment in which we developed, tested and ran the code. The Docker image contains all the necessary software already installed, so no further configuration is required. We also include a Dockerfile as a record of the instructions used to build the Docker image, this can be found in the `docker/` directory in the research compendium. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/), then run Docker and at the Docker prompt, enter:
 
 
-  docker run -dp 8787:8787 benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+    docker run -dp 8787:8787 benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
 
 Then open a web broswer at the following URL to access RStudio (username and password are "rstudio"):
 
@@ -153,11 +152,11 @@ The code chunk below computes the percentages of the two major cortex types for 
 ```{r chert_cortex_type}
 cortex_type <- as.data.frame(table(flakes$Cortype))[-1,]
 cortex_type$prop <- round(prop.table(cortex_type$Freq),2)
-names(cortex_type)  <- c("Cortex type", "Frequency", "Proportion")
+names(cortex_type)  <- c("Cortex_type", "Frequency", "Proportion")
 kable(cortex_type, caption = "Cortex type among chert flakes")
 ```
 
-The chunk above also generates the values that are found in this sentence in the manuscript: "The chert artefacts have a combination of rounded cortex (`r filter(cortex_type, Var1 == 'Round')$prop * 100`%) and angular cortex (`r filter(cortex_type, Var1 == 'Angul')$prop * 100`%.")
+The chunk above also generates the values that are found in this sentence in the manuscript: "The chert artefacts have a combination of rounded cortex (`r filter(cortex_type, Cortex_type == 'Round')$Proportion * 100`%) and angular cortex (`r filter(cortex_type, Cortex_type == 'Angul')$Proportion * 100`%.")
 
 The code chunk below subsets the stone artefact data so that we only include flakes without any missing mass data. We then assign each flake to a depositional phase based on the spit it was recovered from. There is no visual output from this chunk but the values are stored and used in the following chunks. 
 
@@ -565,7 +564,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake mass.")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. When the interval includes zero, the difference is considered not significant. In this case we see that phase five differs from phase four, equivalent to what we see in the Bayesian HDI intervals. 
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. When the interval includes zero, the difference is considered not significant. In this case we see that phase five differs from phase four, equivalent to what we see in the Bayesian HDI intervals. 
 
 The code chunk below produces a summary table of metric attributes of chert complete cores from Jerimalai square B.
 
@@ -655,7 +654,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of core mass.")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. In this case we see that only the comparison of phase four to phase two has a significant difference in core mass. Consequtive phases show no signifance difference, which we interpret as evidence of overall no substantial change in core mass. 
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. In this case we see that only the comparison of phase four to phase two has a significant difference in core mass. Consequtive phases show no signifance difference, which we interpret as evidence of overall no substantial change in core mass. 
 
 The code chunk below produces the figures that illustrate the frequency of flake platform categories for chert complete flakes at Jerimalai square B. 
 
@@ -809,7 +808,7 @@ kable(round(HDI_intervals_for_interactions_f,3), caption = "Highest density inte
 
 The code chunk above produced results that indicate that the HDIs for all phases include zero, which we interpret as no credible difference. In the code chunk below we repeat the same investigation using a frequentist ANOVA. 
 
-```{r chert_flake_metrics_summary_test_nhst}
+```{r chert_flake_core_summary_test_nhst}
 # ANOVA with Tukey's HSD
 fit <- aov(cortex ~ as.factor(phase), myDataFrame)
 fit_summary <-  summary(fit)
@@ -818,7 +817,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake cortex")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake cortex. 
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake cortex. 
 
 In the two code chunks below we repeat the statistical tests above for core cortex.
 
@@ -864,7 +863,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake cortex")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in core cortex.
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in core cortex.
 
 # Results: Core technology
 
@@ -900,7 +899,7 @@ names(core_cortex_means) <- c("Type", "Cortex percentage")
 core_cortex_means[,2] <- round(core_cortex_means[,2],1)
 ```
 
-Consistent with overall size, single platform cores retain the most cortex on average (`r filter(core_cortex_means, Type == 'SPC')$`Cortex percentage``%), followed by radial cores (`r filter(core_cortex_means, Type == 'RC')$`Cortex percentage``%), multiplatform cores (`r filter(core_cortex_means, Type == 'MPC')$`Cortex percentage``%) and faceted flake cores (`r filter(core_cortex_means, Type == 'FFC')$`Cortex percentage``%). Levallois-like cores and bipolar cores exhibit the least cortex (<4%). 
+Consistent with overall size, single platform cores retain the most cortex on average (`r filter(core_cortex_means, Type == 'SPC')$'Cortex percentage'`%), followed by radial cores (`r filter(core_cortex_means, Type == 'RC')$'Cortex percentage'`%), multiplatform cores (`r filter(core_cortex_means, Type == 'MPC')$'Cortex percentag'`%) and faceted flake cores (`r filter(core_cortex_means, Type == 'FFC')$'Cortex percentage'`%). Levallois-like cores and bipolar cores exhibit the least cortex (<4%). 
 
 The code chunk below computes the numbers of flake scars by each core type.
 
@@ -1064,13 +1063,13 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake retouch length")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$`F value`[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$`Pr(>F)`[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact retouch length of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake retouch length.
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact retouch length of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake retouch length.
 
 In the code chunk below we compute a Bayesian t-test to investigate differences in the mass of retouched and non-retouched flakes.
 
 ```{r retouch_nonretouch_flake_mass_bayes}
 # Bayesian t-test of the mass of all retouched vs all unretouched flakes
-flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
+# flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
   
 In the code chunk below we perform a frequentist t-test on flake mass of retouched and non-retouched flakes. 
@@ -1079,7 +1078,7 @@ In the code chunk below we perform a frequentist t-test on flake mass of retouch
 retouch_nonretouch_flake_mass_nhst <- t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
 
-The code chunk above returns the result of the frequentist t-test as follows: t = `retouch_nonretouch_flake_mass_nhst$statistic`, df = `r unname(retouch_nonretouch_flake_mass_nhst$parameter)` and p = `r retouch_nonretouch_flake_mass_nhst$p.value`.
+The code chunk above returns the result of the frequentist t-test as follows: t = `r retouch_nonretouch_flake_mass_nhst$statistic`, df = `r unname(retouch_nonretouch_flake_mass_nhst$parameter)` and p = `r retouch_nonretouch_flake_mass_nhst$p.value`.
 
 The code chunk below makes a table the summarises retouch indices for retouched pieces recovered from Jerimalai. GIUR = Geometric Index of Unifacial Retouch, II = Index of Invasiveness, % = percent of perimeter with retouch
 
