@@ -188,7 +188,7 @@ plotMCMC_ANOVA = function( codaSamples ,
   x = as.numeric(as.factor(datFrm[,xName]))
   xlevels = levels(as.factor(datFrm[,xName]))
   # Display data with posterior predictive distributions
-  openGraph(width=min(10,1.25*length(xlevels)),height=5)
+  # openGraph(width=min(10,1.25*length(xlevels)),height=5)
   par(mar=c(3,3,2,0.5)) # number of margin lines: bottom,left,top,right
   par(mgp=c(1.75,0.5,0)) # which margin lines to use for labels
   plot(-1,0, 
@@ -239,7 +239,7 @@ plotMCMC_ANOVA = function( codaSamples ,
         contrastCoef = matrix( left-right , ncol=1 )
         postContrast = ( mcmcMat[,paste("b[",1:length(xlevels),"]",sep="")] 
                          %*% contrastCoef )
-        openGraph(height=8,width=4)
+        # openGraph(height=8,width=4)
         layout(matrix(1:2,ncol=1))
         plotPost( postContrast , xlab="Difference" ,
                   main=paste0( 
