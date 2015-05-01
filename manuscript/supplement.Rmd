@@ -32,7 +32,6 @@ require(rjags)
 require(runjags)
 require(coda)
 require(BEST)
-require(BayesianFirstAid)
 require(lattice)
 require(xtable)
 require(data.table)
@@ -965,7 +964,6 @@ jhe_190mm_ggsave("figures/fig_16_Jeremalai-flake-retouchedflake-mass-phase.png",
 
 The code chunk below computes the tests for credible difference in retouch flake frequency by phase.
 
-
 ```{r retouch_flake_freq_test_bayes}
 colnames(rt_tab) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
 rt_tab <- rt_tab[-1,]
@@ -1081,9 +1079,247 @@ In the code chunk below we perform a frequentist t-test on flake mass of retouch
 retouch_nonretouch_flake_mass_nhst <- t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
 
-The code chunk above returns the result of the frequentist t-test as follows: t = `retouch_nonretouch_flake_mass_nhst$statistic`, df = `r unname(retouch_nonretouch_flake_mass_nhst$parameter)` and p = `r retouch_nonretouch_flake_mass_nhst$p.value`. 
+The code chunk above returns the result of the frequentist t-test as follows: t = `retouch_nonretouch_flake_mass_nhst$statistic`, df = `r unname(retouch_nonretouch_flake_mass_nhst$parameter)` and p = `r retouch_nonretouch_flake_mass_nhst$p.value`.
 
+The code chunk below makes a table the summarises retouch indices for retouched pieces recovered from Jerimalai. GIUR = Geometric Index of Unifacial Retouch, II = Index of Invasiveness, % = percent of perimeter with retouch
+
+```{r retouch_indices_table_11}
+retouch_indices[is.na(retouch_indices)] <- 0
+retouch_indices$GIUR <- with(retouch_indices, t1/T1 + t2/T2 + t3/T3)/3
+retouch_indices$perimeter_perc <- with(retouch_indices, length/perimeter * 100)
+retouch_indices$II <- with(retouch_indices, ((X0.5 * 0.5) + (X1 * 1))/16)
+# get mean and standard deviation for each index
+retouch_indices_subset <- retouch_indices %>% select(GIUR, perimeter_perc, II) 
+# sweep over the columns to compute mean and standard deviation
+retouch_indices_means <- data.frame(t(round(apply(retouch_indices_subset, 2, mean, na.rm = TRUE),2)))
+retouch_indices_sds <- data.frame(t(round(apply(retouch_indices_subset, 2, sd, na.rm = TRUE),2)))
+# make table
+retouch_table <- retouch_indices %>%
+  select(Square, Spit, Type, GIUR, II, perimeter_perc)
+# do some rounding
+retouch_table[,4:6] <- apply(retouch_table[,4:6], 2, round, 2)
+# have a look
+retouch_table <- arrange(retouch_table, Spit)
+# write the table to a csv file so we can put it in the word doc
+write.csv(retouch_table, file = 'retouch_table.csv', row.names = FALSE)
+kable(retouch_table, caption = "Summary of retouch indices for retouched pieces recovered from Jerimalai. GIUR = Geometric Index of Unifacial Retouch, II = Index of Invasiveness, % = percent of perimeter with retouch")
+```
+
+The retouch intensity can be summarised with the following metrics:
+GIUR = `r retouch_indices_means$GIUR` +/- `r retouch_indices_sds$GIUR`
+perimeter = `r retouch_indices_means$perimeter_perc` +/- `r retouch_indices_sds$ perimeter_perc`%
+II = `r retouch_indices_means$II` +/- `r retouch_indices_sds$II`
 
 
 # Results: Technological types
 
+This code makes the table "Summary of counts and classes. Counts refers to the count of spits in each depositional phase containing a given class."
+
+```{r technological_types_table_13}
+
+# all 
+
+# combine
+
+techno <- data.frame(cores, types, retouch, features, ground,  stringsAsFactors = FALSE)
+# remove extra Spit cols (is those called 'Spit.1' etc)
+techno <- techno[,-grep("Spit\\.", colnames(techno)) ]
+# put depths on 
+techno$depth <- depths$Depth.bs..m[match(techno$Spit,depths$Spit.no)]
+# put phases on 
+techno$phase <- flakes$phase[match(techno$Spit,flakes$Spit)]
+
+techno[] <- lapply(techno, as.character) # change factor to character
+techno[techno == 'x'] <-  1 # replace x with 1
+techno[] <- lapply(techno, as.numeric) # change char to num
+# get row sums
+rs <- rowSums(techno[,2:32], na.rm = TRUE )
+# get row sums by group
+rs_phase <- data.frame(rs, phase = techno$phase)
+# % that have a type present
+# phases with no types at all
+check <- rs_phase[rs_phase$rs == 0,]
+# set 1 or above to 1
+rs_phase$rs <- ifelse(rs_phase$rs == 0, 0, 1)
+check <- aggregate(rs ~ phase, rs_phase[rs_phase$rs == 0,], length) # counts
+check <- t(apply(table(rs_phase), 2, function(x) x/sum(x))) # props
+# just three spits with zero types... let's do it by class
+
+## cores ##
+# put depths on 
+cores$depth <- depths$Depth.bs..m[match(cores$Spit,depths$Spit.no)]
+# put groups on 
+cores$phase <- flakes$phase[match(cores$Spit,flakes$Spit)]
+cores[] <- lapply(cores, as.character) # change factor to character
+cores[cores == 'x'] <-  1 # replace x with 1
+cores[] <- lapply(cores, as.numeric) # change char to num
+# get row sums
+rs <- rowSums(cores[,2:(ncol(cores)-2)], na.rm = TRUE )
+# get row sums by phase
+rs_phase <- data.frame(rs, group = cores$phase)
+# % that have a type present
+# groups with no types at all
+check <- rs_phase[rs_phase$rs == 0,]
+# set any non-zero to 1
+rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
+# yes, more with zero here...
+dc_core <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
+dc_core <- prop.table(as.matrix(dc_core), 1)
+
+## types ##
+# put depths on 
+types$depth <- depths$Depth.bs..m[match(types$Spit,depths$Spit.no)]
+# put groups on 
+types$phase <- flakes$phase[match(types$Spit,flakes$Spit)]
+types[] <- lapply(types, as.character) # change factor to character
+types[types == 'x'] <-  1 # replace x with 1
+types[] <- lapply(types, as.numeric) # change char to num
+# get row sums
+rs <- rowSums(types[,2:(ncol(types)-2)], na.rm = TRUE )
+# get row sums by group
+rs_phase <- data.frame(rs, phase = types$phase)
+# % that have a type present
+# groups with no types at all
+check <- rs_phase[rs_phase$rs == 0,]
+# set any non-zero to 1
+rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
+# yes, more with zero here...
+dc_types <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
+dc_types <- prop.table(as.matrix(dc_types), 1)
+
+## retouch ##
+# put depths on 
+retouch$depth <- depths$Depth.bs..m[match(retouch$Spit,depths$Spit.no)]
+# put groups on 
+retouch$phase <- flakes$phase[match(retouch$Spit,flakes$Spit)]
+retouch[] <- lapply(retouch, as.character) # change factor to character
+retouch[retouch == 'x'] <-  1 # replace x with 1
+retouch[] <- lapply(retouch, as.numeric) # change char to num
+# get row sums
+rs <- rowSums(retouch[,2:(ncol(retouch)-2)], na.rm = TRUE )
+# get row sums by group
+rs_phase <- data.frame(rs, phase = retouch$phase)
+# % that have a type present
+# groups with no types at all
+check <- rs_phase[rs_phase$rs == 0,]
+# set any non-zero to 1
+rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
+# yes, more with zero here...
+dc_retouch <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
+dc_retouch <- prop.table(as.matrix(dc_retouch), 1)
+
+## features ##
+# put depths on 
+features$depth <- depths$Depth.bs..m[match(features$Spit,depths$Spit.no)]
+# put groups on 
+features$phase <- flakes$phase[match(features$Spit,flakes$Spit)]
+features[] <- lapply(features, as.character) # change factor to character
+features[features == 'x'] <-  1 # replace x with 1
+features[] <- lapply(features, as.numeric) # change char to num
+# get row sums
+rs <- rowSums(features[,2:(ncol(features)-2)], na.rm = TRUE )
+# get row sums by group
+rs_phase <- data.frame(rs, phase = features$phase)
+# % that have a type present
+# groups with no types at all
+check <- rs_phase[rs_phase$rs == 0,]
+# set any non-zero to 1
+rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
+# yes, more with zero here...
+dc_feat <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
+dc_feat <- prop.table(as.matrix(dc_feat), 1)
+
+## ground ##
+# put depths on 
+ground$depth <- depths$Depth.bs..m[match(ground$Spit,depths$Spit.no)]
+# put phases on 
+ground$phase <- flakes$phase[match(ground$Spit,flakes$Spit)]
+ground[] <- lapply(ground, as.character) # change factor to character
+ground[ground == 'x'] <-  1 # replace x with 1
+ground[] <- lapply(ground, as.numeric) # change char to num
+# get row sums
+rs <- rowSums(ground[,2:(ncol(ground)-2)], na.rm = TRUE )
+# get row sums by phase
+rs_phase <- data.frame(rs, phase = ground$phase)
+# % that have a type present
+# phases with no types at all
+check <- rs_phase[rs_phase$rs == 0,]
+# set any non-zero to 1
+rs_phase$rs <- ifelse(rs_phase$rs != 0, 1, rs_phase$rs)
+# yes, more with zero here...
+dc_gr <- data.frame(t(apply(table(rs_phase), 2, function(x) x/sum(x))))
+dc_gr <- prop.table(as.matrix(dc_gr), 1)
+
+# put them together
+lst <- list(cores = dc_core,  retouch = dc_retouch, types = dc_types, features = dc_feat,  ground = dc_gr)
+df <- ldply(lst, data.frame)
+df$phase <- rep(seq_along(unique(na.omit(flakes$phase))), length(lst))
+
+# plot proportion of spits having a techno-type present
+df_m <- melt(df, id.var = c('phase', '.id'))
+df_m$variable <- ifelse(df_m$variable == 'X0', 'Absent', 'Present')
+ggplot(df_m, aes(as.factor(phase), value, fill = variable)) +
+  geom_bar(stat="identity") +
+  facet_grid(. ~ .id) +
+  theme_minimal() +
+  xlab("Depositional phase") +
+  ylab("Proportion of spits") +
+  scale_fill_discrete(name="")
+
+# now we can see, let's explore some of the minor patterns...
+# what are the counts of each class in each phase?
+
+# more about features
+l <- lapply(features[,2:(ncol(features)-2)], function(i)  aggregate( i ~ phase, features, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+feat <- dcast(phase ~ name, value.var = 'i', data = df)
+
+# more about ground
+l <- lapply(ground[,2:(ncol(ground)-2)], function(i)  aggregate( i ~ phase, ground, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+grou <- dcast(phase ~ name, value.var = 'i', data = df)
+
+# more about retouch
+l <- lapply(retouch[,2:(ncol(retouch)-2)], function(i)  aggregate( i ~ phase, retouch, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+reto <- dcast(phase ~ name, value.var = 'i', data = df)
+
+# more about types
+l <- lapply(types[,2:(ncol(types)-2)], function(i)  aggregate( i ~ phase, types, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+type <- dcast(phase ~ name, value.var = 'i', data = df)
+
+# more about cores
+l <- lapply(cores[,2:(ncol(cores)-2)], function(i)  aggregate( i ~ phase, cores, sum, na.rm = TRUE))
+df <- do.call(rbind.data.frame, l)
+df$name <- unlist(lapply(1:length(l), function(i) rep(names(l)[i], nrow(l[[i]]))))
+core <- dcast(phase ~ name, value.var = 'i', data = df)
+
+# obsidian?
+all$phase <- makephases(all$Spit)
+obsidian <- table(data.frame(phase = all$phase, rm = all$Material))
+
+# summary table of all techno-types. This will give a count of spits
+# in each phase that contain at least one artefact in the category.
+summaryt <- (t(cbind(
+  ddply(retouch[,2:(ncol(retouch))], "phase", numcolwise(sum, na.rm = TRUE)),
+  ddply(features[,2:(ncol(features))], "phase", numcolwise(sum, na.rm = TRUE)),
+  ddply(ground[,2:(ncol(ground))], "phase", numcolwise(sum, na.rm = TRUE)),
+  ddply(types[,2:(ncol(types))], "phase", numcolwise(sum, na.rm = TRUE)),
+  ddply(cores[,2:(ncol(cores))], "phase", numcolwise(sum, na.rm = TRUE))
+)))
+summaryt <- summaryt[!(row.names(summaryt) %in% c("depth", "phase")),]
+# compute proportions so we have the proportion of spits in each phase 
+# that contains at least one of each class. 
+spits_per_phase <- aggregate(Spit ~ phase, data = cores, length)
+summaryt_props <- data.frame(round(t(t(summaryt) / spits_per_phase$Spit),2))
+names(summaryt_props) <- c( "phase 1", "phase 2", "phase 3", "phase 4", "phase 5")
+# write table to csv to put into word doc
+write.csv(summaryt_props, "techno_types_table.csv")
+kable(summaryt_props, caption = "Summary of proportions and classes. Proportions refers to the proportion of spits in each depositional phase containing a given class")
+
+```
