@@ -1071,18 +1071,19 @@ In the code chunk above we obtain the results of a frequentist ANOVA which retur
 In the code chunk below we compute a Bayesian t-test to investigate differences in the mass of retouched and non-retouched flakes.
 
 ```{r retouch_nonretouch_flake_mass_bayes}
-# any difference between mass of retouched and unretouched, in total?
 # Bayesian t-test of the mass of all retouched vs all unretouched flakes
-flakes_retouch_size_t_test <- bayes.t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
-# flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
+flakes_retouch_size_t_test <- BESTmcmc(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
   
-
-In the code chunk below we perform a frequentist t-test on flake mass of retouched and non-retouched flakes
+In the code chunk below we perform a frequentist t-test on flake mass of retouched and non-retouched flakes. 
 
 ```{r retouch_nonretouch_flake_mass_nhst}
-t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight))
+retouch_nonretouch_flake_mass_nhst <- t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
+
+The code chunk above returns the result of the frequentist t-test as follows: t = `retouch_nonretouch_flake_mass_nhst$statistic`, df = `r unname(retouch_nonretouch_flake_mass_nhst$parameter)` and p = `r retouch_nonretouch_flake_mass_nhst$p.value`. 
+
+
 
 # Results: Technological types
 
