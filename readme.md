@@ -64,7 +64,7 @@ We developed and tested the package on this Docker container, so this is the onl
 
 Manuscript: CC-BY-4.0 <http://creativecommons.org/licenses/by/4.0/>
 
-Code: MIT <http://opensource.org/licenses/MIT> year: 2014, copyright holder: Ben Marwick)
+Code: MIT <http://opensource.org/licenses/MIT> year: 2015, copyright holder: Ben Marwick
 
 Data: CC0 <http://creativecommons.org/publicdomain/zero/1.0/> attribution requested in reuse
 
