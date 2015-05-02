@@ -28,10 +28,10 @@ RUN cd Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 && cd /home/rstudio/manuscript/ \
 
 ## change R's working directory to make it ready to run the supplementary Rmd
-&& Rscript -e 'setwd("~/manuscript")' \
+#&& Rscript -e 'setwd("~/manuscript")' \
 
 ## generate HTML file from Rmd
-&& Rscript -e 'rmarkdown::render("supplement.Rmd")'
+#&& Rscript -e 'rmarkdown::render("supplement.Rmd")'
 
 
     

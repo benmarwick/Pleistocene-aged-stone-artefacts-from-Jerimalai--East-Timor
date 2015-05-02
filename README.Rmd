@@ -13,13 +13,7 @@ knitr::opts_chunk$set(
   fig.path = "README-"
 )
 ```
-## Supplementary materials for a report on the stone artefacts from Jerimalai, East Timor
-
-[![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
-
-
-[![Circle CI](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
-
+## Research compendium for a report on the stone artefacts from Jerimalai, East Timor
 
 ### Compendium DOI: 
  
@@ -43,7 +37,7 @@ This repository is our research compendium for our analysis of the stone artefac
 
 The `manuscript/` directory contains all the data files (in CSV format), the manuscript as submitted (in MS Word format), an supplementary information source file (in R markdown format), an executed version of the supplementary file (in HTML format) and all the figures that are included in the paper. 
 
-### R package
+### R package [![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
 
 This repository is organized as an R package, providing functions compute to Bayesian tests of credible difference. These functions are provided as a package because this makes it simpler to resue the functions many times in the paper. It also makes it easier for others to use and adapt these fucntions on their own data. Nevertheless, this package has been written explicitly for this project and may not yet be suitable for more general purpose use. 
 
@@ -62,37 +56,23 @@ If you just want to use the Bayesian inference functions included here, you can 
 devtools::install_github("benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor")
 ```
 
-The package has a number of dependencies on other R packages, and programs outside of R. These are listed at the bottom of this README. Installing these can be time-consuming, so to simpify 
+The package has a number of dependencies on other R packages, and programs outside of R. These are listed at the bottom of this README. Installing these can be time-consuming and complicated, so to simpify access to the compendium we also provide at Docker image that includes all the necessary software, code and data to run our analysis. 
 
-### Docker image
+### Docker image 
+[![Circle CI](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
 
+A Docker image is a lightweight GNU/Linux virtual computer that can be run as a piece of software on Windows and OSX (and other Linux systems). To capture the complete computational environment used for this project we have a Dockerfile that specifies how to make the Docker image that we developed this project in. The Docker image includes all of the software dependencies needed to run the code in this project, as well asthe R package and other compendium files. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/) on your computer. OSX & Windows users should launch [`boot2docker`](http://boot2docker.io/) to access the Docker terminal, Linux users can just open any terminal). At the Docker prompt, enter:
 
+    docker run -dp 8787:8787 benmarwick/jerimalaistoneartefacts
+
+This will start a server instance of RStudio, which you can access by opening a web broswer at the following URL (username and password are "rstudio"):
+
+    http://localhost:8787/        ## Linux users
+    http://192.168.59.103:8787/   ## OSX, Windows users
+
+Once logged in, the Files pane (bottom right) will show the `manuscript/` directory where you can find the `supplementary.Rmd` document and execute it. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
  
-
-
-
-Then you can read the text & figures using this line at the R prompt:
-
-```{r, eval=FALSE}
-browseVignettes("mjb1989excavationpaper")
-```
-
-This R package has several depedencies that are listed below, some of which need to be installed manually if using this package from your local R installation. 
-
-#### Run the Docker container
-
-[![Circle CI](https://circleci.com/gh/benmarwick/1989-excavation-report-Madjebebe.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/benmarwick/1989-excavation-report-Madjebebe)
-
-This compendium is also available as a [Docker](https://docs.docker.com/installation) container. The advantage of this format is that it includes this package and all its dependencies already installed, so you don't have to worry about those (e.g. `devtools` Rtools, Xcode, JAGS, etc). OSX & Windows users should launch [`boot2docker`](http://boot2docker.io/) to access the Docker terminal, Linux users can just open any terminal). You can either generate the Docker container yourself using the [Dockerfile](https://github.com/benmarwick/1989-excavation-report-Madjebebe/blob/master/Dockerfile) included here, or for a quicker start, pull the image from the [online registry](https://registry.hub.docker.com/u/benmarwick/mjb1989excavationpaper/) and run the container using this line at the Docker prompt: 
-
-```{r eval=FALSE}
-docker run -dp 8787:8787 benmarwick/mjb1989excavationpaper
-```
-
-Then you can interact with RStudio via your browser at localhost:8787 (on Linux) or http://192.168.59.103:8787/ (on Windows/OSX, or whatever address you get from `boot2docker ip` at the shell prompt). Log in to RStudio with user: `rstudio` and password: `rstudio`. See the [rocker-org Wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) for more details. In RStudio you'll see the `Rmd` file for the manuscript and a directory for the raw data. You can knit the `Rmd` file to produce the HTML file that reproduces the text, plots and other results of the analysis. You can also edit and run the `Rmd` interactively in RStudio to explore the analysis further. 
-
-I developed and tested the package on this Docker container, so this is the only platform that I'm confident it works on, and so recommend to anyone wanting to use this package to generate the vignette, etc. 
-
+We developed and tested the package on this Docker container, so this is the only platform that We're confident it works on, and so recommend to anyone wanting to use this package to generate the vignette, etc. 
 
 
 ### Licenses:
@@ -105,7 +85,7 @@ Data: CC0 http://creativecommons.org/publicdomain/zero/1.0/ attribution requeste
 
 ### Dependencies:
 
-I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on Windows 7 and Ubuntu 14.04 and these packages:
+I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on Ubuntu 14.04 and these packages:
 
 Identified using sessionInfo():
 
