@@ -74,56 +74,34 @@ I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on
 
 Identified using `sessionInfo()`:
 
-R version 3.1.1 (2014-07-10) Platform: x86\_64-w64-mingw32/x64 (64-bit)
+R version 3.2.0 (2015-04-16) Platform: x86\_64-pc-linux-gnu (64-bit) Running under: Debian GNU/Linux 8 (jessie)
 
-locale: [1] LC\_COLLATE=English\_United States.1252 [2] LC\_CTYPE=English\_United States.1252
-[3] LC\_MONETARY=English\_United States.1252 [4] LC\_NUMERIC=C
-[5] LC\_TIME=English\_United States.1252
+locale: [1] LC\_CTYPE=en\_US.UTF-8 LC\_NUMERIC=C LC\_TIME=en\_US.UTF-8
+ [4] LC\_COLLATE=en\_US.UTF-8 LC\_MONETARY=en\_US.UTF-8 LC\_MESSAGES=en\_US.UTF-8
+ [7] LC\_PAPER=en\_US.UTF-8 LC\_NAME=C LC\_ADDRESS=C
+[10] LC\_TELEPHONE=C LC\_MEASUREMENT=en\_US.UTF-8 LC\_IDENTIFICATION=C
 
-attached base packages: [1] grid stats
-[3] graphics grDevices [5] utils datasets [7] methods base
+attached base packages: [1] parallel grid stats graphics grDevices utils datasets methods base
 
-other attached packages: [1] rmarkdown\_0.2.49
- [2] vcd\_1.3-1
- [3] data.table\_1.9.2
- [4] xtable\_1.7-3
- [5] BEST\_0.2.2
- [6] rjags\_3-13
- [7] coda\_0.16-1
- [8] lattice\_0.20-29
- [9] devtools\_1.5
-[10] whisker\_0.3-2
-[11] memoise\_0.2.1
-[12] httr\_0.3
-[13] gridExtra\_0.9.1
-[14] RColorBrewer\_1.0-5 [15] scales\_0.2.4
-[16] reshape2\_1.4.0.99 [17] ggplot2\_1.0.0
-[18] dplyr\_0.2
-[19] plyr\_1.8.1
-[20] knitr\_1.6
+other attached packages: [1] JerimalaiStoneArtefacts\_0.0.0.9000 data.table\_1.9.4
+ [3] xtable\_1.7-4 BEST\_0.2.3
+ [5] runjags\_1.2.1-0 rjags\_3-13
+ [7] coda\_0.16-1 lattice\_0.20-31
+ [9] vcd\_1.3-2 dplyr\_0.4.1
+[11] plyr\_1.8.2 reshape2\_1.4.1
+[13] ggplot2\_1.0.1 rmarkdown\_0.5.1
+[15] printr\_0.0.4 knitr\_1.10
 
-loaded via a namespace (and not attached): [1] assertthat\_0.1
- [2] colorspace\_1.2-4 [3] digest\_0.6.4
- [4] evaluate\_0.5.5
- [5] formatR\_0.10
- [6] gtable\_0.1.2
- [7] htmltools\_0.2.4
- [8] labeling\_0.2
- [9] magrittr\_1.0.1
-[10] MASS\_7.3-33
-[11] munsell\_0.4.2
-[12] packrat\_0.3.0.107 [13] parallel\_3.1.1
-[14] proto\_0.3-10
-[15] Rcpp\_0.11.2
-[16] RCurl\_1.95-4.1
-[17] stringr\_0.6.2
-[18] tools\_3.1.1
+loaded via a namespace (and not attached): [1] Rcpp\_0.11.5 magrittr\_1.5 MASS\_7.3-40 munsell\_0.4.2 colorspace\_1.2-6 [6] highr\_0.5 stringr\_0.6.2 tools\_3.2.0 gtable\_0.1.2 DBI\_0.3.1
+[11] htmltools\_0.2.6 lazyeval\_0.1.10 yaml\_2.1.13 digest\_0.6.8 assertthat\_0.1
+[16] formatR\_1.2 codetools\_0.2-11 evaluate\_0.7 labeling\_0.3 scales\_0.2.4
+[21] chron\_2.3-45 proto\_0.3-10
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies):
 
 -   pandoc (\>= 1.12.3) <http://johnmacfarlane.net/pandoc>
 -   jags (\>= 3.0.0) <http://mcmc-jags.sourceforge.net/>
--   libcurl (version 7.14.0 or higher) <http://curl.haxx.se>
+-   GNU make
 
 ### Contact:
 
