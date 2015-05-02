@@ -16,15 +16,15 @@ Ben Marwick (<benmarwick@gmail.com>)
 
 Marwick, B, C. Clarkson, S. O'Connor & S. Collins under review "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" *Journal of Human Evolution*
 
-### Contents:
+### Overview of contents
 
 This repository is our research compendium for our analysis of the stone artefacts from Sue O'Connor's excavations at Jerimalai, East Timor. The compendium contains all data, code, and text associated with the publication (which is currently under review). The `supplement.Rmd` file in the `manuscript/` directory contains details of how all the analyses reported in the paper were conducted, as well as instructions on how to rerun the analysis to reproduce the results.
 
-### Supplementary files
+### The supplementary files
 
 The `manuscript/` directory contains all the data files (in CSV format), the manuscript as submitted (in MS Word format), an supplementary information source file (in R markdown format), an executed version of the supplementary file (in HTML format) and all the figures that are included in the paper.
 
-### R package [![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
+### The R package [![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
 
 This repository is organized as an R package, providing functions compute to Bayesian tests of credible difference. These functions are provided as a package because this makes it simpler to resue the functions many times in the paper. It also makes it easier for others to use and adapt these fucntions on their own data. Nevertheless, this package has been written explicitly for this project and may not yet be suitable for more general purpose use.
 
@@ -45,9 +45,7 @@ devtools::install_github("benmarwick/Pleistocene-aged-stone-artefacts-from-Jerim
 
 The package has a number of dependencies on other R packages, and programs outside of R. These are listed at the bottom of this README. Installing these can be time-consuming and complicated, so to simpify access to the compendium we also provide at Docker image that includes all the necessary software, code and data to run our analysis.
 
-### Docker image
-
-[![Circle CI](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
+### The Docker image [![Circle CI](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
 
 A Docker image is a lightweight GNU/Linux virtual computer that can be run as a piece of software on Windows and OSX (and other Linux systems). To capture the complete computational environment used for this project we have a Dockerfile that specifies how to make the Docker image that we developed this project in. The Docker image includes all of the software dependencies needed to run the code in this project, as well asthe R package and other compendium files. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/) on your computer. OSX & Windows users should launch [`boot2docker`](http://boot2docker.io/) to access the Docker terminal, Linux users can just open any terminal). At the Docker prompt, enter:
 
@@ -74,7 +72,7 @@ Data: CC0 <http://creativecommons.org/publicdomain/zero/1.0/> attribution reques
 
 I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on Ubuntu 14.04 and these packages:
 
-Identified using sessionInfo():
+Identified using `sessionInfo()`:
 
 R version 3.1.1 (2014-07-10) Platform: x86\_64-w64-mingw32/x64 (64-bit)
 
@@ -121,15 +119,11 @@ loaded via a namespace (and not attached): [1] assertthat\_0.1
 [17] stringr\_0.6.2
 [18] tools\_3.1.1
 
-All of these are included in this repository using [packrat](http://rstudio.github.io/packrat/), a dependency management system that takes a snapshot of the libraries needed for this project and saves it in the project directory so that you can recreate those exact same libraries on another machine. To use this system, open the Rproj file in RStudio, then open the Rmd file and knit that.
-
-Other system dependencies identified using `dependencies::needs()` (<https://github.com/ropensci/dependencies>):
+Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies):
 
 -   pandoc (\>= 1.12.3) <http://johnmacfarlane.net/pandoc>
 -   jags (\>= 3.0.0) <http://mcmc-jags.sourceforge.net/>
 -   libcurl (version 7.14.0 or higher) <http://curl.haxx.se>
-
-Note that these are external to R and are not bundled with this repository. You'll need to ensure they're installed yourself before executing the Rmarkdown file. Pandoc is installed when RStudio is installed.
 
 ### Contact:
 
