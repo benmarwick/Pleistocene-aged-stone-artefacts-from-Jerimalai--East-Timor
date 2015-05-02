@@ -5,7 +5,7 @@ machine:
 dependencies:
   override:
     - docker info
-    - docker build -t benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor https://raw.githubusercontent.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/master/docker/Dockerfile
+    - docker build -t benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor https://raw.githubusercontent.com/benmarwick/jerimalaistoneartefacts/master/docker/Dockerfile
 
 test:
   override:
