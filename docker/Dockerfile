@@ -8,7 +8,7 @@ RUN apt-get update \
     r-cran-rjags \
     r-cran-coda \
     r-cran-runjags \
-    r-cran-vcd
+    r-cran-vcd \
     
 && installGithub.r --deps TRUE \
     benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
