@@ -8,10 +8,12 @@ RUN apt-get update \
     r-cran-rjags \
     r-cran-coda \
     r-cran-runjags \
+    r-cran-vcd
     
 && installGithub.r --deps TRUE \
     benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
-    mikemeredith/BEST
+    mikemeredith/BEST \
+    yihui/printr
 
 ## get full copy of my package & compendium   
 RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
