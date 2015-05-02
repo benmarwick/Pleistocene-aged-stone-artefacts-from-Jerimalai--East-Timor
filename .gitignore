@@ -3,3 +3,4 @@
 .RData
 /manuscript/*cache*
 /manuscript/*files*
+*.txt
