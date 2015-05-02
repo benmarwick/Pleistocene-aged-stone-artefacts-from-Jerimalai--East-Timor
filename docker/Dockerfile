@@ -25,3 +25,5 @@ RUN cd Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 ## put the user at this mansuscript directory, ready to inspect, run, etc.
 && cd /home/rstudio/manuscript/
     
+# How to make the image:
+# docker build -t benmarwick/jerimalaistoneartefacts https://raw.githubusercontent.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/master/docker/Dockerfile

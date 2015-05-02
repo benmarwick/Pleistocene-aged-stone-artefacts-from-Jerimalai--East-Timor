@@ -15,7 +15,15 @@ address:
       University of Washington,
       Seattle, WA 98195-3100 USA 
 
-output: html_document
+date: "`r Sys.Date()`"
+output:
+  knitr:::html_vignette:
+    number_sections: yes
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{Supplement}
+  %\VignetteEngine{knitr::rmarkdown}
+
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
@@ -71,7 +79,7 @@ The exact version of the code that produced the data and figures in the publishe
 The code should run on a typical personal computer (Windows/OSX/Linux) that can run R and can install R packages from the internet. The specific software dependencies for the code included here are listed in the code chunk above this text and the DESCRIPTION file of the R package that this supplement file is contained in (the R package name is JerimalaiStoneArtefacts). Managing the dependencies can be tedious, and we have no control over how they will change in the future. In an effort to capture the entire computational environment that this analysis was developed and conducted in, and protect against changes in the dependant software packages, we provide a Docker image as a lightweight virtual machine that is the actual environment in which we developed, tested and ran the code. The Docker image contains all the necessary software already installed, so no further configuration is required. We also include a Dockerfile as a record of the instructions used to build the Docker image, this can be found in the `docker/` directory in the research compendium. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/), then run Docker and at the Docker prompt, enter:
 
 
-    docker run -dp 8787:8787 benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+    docker run -dp 8787:8787 benmarwick/jerimalaistoneartefacts
 
 Then open a web broswer at the following URL to access RStudio (username and password are "rstudio"):
 
