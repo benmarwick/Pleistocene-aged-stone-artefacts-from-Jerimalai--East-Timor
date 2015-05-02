@@ -28,7 +28,7 @@ RUN cd Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 && cd /home/rstudio/manuscript/ \
 
 ## generate HTML file from Rmd
-&& Rscript -e 'rmarkdown::render("manuscript/supplement.Rmd")'
+&& Rscript -e 'rmarkdown::render("~/manuscript/supplement.Rmd")'
 
 
     
