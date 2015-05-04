@@ -96,7 +96,7 @@ All of the data needed to reproduce the results presented in the paper are inclu
 
 ```{r load_data}
 # dates
-dates <- read.csv("data/Jeremalai_dates.csv", as.is = TRUE)
+dates <- read.csv("data/Jeremalai_dates_Square_B.csv", as.is = TRUE)
 # complete flake data
 flakes <- read.csv("data/JB_Chert_Flakes_and_Retouch.csv")
 # core type data
@@ -106,7 +106,7 @@ depths <- read.csv("data/Jeremalai_spit_depths.csv")
 # sediment volumes
 vols <- read.csv("data/Artefact densities with soil volumes Sq B.csv", skip = 1)
 # all artefacts
-all <- read.csv("data/Jerimalai_All_Artefacts.csv")
+all <- read.csv("data/Jerimalai_All_Artefacts_Square_B.csv")
 # techno types
 cores <- read.csv("data/Jerimalai_tech_table_cores.csv")
 types <-  na.omit(read.csv("data/Jerimalai_tech_table_types.csv"))
@@ -119,7 +119,7 @@ retouch_indices <- read.csv("data/Jerimalai_retouch_indices.csv")
 
 # Chronology of the excavated deposit
 
-The code chunk below reproduces Figure 2, the depth-age distribution for radiocarbon dates from Jerimalai. 
+The code chunk below reproduces Figure 2, the depth-age distribution for radiocarbon dates from Jerimalai square B. 
 
 
 ```{r fig_2_chronology}
@@ -1332,3 +1332,66 @@ write.csv(summaryt_props, "techno_types_table.csv")
 kable(summaryt_props, caption = "Summary of proportions and classes. Proportions refers to the proportion of spits in each depositional phase containing a given class")
 
 ```
+
+# Summary of results for Stone Artefacts from Jeremalai Square A
+
+```{r ingest_square_A_data}
+sq_a_all <- read.csv("Jerimalai_All_Artefacts_Square_A.csv")
+```
+
+## Chronology 
+
+Radiocarbon ages from square A have fewer Pleistocene dates than square B and an inversion of samples from spits 38 and 27. These details make it difficult to group excavated spits into analytical units for comparison with square B. The stone artefact assemblage is also smaller than from square B. Due to these limitations, we took a conservative approach and aggreagates spits from square A into two groups: a Pleistocene deposit that includes spits 61-26 and a Holocene deposit that includes spits 25-1.
+
+```{r square_A_radiocarbon}
+sq_a_radiocarbon <- read.csv("Jerimalai_dates_Square_A.csv")
+kable(sq_a_radiocarbon, caption = "Radiocarbon ages from Jerimalai square A")
+```
+
+## Results: Raw materials
+
+The output from the code chunk below shows that chert strongly dominates raw material choices in square A, just as it did in square B. 
+
+```{r square_A_raw_materials}
+# subset flakes
+sq_a_flakes <- sq_a_all %>% 
+  filter(Artclas == "Flake")
+# here's a function to assign phases based on spit numbers
+  makephases <- function(x) {ifelse(x >= 1 & x <= 25, 2,
+                                  ifelse(x >= 26 & x <= 69, 1, NA))}
+# apply phase numbers
+sq_a_flakes <- sq_a_flakes[!(is.na(sq_a_flakes$Spit)),]
+sq_a_flakes$phase  <- makephases(sq_a_flakes$Spit)
+# raw material
+raw <- dcast(sq_a_flakes, Material ~ phase) 
+# remove row with no raw material
+raw <- raw[-1,]
+# get rid of rows with no value
+raw <- raw[rownames(raw) != "",]
+# remove col of NA
+raw <- raw[,colnames(raw) != "NA"]
+# subset dominant raw materials
+raw[,2:3] <- sapply(raw[,2:3], as.numeric)
+dom <- raw[rowSums(raw[,2:3]) > 10,]
+colnames(dom) <- c("raw material", "phase 1", "phase 2")
+kable(dom, caption = "Square A: Frequencies of dominant raw materials by depositional phase")
+
+```
+
+
+
+## Results: Discard rates
+
+
+
+## Results: Taphonomy
+
+## Results: Metric and technological characteristics of cores and unretouched flakes
+
+## Results: Core technology
+
+## Results: Retouched artefacts
+
+## Results: Technological types
+
+
