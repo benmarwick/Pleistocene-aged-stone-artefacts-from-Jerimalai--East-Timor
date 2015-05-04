@@ -96,7 +96,7 @@ All of the data needed to reproduce the results presented in the paper are inclu
 
 ```{r load_data}
 # dates
-dates <- read.csv("data/Jeremalai_dates_Square_B.csv", as.is = TRUE)
+dates <- read.csv("data/Jerimalai_dates_Square_B.csv", as.is = TRUE)
 # complete flake data
 flakes <- read.csv("data/JB_Chert_Flakes_and_Retouch.csv")
 # core type data
@@ -481,13 +481,14 @@ kable(round(HDI_intervals_for_interactions,3), caption = "Highest density interv
 ```
 
 The code chunk above returned results that indicate credible differences in the frequency of heat treatment between each phase except for phase one and two. The phase three to four transition is particularly different from the others, but this corresponds to only a `r round(abs(heat[1,3]/sum(heat[1:2,3]) -  heat[1,4]/sum(heat[1:2,4]) * 100),1)`% change increase in frequency of heated peices. all the HDIs are close to zero, indicating a small effect size. 
-The code chunk below computes a frequentist chi-square and Cramer's V test for the heat treatment data.
+
+The code chunk below computes a frequentist chi-square and Cramer's V test for the heat alteration data.
 
 ```{r chert_artefacts_heat_nhst}
 chert_artefacts_heat_nhst <- assocstats(as.matrix(heat))
 ```
 
-The code chunk above returns a chi-squared value of `r chert_artefacts_heat_nhst$chisq_tests[2,1]` and a p-value of `r chert_artefacts_heat_nhst$chisq_tests[2,3]`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r chert_artefacts_heat_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of breakage types by phase.
+The code chunk above returns a chi-squared value of `r chert_artefacts_heat_nhst$chisq_tests[2,1]` and a p-value of `r chert_artefacts_heat_nhst$chisq_tests[2,3]`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r chert_artefacts_heat_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of heat alteration by phase.
 
 # Results: Metric and technological characteristics of cores and unretouched flakes 
 
@@ -1336,7 +1337,7 @@ kable(summaryt_props, caption = "Summary of proportions and classes. Proportions
 # Summary of results for Stone Artefacts from Jeremalai Square A
 
 ```{r ingest_square_A_data}
-sq_a_all <- read.csv("Jerimalai_All_Artefacts_Square_A.csv")
+sq_a_all <- read.csv("data/Jerimalai_All_Artefacts_Square_A.csv")
 ```
 
 ## Chronology 
@@ -1344,7 +1345,7 @@ sq_a_all <- read.csv("Jerimalai_All_Artefacts_Square_A.csv")
 Radiocarbon ages from square A have fewer Pleistocene dates than square B and an inversion of samples from spits 38 and 27. These details make it difficult to group excavated spits into analytical units for comparison with square B. The stone artefact assemblage is also smaller than from square B. Due to these limitations, we took a conservative approach and aggreagates spits from square A into two groups: a Pleistocene deposit that includes spits 61-26 and a Holocene deposit that includes spits 25-1.
 
 ```{r square_A_radiocarbon}
-sq_a_radiocarbon <- read.csv("Jerimalai_dates_Square_A.csv")
+sq_a_radiocarbon <- read.csv("data/Jerimalai_dates_Square_A.csv")
 kable(sq_a_radiocarbon, caption = "Radiocarbon ages from Jerimalai square A")
 ```
 
@@ -1375,18 +1376,379 @@ raw[,2:3] <- sapply(raw[,2:3], as.numeric)
 dom <- raw[rowSums(raw[,2:3]) > 10,]
 colnames(dom) <- c("raw material", "phase 1", "phase 2")
 kable(dom, caption = "Square A: Frequencies of dominant raw materials by depositional phase")
-
 ```
 
 
+```{r square_A_raw_material_by_phase_test_bayes}
+data <- melt(as.matrix(dom),  varnames=c("raw_material", "phase"), value.name="Freq")
+myDataFrame = data
+yName=names(myDataFrame)[3]   # Freq
+x1Name=names(myDataFrame)[2]  # phase 
+x2Name=names(myDataFrame)[1]  # raw material
+x1contrasts = list( 
+  list( c("phase 1")  , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ))
+
+numSavedSteps = 12000 # MCMC parameters
+thinSteps = 10        # MCMC parameters
+
+mcmcCoda = genMCMC_cont_table( datFrm=myDataFrame , 
+                    yName=yName , x1Name=x1Name , x2Name=x2Name ,
+                    numSavedSteps=numSavedSteps , thinSteps=thinSteps , 
+                    )
+
+# Get summary statistics of chain:
+summaryInfo = smryMCMC_cont_table( mcmcCoda , 
+                        datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
+                        x1contrasts=x1contrasts 
+                         )
+
+# #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_cont_table( mcmcCoda , 
+#               datFrm=myDataFrame , yName=yName , x1Name=x1Name , 
+#                x2Name=x2Name ,
+#               x1contrasts=x1contrasts  )
+
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo[88, c("HDIlow", "HDIhigh"), drop = FALSE]
+kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and raw material frequencies.")
+```
+
+```{r  square_A_raw_material_by_phase_test_nhst}
+# here is the frequentist equivalent 
+sq_A_raw_material_by_phase_nhst <- assocstats(as.matrix(dom[,2:3])) 
+```
 
 ## Results: Discard rates
 
+The code chunk below generates the figure that shows discard rates of chert artefacts over time at Jerimalai square A. Each point is an excavation unit. The blue line is a locally weighted regression line (span = 0.4) to aid in visualising the trend. Artefact discard at square A peaksat aroudn 0.7m below the surface, an equivalent depth to the peak in square B. This corresponds to around spits 33-34, which lies between the two inverted dates (Wk-17830, Wk-19227). This means that we can only offer a wide interval of 20-15 ka BP for the age of the peak discard at square A. This is broadly consistent with a post-LGM increase in discard observed at square B. 
 
+```{r square_A_discard_over_time}
+# spit depths
+sq_a_depths <- read.csv("data/Jerimalai_spit_depths_Square_A.csv")
+# sediment volumes
+vols <- read.csv("data/Artefact densities with soil volumes Sq B.csv", skip = 1)
+# put depths on lithic data
+sq_a_flakes$depth <- sq_a_depths$Depth.bs..m[match(sq_a_flakes$Spit,sq_a_depths$Spit.no)]
+# discard rates
+sq_a_discard <- aggregate(Weight ~ depth + Spit, sq_a_flakes, length)
+# sediment volumes: put volumes on
+sq_a_discard$sedvol <- vols$Soil.1[match(sq_a_discard$Spit, vols$X.3)]
+# put spit thickesses on
+sq_a_discard$thick <- c(0.018, diff(sq_a_discard$depth)) # add first value from depth_and_dates.xsl
+# compute artefacts per kg of sediment
+sq_a_discard$kgsed <- with(sq_a_discard, Weight / sedvol) # weight is count of artefacts that have a weight
+# compute artefact per cubic meter (spit thickess)
+sq_a_discard$cubmet <- with(sq_a_discard, Weight / thick)
+# seems we have an unusually extreme value in spit 34
+# omit - perhaps a data collection typo
+# discard <- discard[discard$Spit != 34, ]
+# Plot
+ggplot(sq_a_discard, (aes(depth, cubmet))) +
+  geom_point() +
+  stat_smooth(span = 0.5, se = FALSE) +
+  xlab("Depth below surface (m)") +
+  ylab("Number of chert flakes per \ncubic meter of deposit") +
+  coord_flip() +
+  scale_x_reverse()
+# save plot
+jhe_90mm_ggsave("figures/sq_A_Jeremalai-flake-discard.png")
+```
 
 ## Results: Taphonomy
 
+
+The code chunk below computes a Bayesian Poisson exponential ANOVA to investigate differences in flake breakage classes over time. 
+
+```{r sq_A_artefact_taphonomy_bayes}
+sq_a_allchert <- sq_a_all[sq_a_all$Material == 'Chert', ]
+sq_a_allchert$phase <- makephases(sq_a_allchert$Spit)
+# make Artclass that is long and transv breaks
+sq_a_allchert$Artclas <- ifelse(sq_a_allchert$Breaks == "", 
+       as.character(sq_a_allchert$Artclas), 
+       paste(sq_a_allchert$Artclas, sq_a_allchert$Breaks, sep = "-"))
+sq_a_taph <- data.frame(table(sq_a_allchert$Artclas))
+# use regex to get broken flakes -b- 
+sq_a_broken <- sq_a_allchert[grep("-b", sq_a_allchert$Artclas), ]
+# get counts of broken to complete per phase
+# flake to -b-
+sq_a_breaks <- dcast(sq_a_allchert, Artclas ~ phase)[-1,]
+sq_a_breaks <- sq_a_breaks[sq_a_breaks$Artclas =="flake" | grepl("-b-", sq_a_breaks$Artclas), ]
+sq_a_allchert$Artclas <- tolower(sq_a_allchert$Artclas)
+sq_a_allchert$breakt <- "" # create variable to fill
+sq_a_allchert$breakt[grep("trans", sq_a_allchert$Artclas)] <- "trans"
+sq_a_allchert$breakt[grep("long", sq_a_allchert$Artclas)] <- "long"
+# per depositional phase
+sq_a_breakt <- dcast(sq_a_allchert, breakt ~ phase)[-1,]
+# add complete flake counts
+sq_a_breakt <- rbind( sq_a_breakt , setNames( sq_a_breaks[1, ] , names( sq_a_breakt ) ) )
+# shift rownames out and delete them
+rownames(sq_a_breakt) <- sq_a_breakt[,1]
+sq_a_breakt <- sq_a_breakt[,-1]
+# do bayesian contingency table test
+colnames(sq_a_breakt) <- c("phase 1", "phase 2")
+data <- melt(as.matrix(sq_a_breakt),  varnames=c("breakt", "phase"), value.name="Freq")
+myDataFrame = data
+yName=names(myDataFrame)[3]   # Freq 
+x1Name=names(myDataFrame)[2]  # phase
+x2Name=names(myDataFrame)[1]  # break type
+x1contrasts = list( 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) 
+  )
+numSavedSteps = 12000 # MCMC parameters
+thinSteps = 10        # MCMC parameters
+
+mcmcCoda = genMCMC_cont_table( datFrm=myDataFrame , 
+                    yName=yName , x1Name=x1Name , x2Name=x2Name ,
+                    numSavedSteps=numSavedSteps , thinSteps=thinSteps , 
+                    )
+
+# Get summary statistics of chain:
+summaryInfo = smryMCMC_cont_table( mcmcCoda , 
+                        datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
+                        x1contrasts=x1contrasts 
+                         )
+
+# #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_cont_table( mcmcCoda , 
+#               datFrm=myDataFrame , yName=yName , x1Name=x1Name , 
+#                x2Name=x2Name ,
+#               x1contrasts=x1contrasts  )
+
+# table of raw counts
+kable(sq_a_breakt, caption = "Square A: Table of frequencies of each class of breakage by phase")
+
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo[88, c("HDIlow", "HDIhigh"), drop = FALSE]
+kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake breakage classes.")
+```
+
+The above code chunk returns results that there is no credible difference in the frequences of flake breakage types by phase. 
+
+The code chunk below computes the frequentist equivalent, the chi-square test and the Cramer's V for effect size. 
+
+```{r sq_A_artefact_taphonomy_nhst}
+artefact_taphonomy_nhst <- assocstats(as.matrix(sq_a_breakt))
+```
+
+The code chunk below summarises the frequencies of heat-treated flakes at Jerimalai square A
+
+```{r sq_A_lithics_heat_treatment}
+check <- sum(sq_a_flakes$Heat, na.rm = TRUE) / nrow(sq_a_flakes)
+heat <- aggregate(Heat ~ phase, sq_a_flakes, length)
+total <- aggregate(Spit ~ phase, sq_a_flakes, length)
+heat$Not_heat <- total$Spit - heat$Heat
+# show proportions that are heat-treated
+max_heat <- max(heat$Heat / total$Spit)
+min_heat <- min(heat$Heat / total$Spit)
+heat <- t(heat)
+# do bayesian contingency table test
+colnames(heat) <- c("phase 1", "phase 2")
+heat <- heat[-1,]
+```
+
+The code chunk below computes a Bayesian Poisson exponential ANOVA to investigate differences in heat treatment by phase. 
+
+```{r sq_A_lithics_heat_treatment_bayes}
+data <- melt(as.matrix(heat),  varnames=c("heat", "phase"), value.name="Freq")
+myDataFrame = data
+yName=names(myDataFrame)[3]   # Freq 
+x1Name=names(myDataFrame)[2]  # phase
+x2Name=names(myDataFrame)[1]  # heat
+x1contrasts = list( 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) 
+  )
+numSavedSteps = 12000 # MCMC parameters
+thinSteps = 10        # MCMC parameters
+
+mcmcCoda = genMCMC_cont_table( datFrm=myDataFrame , 
+                    yName=yName , x1Name=x1Name , x2Name=x2Name ,
+                    numSavedSteps=numSavedSteps , thinSteps=thinSteps , 
+                    )
+
+# Get summary statistics of chain:
+summaryInfo = smryMCMC_cont_table( mcmcCoda , 
+                        datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name ,
+                        x1contrasts=x1contrasts 
+                         )
+
+# # #  Display posterior information (not easy to read unless using interactively):
+#     plotMCMC_cont_table( mcmcCoda , 
+#               datFrm=myDataFrame , yName=yName , x1Name=x1Name , 
+#                x2Name=x2Name ,
+#               x1contrasts=x1contrasts  )
+
+# table of heated artefact counts
+kable(heat, caption = "Square A: Table of frequencies of heat treatment by phase")
+
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo[25, c("HDIlow", "HDIhigh"), drop = FALSE]
+kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake breakage classes.")
+```
+
+The code chunk above returned results that indicate credible differences in the frequency of heat treatment between phase one and two. There are more flakes that have not been affected by heat in the Holocene phase. The code chunk below computes a frequentist chi-square and Cramer's V test for the heat treatment data.
+
+```{r sq_A_chert_artefacts_heat_nhst}
+sq_A_chert_artefacts_heat_nhst <- assocstats(as.matrix(heat))
+```
+
+The code chunk above returns a chi-squared value of `r sq_A_chert_artefacts_heat_nhst$chisq_tests[2,1]` and a p-value of `r sq_A_chert_artefacts_heat_nhst$chisq_tests[2,3]`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r sq_A_chert_artefacts_heat_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of heat alteration by phase.
+
 ## Results: Metric and technological characteristics of cores and unretouched flakes
+
+The code chunk below produces the table summarizing the attributes of chert complete flakes from Jerimalai square A.
+
+```{r sq_A_chert_flake_metrics_summary_table_6}
+metrics <- sq_a_flakes %>% 
+  group_by(phase) %>% 
+  summarise(mean(Length, na.rm = TRUE),  
+            mean(Width, na.rm = TRUE), 
+            mean(Thick, na.rm = TRUE),
+            mean(Weight, na.rm = TRUE),
+            mean(Length, na.rm = TRUE),
+            mean(Platwid, na.rm = TRUE),
+            mean(Platthic, na.rm = TRUE),
+            mean(NoDS, na.rm = TRUE),
+            mean(Cortex, na.rm = TRUE),
+            sd(Length, na.rm = TRUE),  
+            sd(Width, na.rm = TRUE), 
+            sd(Thick, na.rm = TRUE),
+            sd(Weight, na.rm = TRUE),
+            sd(Length, na.rm = TRUE),
+            sd(Platwid, na.rm = TRUE),
+            sd(Platthic, na.rm = TRUE),
+            sd(NoDS, na.rm = TRUE),
+            sd(Cortex, na.rm = TRUE),
+            n = length(Weight))
+
+# get overhang removal data also
+ohr <- filter(sq_a_flakes, Overhang == "Yes") %>%
+       group_by(phase) %>%
+       summarise(OHR_n = length(Overhang))
+# get percentages of OHR per phase
+ohr$OHR_perc <- ohr$OHR_n/metrics$n * 100
+
+# combine
+metrics <- cbind(metrics, ohr[,c("OHR_n", "OHR_perc")])
+metrics <- as.data.frame(t(round(metrics,2)))[-1,]
+colnames(metrics) <- c("phase 1", "phase 2")
+kable(metrics, caption = "Square A: Summary of chert flake metrics by phase")
+```
+
+The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake mass by depositional phase. 
+
+```{r sq_A_chert_flake_metrics_summary_test_bayes}
+myDataFrame <- data.frame(phase = sq_a_flakes$phase, mass = sq_a_flakes$Weight)
+yName = names(myDataFrame)[2] # mass
+xName = names(myDataFrame)[1] # phase
+contrasts = list(
+  list( c("1") , c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) )
+# Generate the MCMC chain:
+  mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
+                      numSavedSteps=11000 , thinSteps=10 
+                      )
+  # Get summary statistics of chain:
+  summaryInfo_ANOVA = smryMCMC_ANOVA( mcmcCoda_ANOVA , 
+                          datFrm=myDataFrame , xName=xName ,
+                          contrasts=contrasts 
+                          )
+  
+#  Display posterior information (not easy to read unless using interactively):
+    plotMCMC_ANOVA( mcmcCoda_ANOVA , 
+              datFrm=myDataFrame , yName=yName , xName=xName , 
+              contrasts=contrasts  )
+  
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo_ANOVA[nrow(summaryInfo_ANOVA), c("HDIlow", "HDIhigh"), drop = FALSE]
+kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake mass.")
+```
+
+The code chunk above produced results a credibly different distributions of flake mass between the two phases. In the code chunk below we repeat the same investigation using a frequentist t-test. 
+
+```{r sq_A_chert_flake_metrics_summary_test_nhst}
+sq_a_flake_mass_ttest <- t.test(Weight ~ as.factor(phase), sq_a_flakes)
+```
+
+In the code chunk above we obtain the results of a frequentist t-test which returns a statistically significant result: t = `r unname(sq_a_flake_mass_ttest[[1]])`, df = `r unname(sq_a_flake_mass_ttest[2]])`, p = `r unname(sq_a_flake_mass_ttest[[3]])`. This shows a statistically significant change in chert flake mass, consistant with what we see in the Bayesian HDI intervals. Flakes get slightly larger in the Holocene period. 
+
+The code chunk below produces a summary table of metric attributes of chert complete cores from Jerimalai square A.
+
+```{r sq_A_chert_core_metrics_summary}
+cores_mass <- sq_a_allchert[sq_a_allchert$Artclas == "core", ]
+core_metrics <- cores_mass %>% 
+  group_by(phase) %>% 
+  summarise(mean(Weight), 
+            mean(Length), 
+            mean(Width), 
+            mean(Thick),
+            sd(Weight), 
+            sd(Length), 
+            sd(Width), 
+            sd(Thick),
+            n = length(Weight))
+core_metrics_t <- t(round(core_metrics,2))
+colnames(core_metrics_t) <- c("phase 1", "phase 2" )
+kable(core_metrics_t, caption = "Square A: Summary of chert core metrics")
+```
+
+There are fewer cores in the Holocene, and they tend to be smaller. The code chunk below creates a figure that shows the distribution of core and complete flake mass by depositional phases
+
+```{r sq_a_flake_and_core_mass_by_phase}
+# plot flake and core mass by phase in one box plot
+flakes_cores_weight <- sq_a_allchert[(sq_a_allchert$Artclas == "flake" | sq_a_allchert$Artclas == "core"), c('Artclas', 'Weight', 'phase') ]
+
+ggplot(flakes_cores_weight, aes(fill = Artclas, as.factor(phase), Weight)) +
+  geom_point(aes(colour = Artclas), size = 0.5, alpha = 0.9, shape = 1, 
+             position=position_jitterdodge(dodge.width=0.9)) +
+  geom_boxplot(alpha = 0.5) +
+  scale_y_log10() +
+  #theme_minimal(base_size = 4) +
+  xlab('depositional phase') +
+  ylab("mass (g)") +
+  scale_fill_manual(name="artefact type",
+                      labels=c("core", "complete flake"), 
+                     values = c("grey10", "grey80")) +
+  scale_colour_manual(name="artefact type",
+                      labels=c("core", "complete flake"), 
+                      values = c("grey10", "grey15")) 
+  
+```
+
+The box and whisker plot above suggests that changes in the disrtbution of core and flake mass were very subtle between the two phases. 
+
+The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert core mass by depositional phase. 
+
+```{r sq_a_chert_core_metrics_summary_test_bayes}
+myDataFrame <- data.frame(phase = cores_mass$phase, mass = cores_mass$Weight)
+yName = names(myDataFrame)[2] # mass
+xName = names(myDataFrame)[1] # phase
+contrasts = list(
+  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) )  )
+# Generate the MCMC chain:
+  mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
+                      numSavedSteps=11000 , thinSteps=10 
+                      )
+  # Get summary statistics of chain:
+  summaryInfo_ANOVA = smryMCMC_ANOVA( mcmcCoda_ANOVA , 
+                          datFrm=myDataFrame , xName=xName ,
+                          contrasts=contrasts 
+                          )
+  
+# #  Display posterior information (not easy to read unless using interactively):
+    plotMCMC_ANOVA( mcmcCoda_ANOVA , 
+              datFrm=myDataFrame , yName=yName , xName=xName , 
+              contrasts=contrasts  )
+#   
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo_ANOVA[nrow(summaryInfo_ANOVA), c("HDIlow", "HDIhigh"), drop = FALSE]
+kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and core mass.")
+```
+
+```{r sq_A_chert_core_metrics_summary_test_nhst}
+sq_a_core_mass_ttest <- t.test(mass ~ as.factor(phase), myDataFrame)
+```
+
+In the code chunk above we obtain the results of a frequentist t-test which returns a statistically significant result: t = `r unname(sq_a_core_mass_ttest[[1]])`, df = `r unname(sq_a_core_mass_ttest[2]])`, p = `r unname(sq_a_core_mass_ttest[[3]])`. This shows a non-significant change in chert core mass. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.  
+
 
 ## Results: Core technology
 
