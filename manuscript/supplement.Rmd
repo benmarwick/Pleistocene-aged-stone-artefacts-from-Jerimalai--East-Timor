@@ -1344,7 +1344,7 @@ sq_a_all <- read.csv("data/Jerimalai_All_Artefacts_Square_A.csv")
 Radiocarbon ages from square A have fewer Pleistocene dates than square B and an inversion of samples from spits 38 and 27. These details make it difficult to group excavated spits into analytical units for comparison with square B. The stone artefact assemblage is also smaller than from square B. Due to these limitations, we took a conservative approach and aggreagates spits from square A into two groups: a Pleistocene deposit that includes spits 61-26 and a Holocene deposit that includes spits 25-1.
 
 ```{r square_A_radiocarbon}
-sq_a_radiocarbon <- read.csv("Jerimalai_dates_Square_A.csv")
+sq_a_radiocarbon <- read.csv("data/Jerimalai_dates_Square_A.csv")
 kable(sq_a_radiocarbon, caption = "Radiocarbon ages from Jerimalai square A")
 ```
 
