@@ -1336,7 +1336,7 @@ kable(summaryt_props, caption = "Summary of proportions and classes. Proportions
 # Summary of results for Stone Artefacts from Jeremalai Square A
 
 ```{r ingest_square_A_data}
-sq_a_all <- read.csv("Jerimalai_All_Artefacts_Square_A.csv")
+sq_a_all <- read.csv("data/Jerimalai_All_Artefacts_Square_A.csv")
 ```
 
 ## Chronology 
