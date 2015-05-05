@@ -1518,7 +1518,7 @@ summaryInfo = smryMCMC_cont_table( mcmcCoda ,
 kable(sq_a_breakt, caption = "Square A: Table of frequencies of each class of breakage by phase")
 
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo[88, c("HDIlow", "HDIhigh"), drop = FALSE]
+HDI_intervals_for_interactions <- summaryInfo[nrow(summaryInfo), c("HDIlow", "HDIhigh"), drop = FALSE]
 kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake breakage classes.")
 ```
 
