@@ -1749,7 +1749,103 @@ sq_a_core_mass_ttest <- t.test(mass ~ as.factor(phase), myDataFrame)
 
 In the code chunk above we obtain the results of a frequentist t-test which returns a statistically significant result: t = `r unname(sq_a_core_mass_ttest[[1]])`, df = `r unname(sq_a_core_mass_ttest[2]])`, p = `r unname(sq_a_core_mass_ttest[[3]])`. This shows a non-significant change in chert core mass. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.  
 
+The code chunk below produces the figures that illustrate the frequency of flake platform categories for chert complete flakes at Jerimalai square A. 
 
+```{r sq_a_chert_flake_platform}
+# flake platform
+plat <- dcast(sq_a_flakes, Plat ~ depth) 
+rownames(plat) <- plat[,1]
+# get rid of rows with no plat
+plat <- plat[rownames(plat) != "",]
+plat <- plat[,-1]
+plat_freqs <- data.frame(plat_types = rownames(plat), Freq = rowSums(plat))
+plat_freqs <- plat_freqs[plat_freqs$Freq > 90,]
+plat_freqs$plat_types <- c('2-scars', '3-scars', 'cortical', 'focalised', 'single')
+# plot freq of platform types
+main <- ggplot(plat_freqs, aes(reorder(plat_types, Freq), Freq)) + 
+  geom_bar(stat="identity", fill = "white", colour = "black") +
+  # theme_minimal() +
+  xlab("platform type") +
+  ylab("frequency") +
+  # remove grid lines for subplot
+  theme_update(panel.background = element_blank(),
+               panel.grid.major = element_blank(),
+               panel.grid.minor = element_blank())
+main + theme_minimal()
+# raw materials by spit
+# compute proportions per layer (col props)
+all_tab <- data.frame()
+for(i in seq(ncol(plat))){
+  for(j in seq(nrow(plat))){
+    all_tab[j,i] <- plat[j,i]/colSums(plat)[i]
+  }
+}
+# check 
+check <- colSums(all_tab) # should == 1
+colnames(all_tab) <- colnames(plat) 
+check <- rowSums(all_tab) # should be various
+all_tab$plat_type <- rownames(plat) 
+# get rid of raw materials that are not very abundant
+all_tab <- all_tab[which(rowSums(all_tab[,1:ncol(all_tab)-1]) > 1.5) , ]
+# get rid of NA column
+all_tab <- all_tab[,names(all_tab) != 'NA']
+# plot
+all_tab_m <- melt(all_tab, id.var = 'plat_type')
+# by phase
+plat <- dcast(flakes, Plat ~ phase)
+rownames(plat) <- plat[,1]
+# get rid of rows with no plat
+plat <- plat[rownames(plat) != "",]
+plat <- plat[,-1]
+# raw materials by site
+# compute proportions per phase (col props)
+all_tab <- data.frame()
+for(i in seq(ncol(plat))){
+  for(j in seq(nrow(plat))){
+    all_tab[j,i] <- plat[j,i]/colSums(plat)[i]
+  }
+}
+all_tab$plat_type <- rownames(plat) 
+# get rid of raw materials that are not very abundant
+all_tab <- all_tab[which(rowSums(all_tab[,1:ncol(all_tab)-1]) > 0.15) , ]
+# get rid of NA column
+all_tab <- all_tab[,names(all_tab) != 'NA']
+# plot distibution of platform sizes for each type
+flakes$Platarea <- with(flakes, (Platthic * Platwid))
+plat_area_type <- flakes[flakes$Plat %in% c("Single", "Focal", "2-scars", "Cort", '3-scars'),]
+
+# make names a bit more readable
+plat_area_type$Plat <- ifelse(plat_area_type$Plat == 'Cort', 'cortical',
+                      ifelse(plat_area_type$Plat == 'Focal',  'focalised', 
+                    ifelse(plat_area_type$Plat == 'Single',  'single', as.character(plat_area_type$Plat))))  
+
+# put types in same order as frequency plot
+plat_area_type$Plat <- factor(plat_area_type$Plat, 
+                              levels = c('cortical', '3-scars','2-scars', 'focalised', 'single'), ordered = TRUE)
+                               
+sub <- ggplot(plat_area_type, aes(Plat, Platarea)) +
+  geom_boxplot() +
+  geom_jitter(size = 0.5, alpha = 0.3, shape = 1) +
+  scale_y_log10() +
+  ylab(as.expression(bquote('platform area (' * mm^{2} * ")" ))) +
+  xlab("") +
+  theme_minimal()
+
+# plot freq of plat type and platform area together in one plot
+  
+vp <- viewport(width = 0.45, height = 0.54, 
+               x = 0.57, y = 0.4, 
+               just = c("right", "bottom"))
+
+# combine plots, print and save (wont show in console)
+  png("figures/fig_7_Jeremalai-platform-area-by-plat-type.png", 
+      units = "mm", w = 190, h = 190/2, res = 600)
+     print(main)
+     print(sub + theme_bw(base_size = 10), vp = vp)
+  dev.off()
+
+```
+![](figures/fig_7_Jeremalai-platform-area-by-plat-type.png)
 ## Results: Core technology
 
 ## Results: Retouched artefacts
