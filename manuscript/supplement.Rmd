@@ -2063,7 +2063,7 @@ for(i in seq_along(techno_tables)){
   techno_tables_out[[i]]$type <- rownames(techno_tables_out[[i]])
 }
 # list to dataframe
-bind_rows(techno_tables_out) %>%  View
+bind_rows(techno_tables_out) # %>%  View
 
 
 
