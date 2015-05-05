@@ -102,7 +102,7 @@ flakes <- read.csv("data/JB_Chert_Flakes_and_Retouch.csv")
 # core type data
 core_types <- read.csv("data/Jerimalai_cores_techno_metrics.csv")
 # spit depths
-depths <- read.csv("data/Jeremalai_spit_depths.csv")
+depths <- read.csv("data/Jerimalai_spit_depths_Square_B.csv")
 # sediment volumes
 vols <- read.csv("data/Artefact densities with soil volumes Sq B.csv", skip = 1)
 # all artefacts
