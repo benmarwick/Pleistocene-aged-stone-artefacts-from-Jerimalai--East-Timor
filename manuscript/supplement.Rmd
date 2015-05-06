@@ -2086,7 +2086,7 @@ kable(techno_tables_comb, caption = "Square A: Summary of proportions and classe
 
 # Colophon
 
-This report was generated on `r Sys.time()` using the following computation environment and dependences: 
+This report was generated on `r Sys.time()` using the following computational environment and dependences: 
 
 ```{r colophon}
 # which R packages and versions?
@@ -2101,5 +2101,5 @@ git_data <- git_stamp(repo = getwd())
 
 ```
 
-The current git commit of this file is `r git_data[1]`, which is on the `r git_data[2]` branch. The current commit message is `r git_data[3]`. 
+The current git commit of this file is `r git_data[1]`, which is on the `r git_data[2]` branch. The current commit message is "`r git_data[3]`". 
 
