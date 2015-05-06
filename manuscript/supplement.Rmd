@@ -42,6 +42,7 @@ require(BEST)
 require(lattice)
 require(xtable)
 require(data.table)
+require(dependencies)
 require(JerimalaiStoneArtefacts)
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
                comment = NA, verbose = TRUE, echo=TRUE,
@@ -2063,35 +2064,41 @@ for(i in seq_along(techno_tables)){
   techno_tables_out[[i]]$type <- rownames(techno_tables_out[[i]])
 }
 # list to dataframe
-bind_rows(techno_tables_out) # %>%  View
+techno_tables_comb <- bind_rows(techno_tables_out) # %>%  View
+techno_tables_comb <- techno_tables_comb[,c(3,1,2)]
+names(techno_tables_comb) <- c("class", "phase 1", "phase 2")
 
+# how many spits in each phase?
+sq_a_spits_per_phase <- sq_a_allchert %>% 
+  group_by(phase) %>% 
+  summarise(n_spits = n_distinct(Spit))
 
+sq_a_props <- lapply(seq_along(techno_tables_comb)[2:3],  function(i) techno_tables_comb[,i] / sq_a_spits_per_phase$n_spits[i-1] )
 
-# # summary table of all techno-types. This will give a count of spits
-# # in each phase that contain at least one artefact in the category.
-# summaryt <- (t(cbind(
-#   ddply(retouch[,2:(ncol(retouch))], "phase", numcolwise(sum, na.rm = TRUE)),
-#   ddply(features[,2:(ncol(features))], "phase", numcolwise(sum, na.rm = TRUE)),
-#   ddply(ground[,2:(ncol(ground))], "phase", numcolwise(sum, na.rm = TRUE)),
-#   ddply(types[,2:(ncol(types))], "phase", numcolwise(sum, na.rm = TRUE)),
-#   ddply(cores[,2:(ncol(cores))], "phase", numcolwise(sum, na.rm = TRUE))
-# )))
-# summaryt <- summaryt[!(row.names(summaryt) %in% c("depth", "phase")),]
-# # compute proportions so we have the proportion of spits in each phase 
-# # that contains at least one of each class. 
-# spits_per_phase <- aggregate(Spit ~ phase, data = cores, length)
-# summaryt_props <- data.frame(round(t(t(summaryt) / spits_per_phase$Spit),2))
-# names(summaryt_props) <- c( "phase 1", "phase 2", "phase 3", "phase 4", "phase 5")
-# 
-# kable(summaryt_props, caption = "Square A: Summary of proportions and classes. Proportions refers to the proportion of spits in each depositional phase containing a given class")
+techno_tables_comb$`phase 1` <- sq_a_props[[1]]$`phase 1`
+techno_tables_comb$`phase 2` <- sq_a_props[[2]]$`phase 2`
+techno_tables_comb[2:3] <- round(techno_tables_comb[2:3], 2)
+kable(techno_tables_comb, caption = "Square A: Summary of proportions and classes. Proportions refers to the proportion of spits in each depositional phase containing a given class")
 ```
 
 
 
+# Colophon
 
+This report was generated on `r Sys.time()` using the following computation environment and dependences: 
 
+```{r colophon}
+# which R packages and versions?
+sessionInfo()
 
+# what other pieces of software?
+needs <- needs()
+c(needs$depends$SystemRequirements[needs$depends$SystemRequirements != "NULL"], needs$imports$SystemRequirements[needs$imports$SystemRequirements != "NULL"])
 
+# what commit is this file at?
+git_data <- git_stamp(repo = getwd())
 
+```
 
+The current git commit of this file is `r git_data[1]`, which is on the `r git_data[2]` branch. The current commit message is `r git_data[3]`. 
 
