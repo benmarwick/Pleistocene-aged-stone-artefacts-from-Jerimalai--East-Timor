@@ -9,8 +9,8 @@ before_install:
   - sudo apt-get install jags
 
 install:
-  - ./travis-tool.sh install_aptget r-cran-knitr r-cran-ggplot2 r-cran-dplyr r-cran-rjags r-cran-coda r-cran-rempis 
-  - ./travis-tool.sh install_github hadley/reshape yihui/printr rstudio/rmarkdown ropensci/dependencies benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+  - ./travis-tool.sh install_aptget r-cran-knitr r-cran-ggplot2 r-cran-dplyr r-cran-rjags r-cran-coda
+  - ./travis-tool.sh install_github hadley/reshape yihui/printr rstudio/rmarkdown ropensci/dependencies christophergandrud/repmis benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
   - ./travis-tool.sh install_deps
 
 script: ./travis-tool.sh run_tests
