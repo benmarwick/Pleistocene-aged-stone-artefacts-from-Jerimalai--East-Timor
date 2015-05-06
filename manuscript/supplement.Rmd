@@ -43,6 +43,7 @@ require(lattice)
 require(xtable)
 require(data.table)
 require(dependencies)
+require(repmis)
 require(JerimalaiStoneArtefacts)
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
                comment = NA, verbose = TRUE, echo=TRUE,
