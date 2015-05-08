@@ -11,11 +11,12 @@ RUN apt-get update \
     r-cran-vcd \ 
     
 && installGithub.r --deps TRUE \
-    benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
+    kenkellner/jagsUI \
     mikemeredith/BEST \
     yihui/printr \
     ropensci/dependencies \
-    christophergandrud/repmis
+    christophergandrud/repmis \
+    benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 
 ## get full copy of my package & compendium   
 RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
