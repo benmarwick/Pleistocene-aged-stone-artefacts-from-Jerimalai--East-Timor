@@ -2095,8 +2095,7 @@ needs <- needs()
 c(needs$depends$SystemRequirements[needs$depends$SystemRequirements != "NULL"], needs$imports$SystemRequirements[needs$imports$SystemRequirements != "NULL"])
 
 # what commit is this file at?
-opts_chunk$set(root.dir=normalizePath('../')) 
-repo <- repository(getwd())
+repo <- repository(path = "../")
 last_commit <- commits(repo)[[1]]
 ```
 
