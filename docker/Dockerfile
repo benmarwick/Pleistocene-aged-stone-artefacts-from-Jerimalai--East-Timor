@@ -15,7 +15,7 @@ RUN apt-get update \
     mikemeredith/BEST \
     yihui/printr \
     ropensci/dependencies \
-    christophergandrud/repmis \
+    ropensci/git2r \
     benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor 
 
 ## get full copy of my package & compendium   
