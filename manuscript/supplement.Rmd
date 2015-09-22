@@ -1113,6 +1113,7 @@ retouch_table <- retouch_indices %>%
 retouch_table[,4:6] <- apply(retouch_table[,4:6], 2, round, 2)
 # have a look
 retouch_table <- arrange(retouch_table, Spit)
+retouch_table$Phase <- makephases(retouch_table$Spit)
 # write the table to a csv file so we can put it in the word doc
 write.csv(retouch_table, file = 'retouch_table.csv', row.names = FALSE)
 kable(retouch_table, caption = "Summary of retouch indices for retouched pieces recovered from Jerimalai. GIUR = Geometric Index of Unifacial Retouch, II = Index of Invasiveness, % = percent of perimeter with retouch")
