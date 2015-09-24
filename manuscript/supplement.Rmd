@@ -500,24 +500,24 @@ The code chunk below produces the table "summarizing the attributes of chert com
 # the table has been rearranged by hand for the paper
 metrics <- flakes %>% 
   group_by(phase) %>% 
-  summarise(mean(Length, na.rm = TRUE),  
-            mean(Width, na.rm = TRUE), 
-            mean(Thick, na.rm = TRUE),
-            mean(Weight, na.rm = TRUE),
-            mean(Length, na.rm = TRUE),
-            mean(Platwid, na.rm = TRUE),
-            mean(Platthic, na.rm = TRUE),
-            mean(NoDS, na.rm = TRUE),
-            mean(Cortex, na.rm = TRUE),
-            sd(Length, na.rm = TRUE),  
-            sd(Width, na.rm = TRUE), 
-            sd(Thick, na.rm = TRUE),
-            sd(Weight, na.rm = TRUE),
-            sd(Length, na.rm = TRUE),
-            sd(Platwid, na.rm = TRUE),
-            sd(Platthic, na.rm = TRUE),
-            sd(NoDS, na.rm = TRUE),
-            sd(Cortex, na.rm = TRUE),
+  summarise(median(Length, na.rm = TRUE),  
+            median(Width, na.rm = TRUE), 
+            median(Thick, na.rm = TRUE),
+            median(Weight, na.rm = TRUE),
+            median(Length, na.rm = TRUE),
+            median(Platwid, na.rm = TRUE),
+            median(Platthic, na.rm = TRUE),
+            median(NoDS, na.rm = TRUE),
+            median(Cortex, na.rm = TRUE),
+            IQR(Length, na.rm = TRUE),  
+            IQR(Width, na.rm = TRUE), 
+            IQR(Thick, na.rm = TRUE),
+            IQR(Weight, na.rm = TRUE),
+            IQR(Length, na.rm = TRUE),
+            IQR(Platwid, na.rm = TRUE),
+            IQR(Platthic, na.rm = TRUE),
+            IQR(NoDS, na.rm = TRUE),
+            IQR(Cortex, na.rm = TRUE),
             n = length(Weight))
 
 # get overhang removal data also
@@ -585,18 +585,19 @@ The code chunk below produces a summary table of metric attributes of chert comp
 cores_mass <- allchert[allchert$Artclas == "core", ]
 core_metrics <- cores_mass %>% 
   group_by(phase) %>% 
-  summarise(mean(Weight), 
-            mean(Length), 
-            mean(Width), 
-            mean(Thick),
-            sd(Weight), 
-            sd(Length), 
-            sd(Width), 
-            sd(Thick),
+  summarise(median(Weight), 
+            median(Length), 
+            median(Width), 
+            median(Thick),
+            IQR(Weight), 
+            IQR(Length), 
+            IQR(Width), 
+            IQR(Thick),
             n = length(Weight))
 core_metrics_t <- t(round(core_metrics,2))
 colnames(core_metrics_t) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
 kable(core_metrics_t, caption = "Summary of chert core metrics")
+
 ```
 
 The code chunk below creates a figure that shows the distribution of core and complete flake mass by depositional phases
