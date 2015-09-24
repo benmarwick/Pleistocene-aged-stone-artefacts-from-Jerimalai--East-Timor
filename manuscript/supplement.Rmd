@@ -589,10 +589,16 @@ core_metrics <- cores_mass %>%
             median(Length), 
             median(Width), 
             median(Thick),
+            median(as.numeric(cores_mass$NoDS)),
+            median(as.numeric(cores_mass$Cortex), na.rm = TRUE),
+            median(as.numeric(cores_mass$Corerot)),
             IQR(Weight), 
             IQR(Length), 
             IQR(Width), 
             IQR(Thick),
+            IQR(as.numeric(cores_mass$NoDS)),
+            IQR(as.numeric(cores_mass$Cortex), na.rm = TRUE),
+            IQR(as.numeric(cores_mass$Corerot)),
             n = length(Weight))
 core_metrics_t <- t(round(core_metrics,2))
 colnames(core_metrics_t) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
