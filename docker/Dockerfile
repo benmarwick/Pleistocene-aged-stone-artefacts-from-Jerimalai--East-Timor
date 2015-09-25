@@ -34,3 +34,4 @@ RUN mv Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor /home/rstudio
     
 # How to make the image:
 # docker build -t benmarwick/jerimalaistoneartefacts https://raw.githubusercontent.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/master/docker/Dockerfile
+# An 'automated build' on the docker hub
