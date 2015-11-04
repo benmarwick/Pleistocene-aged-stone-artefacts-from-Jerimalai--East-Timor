@@ -10,7 +10,7 @@ before_install:
 
 install:
   - ./travis-tool.sh install_aptget r-cran-knitr r-cran-ggplot2 r-cran-dplyr r-cran-rjags r-cran-coda
-  - ./travis-tool.sh install_github hadley/reshape yihui/printr rstudio/rmarkdown benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+  - ./travis-tool.sh install_github hadley/reshape yihui/printr rstudio/rmarkdown ropensci/dependencies christophergandrud/repmis benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
   - ./travis-tool.sh install_deps
 
 script: ./travis-tool.sh run_tests
