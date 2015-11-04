@@ -1,0 +1,21 @@
+"","V1","V2","V3","V4","V5"
+"phase",1,2,3,4,5
+"mean(Length, na.rm = TRUE)",10.93,10.65,9.38,10.77,12.18
+"mean(Width, na.rm = TRUE)",9.73,9.79,8.8,10.13,11.1
+"mean(Thick, na.rm = TRUE)",2.94,2.84,2.41,2.84,3.32
+"mean(Weight, na.rm = TRUE)",0.77,0.6,0.4,0.7,1.16
+"mean(Platwid, na.rm = TRUE)",7.56,7.23,6.81,7.7,8.35
+"mean(Platthic, na.rm = TRUE)",2.98,2.77,2.36,2.77,3.24
+"mean(NoDS, na.rm = TRUE)",3.89,4.01,3.91,3.96,3.96
+"mean(Cortex, na.rm = TRUE)",3.77,3.13,2.53,2.98,4.11
+"sd(Length, na.rm = TRUE)",7.1,6,5.55,6.2,7.9
+"sd(Width, na.rm = TRUE)",5.67,5.17,4.55,6.54,6.83
+"sd(Thick, na.rm = TRUE)",2.37,2.27,1.88,2.26,2.67
+"sd(Weight, na.rm = TRUE)",1.98,1.04,0.76,1.75,3.2
+"sd(Platwid, na.rm = TRUE)",4.57,4.51,3.98,4.98,5.36
+"sd(Platthic, na.rm = TRUE)",2.23,2.21,1.8,2.09,2.55
+"sd(NoDS, na.rm = TRUE)",2.04,2.16,2.05,2.45,2.03
+"sd(Cortex, na.rm = TRUE)",13.59,12.3,11.63,11.82,14.18
+"n",256,219,371,1130,966
+"OHR_n",136,123,198,651,575
+"OHR_perc",53.12,56.16,53.37,57.61,59.52
