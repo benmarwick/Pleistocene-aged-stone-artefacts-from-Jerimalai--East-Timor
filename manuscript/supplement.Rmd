@@ -28,7 +28,7 @@ vignette: >
 
 ```{r setup, include=FALSE, echo=FALSE}
 require(knitr)
-require(printr)
+require(printr) # devtools::install_github("yihui/printr")
 require(rmarkdown)
 require(ggplot2)
 require(reshape2)
@@ -44,13 +44,14 @@ require(xtable)
 require(data.table)
 require(git2r)
 require(dependencies) # devtools::install_github("ropensci/dependencies")
+require(Bchron)
 require(JerimalaiStoneArtefacts)
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
                comment = NA, verbose = TRUE, echo=TRUE,
                cache = TRUE)
 theme_set(theme_bw(base_size=14))
 runjags.options( inits.warning=FALSE , rng.warning=FALSE )
-# custom functions to save figures at JHE size & resolution
+# custom functions to save figures at JAS size & resolution
 # cf http://www.elsevier.com/author-schemas/artwork-and-media-instructions/artwork-sizing
 jhe_190mm_ggsave <- function(filename = default_name(plot), 
                             width= 190, 
@@ -222,36 +223,72 @@ The code chunk below reproduces Figure 2, the depth-age distribution for radioca
 
 
 ```{r fig_2_chronology}
-# plot dates and label with phases
-dates$cal_age_min <- as.numeric(gsub("\\D", "", dates$cal_age_min))
-dates$cal_age_max <- as.numeric(gsub("\\D", "", dates$cal_age_max))
-dates$mid <- with(dates, cal_age_min + ((cal_age_max - cal_age_min) /2) )
-ggplot(dates, aes(mid, depth_bs)) +
-  geom_point(size = 3) +
-  scale_y_reverse() + 
-  geom_errorbarh(aes(xmin=cal_age_min,xmax=cal_age_max,  height = 0)) +
-  #geom_smooth(span = 0.19, se = FALSE) +
-  ylab("depth below surface (m)") +
-  xlab("calibrated age (BP)") +
-  geom_vline(xintercept = 42000, colour = 'grey') +
-  annotate("text", x = 40000, y = 0.25, label = "Phase I", angle = 90) + 
-  geom_vline(xintercept = 38000, colour = 'grey') +
-  geom_vline(xintercept = 17000, colour = 'grey') +
-  annotate("text", x = 25000, y = 0.25, label = "Phase II", angle = 90) + 
-  geom_vline(xintercept = 9000, colour = 'grey') +
-  annotate("text", x = 14000, y = 0.25, label = "Phase III", angle = 90) + 
-  geom_vline(xintercept = 5500, colour = 'grey') +
-  annotate("text", x = 7000, y = 0.25, label = "Phase IV", angle = 90) +
-  geom_vline(xintercept = 5500,colour = 'grey') +
-  geom_vline(xintercept = 0, colour = 'grey') +
-  annotate("text", x = 3500, y = 0.25, label = "Phase V", angle = 90)
-  theme( # remove the vertical grid lines
-    panel.grid.major.x = element_blank() ,
-    # explicitly set the horizontal lines (or they will disappear too)
-    panel.grid.major.y = element_blank()  
-  )
-# save to png file 
-jhe_190mm_ggsave("figures/fig_2-Jeremalai-dates.png")
+# ages <- BchronCalibrate(ages = dates$age,
+                     ageSds = dates$error,
+                     positions = dates$depth_bs, 
+                     calCurves = rep("intcal13", length(dates$age)))
+# show tables of calibrated age ranges for each date
+# summary(ages)
+
+# plot(ages, xlab='Age (cal years BP)', withPositions = TRUE)
+
+
+ages_predict = Bchronology(ages = dates$age,
+                     ageSds = dates$error,
+                     positions = dates$depth_bs, 
+                     ids = dates$lab_code,
+                     calCurves = rep("intcal13", length(dates$age)))
+
+# save plot
+png("figures/fig_2-Jeremalai-dates.png", 
+    width = 200, 
+    height = 120, 
+    units = "mm", res = 100)
+
+bchron_plot <- function(){
+plot(ages_predict,
+     main="",
+     xlab='Age (cal years BP)',
+     ylab='Depth (m)',
+     las=1 ) #, 
+     #asp=0.6)
+
+# add phases
+
+phases <- data.frame(phase = 1:5,
+                     start = c(42, 38, 17, 6.9, 5.3),
+                     end =   c(38, 17, 9,  5.5, 0 ))
+
+phase_lines <- (phases$start * 1000)
+line_height <- c(1.7, 0.25, -0.1, 0.4)
+
+lines(rep(phase_lines[1],2), line_height[1:2], col = "blue")
+lines(rep(phase_lines[2],2), line_height[1:2], col = "blue")
+lines(rep(phase_lines[3],2), line_height[c(1,3)], col = "blue")
+lines(rep(phase_lines[4],2), line_height[c(1,3)], col = "blue")
+lines(rep(phase_lines[5],2), line_height[c(1,3)], col = "blue")
+
+text(phase_lines[1] - 2000, line_height[4], labels = "Phase I")
+text(phase_lines[2] - 8000, line_height[4], labels = "Phase II")
+text(phase_lines[3] - 5000, line_height[4], labels = "Phase III")
+text(phase_lines[4] - 600, line_height[4] +1, labels = "Phase IV", srt = 90)
+text(phase_lines[5] - 4000, line_height[4], labels = "Phase V")
+}
+bchron_plot()
+# end saving plot
+dev.off()
+
+# and show the plot when this document is knited
+bchron_plot()
+
+# combine all the calibrated dates into a single plot (using results = 'hide' to hide the progress bar)
+# ages_densities <- BchronDensity(ages = dates$age,
+#                     ageSds = dates$error,
+#                     
+#                     calCurves = rep("intcal13", length(dates$age)))
+
+# plot(ages_densities, xlab='Age (cal years BP)', withPositions = TRUE)
+
 ```
 
 # Results: Raw materials
@@ -298,9 +335,7 @@ flakes$phase  <- makephases(flakes$Spit)
 # check if any NA, don't want any, should return all TRUE
 # is.na(unique(flakes$phase)) %in% FALSE
 # get phase durations
-phases <- data.frame(phase = 1:5,
-                     start = c(42, 38, 17, 6.5, 5.5),
-                     end =   c(38, 17, 9,  5.5, 0 ))
+
 phases$duration <- with(phases, start - end)
 ```
 
