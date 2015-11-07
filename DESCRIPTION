@@ -10,4 +10,16 @@ Imports:
     rjags,
     coda,
     runjags
+    rmarkdown,
+    ggplot2,
+    reshape2,
+    plyr,
+    dplyr,
+    vcd,
+    BEST,
+    lattice,
+    xtable,
+    data.table,
+    git2r,
+    Bchron
 Suggests: testthat

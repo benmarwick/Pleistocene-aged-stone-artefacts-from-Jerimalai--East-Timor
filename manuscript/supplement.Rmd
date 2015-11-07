@@ -48,7 +48,7 @@ require(Bchron)
 require(JerimalaiStoneArtefacts)
 opts_chunk$set(tidy=FALSE, warning=FALSE, message=FALSE, 
                comment = NA, verbose = TRUE, echo=TRUE,
-               cache = TRUE)
+               cache = TRUE, quiet = TRUE)
 theme_set(theme_bw(base_size=14))
 runjags.options( inits.warning=FALSE , rng.warning=FALSE )
 # custom functions to save figures at JAS size & resolution
@@ -222,11 +222,12 @@ retouch_indices <- read.csv("data/Jerimalai_retouch_indices.csv")
 The code chunk below reproduces Figure 2, the depth-age distribution for radiocarbon dates from Jerimalai square B. 
 
 
-```{r fig_2_chronology}
-# ages <- BchronCalibrate(ages = dates$age,
-                     ageSds = dates$error,
-                     positions = dates$depth_bs, 
-                     calCurves = rep("intcal13", length(dates$age)))
+```{r fig_2_chronology, results = 'hide'}
+ # ages <- BchronCalibrate(ages = dates$age,
+ #                     ageSds = dates$error,
+ #                     positions = dates$depth_bs, 
+ #                     calCurves = rep("intcal13",  
+ #                                  length(dates$age)))
 # show tables of calibrated age ranges for each date
 # summary(ages)
 
@@ -278,9 +279,6 @@ bchron_plot()
 # end saving plot
 dev.off()
 
-# and show the plot when this document is knited
-bchron_plot()
-
 # combine all the calibrated dates into a single plot (using results = 'hide' to hide the progress bar)
 # ages_densities <- BchronDensity(ages = dates$age,
 #                     ageSds = dates$error,
@@ -289,7 +287,10 @@ bchron_plot()
 
 # plot(ages_densities, xlab='Age (cal years BP)', withPositions = TRUE)
 
+# and show the plot when this document is knited
+bchron_plot()
 ```
+
 
 # Results: Raw materials
 
@@ -322,6 +323,11 @@ flakes$phase <- ifelse(flakes$Spit > 0 & flakes$Spit <= 20, 4,
                                      ifelse(flakes$Spit >= 50 & flakes$Spit <= 69, 1, NA))))
 # check if any NA
 check <- unique(flakes$phase)
+
+# again...
+phases <- data.frame(phase = 1:5,
+                     start = c(42, 38, 17, 6.9, 5.3),
+                     end =   c(38, 17, 9,  5.5, 0 ))
 
 # here's a function to assign phases based on spit numbers
   makephases <- function(x) {ifelse(x > 0 & x <= 20, 5,
@@ -665,6 +671,10 @@ metrics <- t(round(metrics,2))
 # save as CSV to tidy up, there is no simple way to make the table
 # that appears in the paper
 write.csv(metrics, "figures/table_6_flake_metrics.csv")
+# show a slightly untidy version
+metrics <- data.frame(metrics)
+names(metrics) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5")
+kable(metrics[-1,], caption = "Summary of chert core metrics")
 ```
 
 The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake mass by depositional phase. 
@@ -1203,7 +1213,7 @@ kable(round(HDI_intervals_for_interactions_l ,3), caption = "Highest density int
 HDIs_flake_retouch_freq_and_length <- round(cbind(HDI_intervals_for_interactions_fr, HDI_intervals_for_interactions_l),3)
 ```
 
-The results of the code chunk above show that the HDIs for all interactions include zero. This indicates no credible difference in retouch lenght by phase.
+The results of the code chunk above show that the HDIs for all interactions include zero. This indicates no credible difference in retouch length by phase.
 
 The code chunk below repeats this analysis using a frequentist test.
 
