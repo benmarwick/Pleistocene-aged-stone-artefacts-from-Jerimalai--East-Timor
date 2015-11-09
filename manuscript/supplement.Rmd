@@ -277,15 +277,15 @@ phases <- data.frame(phase = 1:4,
                      end =   c(35,  9,  5.5, 0 ))
 
 phase_lines <- (phases$start * 1000)
-line_height <- c(1.7, 0.25, -0.1, 0.4)
+line_height <- c(1.7, 0.3, -0.1, 0.4)
 
 lines(rep(phase_lines[1],2), line_height[1:2], col = "blue")
-lines(rep(phase_lines[2],2), line_height[1:2], col = "blue")
+lines(rep(phase_lines[2],2), line_height[c(1,3)], col = "blue")
 lines(rep(phase_lines[3],2), line_height[c(1,3)], col = "blue")
 lines(rep(phase_lines[4],2), line_height[c(1,3)], col = "blue")
 
-text(phase_lines[1] - 2000, line_height[4], labels = "Phase I")
-text(phase_lines[2] - 2000, line_height[4], labels = "Phase II")
+text(phase_lines[1] - 2500, line_height[4], labels = "Phase I")
+text(phase_lines[2] - 2500, line_height[4], labels = "Phase II")
 text(phase_lines[3] - 600, line_height[4]+1, labels = "Phase III", srt = 90)
 text(phase_lines[4] - 2500, line_height[4] , labels = "Phase IV")
 }
@@ -505,7 +505,7 @@ breakt <- rbind( breakt , setNames( breaks[1, ] , names( breakt ) ) )
 rownames(breakt) <- breakt[,1]
 breakt <- breakt[,-1]
 # exclude artefacts not assigned to a phase
-breakt <- breakt[, -which(is.na(names(breakt)))]
+breakt <- breakt[, -which(names(breakt) == "NA")]
 # do bayesian contingency table test
 colnames(breakt) <- c("phase 1", "phase 2", "phase 3", "phase 4")
 data <- melt(as.matrix(breakt),  varnames=c("breakt", "phase"), value.name="Freq")
@@ -745,6 +745,7 @@ The code chunk below produces a summary table of metric attributes of chert comp
 cores_mass <- allchert[allchert$Artclas == "core", ]
 core_metrics <- cores_mass %>% 
   group_by(phase) %>% 
+  filter(phase %in% 1:4) %>%
   summarise(median(Weight), 
             median(Length), 
             median(Width), 
@@ -770,7 +771,11 @@ The code chunk below creates a figure that shows the distribution of core and co
 
 ```{r flake_and_core_mass_by_phase_fig_6}
 # plot flake and core mass by phase in one box plot
-flakes_cores_weight <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "core"), c('Artclas', 'Weight', 'phase') ]
+flakes_cores_weight <- allchert %>%
+                         filter(Artclas %in% c("flake", "core")) %>%
+                         filter(phase %in% 1:4) %>%
+                         select(Artclas, Weight, phase)
+  
 
 ggplot(flakes_cores_weight, aes(fill = Artclas, as.factor(phase), Weight)) +
   geom_point(aes(colour = Artclas), size = 0.5, alpha = 0.9, shape = 1, 
@@ -796,13 +801,14 @@ The code chunk below uses a Bayesian one-way ANOVA to investigate differences in
 
 ```{r chert_core_metrics_summary_test_bayes}
 myDataFrame <- data.frame(phase = cores_mass$phase, mass = cores_mass$Weight)
+# remove flakes with no phase
+myDataFrame <- myDataFrame[!is.na(myDataFrame$phase),]
 yName = names(myDataFrame)[2] # mass
 xName = names(myDataFrame)[1] # phase
 contrasts = list(
   list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
   list( c("2")  , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
-  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
-  list( c("4")  , c("5") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
+  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -819,7 +825,7 @@ contrasts = list(
 #               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+ HDI_intervals_for_interactions <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA)-length(contrasts)+1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and core mass.")
 ```
 
@@ -938,7 +944,11 @@ vp <- viewport(width = 0.45, height = 0.54,
 The code chunk below creates a plot showing the distributions of core and flake cortex by depositional phase at Jerimalai square B.  
 
 ```{r lithics_chert_cortex_fig_8}
-flakes_cores_cortex <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "core"), c('Artclas', 'Cortex', 'phase') ]
+flakes_cores_cortex <- allchert %>%
+                         filter(Artclas %in% c("flake", "core")) %>%
+                         filter(phase %in% 1:4) %>%
+                         select(Artclas, Cortex, phase)
+
 ggplot(flakes_cores_cortex, aes( fill = Artclas, as.factor(phase), Cortex)) +
   geom_point(aes(colour = Artclas), size = 0.5, alpha = 0.9, shape = 1, 
              position=position_jitterdodge(dodge.width=0.9)) +
@@ -960,13 +970,14 @@ The code chunk below uses a Bayesian one-way ANOVA to investigate differences in
 
 ```{r chert_flake_cortex_test_bayes}
 myDataFrame <- data.frame(phase = flakes$phase, cortex = flakes$Cortex)
+# remove flakes with no phase
+myDataFrame <- myDataFrame[!is.na(myDataFrame$phase),]
 yName = names(myDataFrame)[2] # cortex
 xName = names(myDataFrame)[1] # phase
 contrasts = list(
   list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
   list( c("2")  , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
-  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
-  list( c("4")  , c("5") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
+  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1))  )
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -982,7 +993,7 @@ contrasts = list(
 #               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions_f <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+HDI_intervals_for_interactions_f <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA)-length(contrasts)+1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions_f,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake cortex")
 ```
 
@@ -1009,8 +1020,8 @@ xName = names(myDataFrame)[1] # phase
 contrasts = list(
   list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
   list( c("2")  , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
-  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
-  list( c("4")  , c("5") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
+  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) 
+  )
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -1026,7 +1037,7 @@ contrasts = list(
 #               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions_c <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+ HDI_intervals_for_interactions_c <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA)-length(contrasts)+1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions_c,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and core cortex")
 # combine core and flake HDIs into one table
 HDIs_for_cores_and_flakes <- round(cbind(HDI_intervals_for_interactions_c, HDI_intervals_for_interactions_f),3)
@@ -1124,7 +1135,12 @@ jhe_190mm_ggsave("figures/fig_15_Jeremalai-flake-retouched-flake-location-phase.
 The code chunk below draws a plot of the distribution of flake lengths for retouched and unretouched flakes by depositional unit at Jerimalai square B.
 
 ```{r flake_lengths_retouch_by_phase_fig_16}
-flakes_retouch_size <- allchert[(allchert$Artclas == "flake" | allchert$Artclas == "retf"), c('Artclas', 'Weight', 'Length', 'phase') ]
+
+flakes_retouch_size <- allchert %>%
+                         filter(Artclas %in% c("flake", "retf")) %>%
+                         filter(phase %in% 1:4) %>%
+                         select(Artclas, Weight, Length, phase)
+
 ggplot(flakes_retouch_size, aes( fill = Artclas, as.factor(phase), Weight)) +
   geom_point(aes(colour = Artclas), size = 0.5, alpha = 0.9, shape = 1, 
              position=position_jitterdodge(dodge.width=0.9)) + 
@@ -1145,17 +1161,18 @@ jhe_190mm_ggsave("figures/fig_16_Jeremalai-flake-retouchedflake-mass-phase.png",
 The code chunk below computes the tests for credible difference in retouch flake frequency by phase.
 
 ```{r retouch_flake_freq_test_bayes}
-colnames(rt_tab) <- c("phase 1", "phase 2", "phase 3", "phase 4", "phase 5" )
+rt_tab <- data.frame(rt_tab)
+colnames(rt_tab) <- c("phase 1", "phase 2", "phase 3", "phase 4")
 rt_tab <- rt_tab[-1,]
 myDataFrame <- melt(as.matrix(rt_tab),  varnames=c("retouch", "phase"), value.name="Freq")
+myDataFrame <- myDataFrame[complete.cases(myDataFrame),] # omit NAs
 yName=names(myDataFrame)[3]   # Freq 
 x1Name=names(myDataFrame)[2]  # phase
 x2Name=names(myDataFrame)[1]  # retouch
 x1contrasts = list( 
   list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
   list( c("phase 2")  , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
-  list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
-  list( c("phase 4")  , c("phase 5") , compVal=0.0 , ROPE=c(-0.1,0.1))
+  list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1)) 
   )
 numSavedSteps = 12000 # MCMC parameters
 thinSteps = 10        # MCMC parameters
@@ -1181,7 +1198,7 @@ summaryInfo = smryMCMC_cont_table( mcmcCoda ,
 kable(rt_tab, caption = "Table of frequencies of retouched flakes by phase")
 
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions_fr <- summaryInfo[49:52, c("HDIlow", "HDIhigh")]
+ HDI_intervals_for_interactions_fr <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA)-length(contrasts)+1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions_fr,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and retouched flake frequency.")
 ```
 
@@ -1203,13 +1220,13 @@ rt_len <- rt_len[!(is.na(rt_len$rt_len)), ]
 mean_lengths <- aggregate(rt_len ~ phase, rt_len, mean)
 # do bayesian ANOVA
 myDataFrame <- rt_len
+myDataFrame <- myDataFrame[complete.cases(myDataFrame),] # omit NAs
 yName = names(myDataFrame)[2] # retouch length
 xName = names(myDataFrame)[1] # phase
 contrasts = list(
   list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
   list( c("2")  , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1)) ,
-  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1)) , 
-  list( c("4")  , c("5") , compVal=0.0 , ROPE=c(-0.1,0.1)) )
+  list( c("3")  , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1))  )
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -1225,7 +1242,7 @@ contrasts = list(
 #               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions_l <- summaryInfo_ANOVA[14:17, c("HDIlow", "HDIhigh")]
+ HDI_intervals_for_interactions_l <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA)-length(contrasts)+1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions_l ,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and retouch length")
 # combine retouch freq and length into one table
 HDIs_flake_retouch_freq_and_length <- round(cbind(HDI_intervals_for_interactions_fr, HDI_intervals_for_interactions_l),3)
@@ -1530,9 +1547,15 @@ The output from the code chunk below shows that chert strongly dominates raw mat
 # subset flakes
 sq_a_flakes <- sq_a_all %>% 
   filter(Artclas == "Flake")
+
+
+# In Square A, Phase I corresponds to Spits 46-39 and has an associated date of 42 ka  from Spit 39 (Table 1). Phase II is comprised of Spits 38-26 with associated ages of between 17-10 ka (with one inversion noted in Spit 27 with a date of 22 ka). Phase III consists of Spits 25-6 and is associated with ages of 6.4-5.5 ka, and Phase IV is covered by Spits 5-1 with associated ages of 3-0 ka. 
+
 # here's a function to assign phases based on spit numbers
-  sq_a_makephases <- function(x) {ifelse(x >= 1 & x <= 25, 2,
-                                  ifelse(x >= 26 & x <= 69, 1, NA))}
+  sq_a_makephases <- function(x) {ifelse(x >= 1 & x <= 5, 4,
+                                  ifelse(x >= 6 & x <= 25, 3,
+                                  ifelse(x >= 26 & x <= 38, 2,
+                                  ifelse(x >= 39 & x <= 46, 1, NA))))}
 # apply phase numbers
 sq_a_flakes <- sq_a_flakes[!(is.na(sq_a_flakes$Spit)),]
 sq_a_flakes$phase  <- sq_a_makephases(sq_a_flakes$Spit)
@@ -1541,7 +1564,7 @@ raw <- dcast(sq_a_flakes, Material ~ phase)
 # subset dominant raw materials
 raw[,2:3] <- sapply(raw[,2:3], as.numeric)
 dom <- raw[rowSums(raw[,2:3]) > 10,]
-colnames(dom) <- c("raw material", "phase 1", "phase 2")
+colnames(dom) <- c("raw material", "phase 1", "phase 2", "phase 3", "phase 4")
 kable(dom, caption = "Square A: Frequencies of dominant raw materials by depositional phase")
 ```
 
@@ -1553,7 +1576,9 @@ yName=names(myDataFrame)[3]   # Freq
 x1Name=names(myDataFrame)[2]  # phase 
 x2Name=names(myDataFrame)[1]  # raw material
 x1contrasts = list( 
-  list( c("phase 1")  , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ))
+  list( c("phase 1")  , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+  list( c("phase 2")  , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+  list( c("phase 3")  , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1) ))
 
 numSavedSteps = 12000 # MCMC parameters
 thinSteps = 10        # MCMC parameters
@@ -1576,13 +1601,14 @@ summaryInfo = smryMCMC_cont_table( mcmcCoda ,
 #               x1contrasts=x1contrasts  )
 
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo[nrow(summaryInfo), c("HDIlow", "HDIhigh"), drop = FALSE]
+HDI_intervals_for_interactions <- summaryInfo[c((nrow(summaryInfo) - length(x1contrasts) + 1):nrow(summaryInfo)), c("HDIlow", "HDIhigh")]
+
 kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and raw material frequencies.")
 ```
 
 ```{r  square_A_raw_material_by_phase_test_nhst}
 # here is the frequentist equivalent 
-sq_A_raw_material_by_phase_nhst <- assocstats(as.matrix(dom[,2:3])) 
+sq_A_raw_material_by_phase_nhst <- assocstats(as.matrix(dom[,-1])) 
 ```
 
 The Bayesian test includes zero in the HDI, indicating a non-credible difference. The t-test In the code chunk above we obtain the results of a frequentist t-test which returns a statistically significant result: t = `r unname(sq_A_raw_material_by_phase_nhst[[1]])`, df = `r unname(sq_A_raw_material_by_phase_nhst[[2]])`, p = `r unname(sq_A_raw_material_by_phase_nhst[[3]])`. This shows a statistically significant change in flake raw material, however the low Cramer's V indicates a very small effect size. This is consistant with what we see in the Bayesian HDI intervals, and we interpret these results as an insubstantial increase in the very small proportion of artefacts made from volcanic rock. 
@@ -1652,14 +1678,16 @@ sq_a_breakt <- rbind( sq_a_breakt , setNames( sq_a_breaks[1, ] , names( sq_a_bre
 rownames(sq_a_breakt) <- sq_a_breakt[,1]
 sq_a_breakt <- sq_a_breakt[,-1]
 # do bayesian contingency table test
-colnames(sq_a_breakt) <- c("phase 1", "phase 2")
+colnames(sq_a_breakt) <- c("phase 1", "phase 2", "phase 3", "phase 4")
 data <- melt(as.matrix(sq_a_breakt),  varnames=c("breakt", "phase"), value.name="Freq")
 myDataFrame = data
 yName=names(myDataFrame)[3]   # Freq 
 x1Name=names(myDataFrame)[2]  # phase
 x2Name=names(myDataFrame)[1]  # break type
 x1contrasts = list( 
-  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1)),
+  list( c("phase 2") , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1)),
+  list( c("phase 3") , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1))
   )
 numSavedSteps = 12000 # MCMC parameters
 thinSteps = 10        # MCMC parameters
@@ -1685,7 +1713,7 @@ summaryInfo = smryMCMC_cont_table( mcmcCoda ,
 kable(sq_a_breakt, caption = "Square A: Table of frequencies of each class of breakage by phase")
 
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo[nrow(summaryInfo), c("HDIlow", "HDIhigh"), drop = FALSE]
+HDI_intervals_for_interactions <-  summaryInfo[c((nrow(summaryInfo) - length(x1contrasts) + 1):nrow(summaryInfo)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake breakage classes.")
 ```
 
@@ -1701,16 +1729,16 @@ The code chunk below summarises the frequencies of heat-treated flakes at Jerima
 
 ```{r sq_A_lithics_heat_treatment}
 check <- sum(sq_a_flakes$Heat, na.rm = TRUE) / nrow(sq_a_flakes)
-heat <- aggregate(Heat ~ phase, sq_a_flakes, length)
+heat_sqa <- aggregate(Heat ~ phase, sq_a_flakes, length)
 total <- aggregate(Spit ~ phase, sq_a_flakes, length)
-heat$Not_heat <- total$Spit - heat$Heat
+heat_sqa$Not_heat <- total$Spit - heat_sqa$Heat
 # show proportions that are heat-treated
-max_heat <- max(heat$Heat / total$Spit)
-min_heat <- min(heat$Heat / total$Spit)
-heat <- t(heat)
+max_heat <- max(heat_sqa$Heat / total$Spit)
+min_heat <- min(heat_sqa$Heat / total$Spit)
+heat_t <- t(heat_sqa)
 # do bayesian contingency table test
-colnames(heat) <- c("phase 1", "phase 2")
-heat <- heat[-1,]
+names(heat_t) <- c("phase 1", "phase 2", "phase 3", "phase 4")
+heat <- heat_t[-1,]
 ```
 
 The code chunk below computes a Bayesian Poisson exponential ANOVA to investigate differences in heat treatment by phase. 
@@ -1722,7 +1750,9 @@ yName=names(myDataFrame)[3]   # Freq
 x1Name=names(myDataFrame)[2]  # phase
 x2Name=names(myDataFrame)[1]  # heat
 x1contrasts = list( 
-  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) 
+  list( c("phase 1") , c("phase 2") , compVal=0.0 , ROPE=c(-0.1,0.1) ), 
+  list( c("phase 2") , c("phase 3") , compVal=0.0 , ROPE=c(-0.1,0.1) ), 
+  list( c("phase 3") , c("phase 4") , compVal=0.0 , ROPE=c(-0.1,0.1) )
   )
 numSavedSteps = 12000 # MCMC parameters
 thinSteps = 10        # MCMC parameters
@@ -1748,7 +1778,7 @@ summaryInfo = smryMCMC_cont_table( mcmcCoda ,
 kable(heat, caption = "Square A: Table of frequencies of heat treatment by phase")
 
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo[25, c("HDIlow", "HDIhigh"), drop = FALSE]
+HDI_intervals_for_interactions <- summaryInfo[c((nrow(summaryInfo) - length(x1contrasts) + 1):nrow(summaryInfo)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake breakage classes.")
 ```
 
@@ -1797,7 +1827,7 @@ ohr$OHR_perc <- ohr$OHR_n/metrics$n * 100
 # combine
 metrics <- cbind(metrics, ohr[,c("OHR_n", "OHR_perc")])
 metrics <- as.data.frame(t(round(metrics,2)))[-1,]
-colnames(metrics) <- c("phase 1", "phase 2")
+colnames(metrics) <- c("phase 1", "phase 2", "phase 3", "phase 4")
 kable(metrics, caption = "Square A: Summary of chert flake metrics by phase")
 ```
 
@@ -1808,7 +1838,9 @@ myDataFrame <- data.frame(phase = sq_a_flakes$phase, mass = sq_a_flakes$Weight)
 yName = names(myDataFrame)[2] # mass
 xName = names(myDataFrame)[1] # phase
 contrasts = list(
-  list( c("1") , c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) )
+  list( c("1") , c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ), 
+  list( c("2") , c("3") , compVal=0.0 , ROPE=c(-0.1,0.1) ), 
+  list( c("3") , c("4") , compVal=0.0 , ROPE=c(-0.1,0.1) ))
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -1825,17 +1857,18 @@ contrasts = list(
               contrasts=contrasts  )
   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo_ANOVA[nrow(summaryInfo_ANOVA), c("HDIlow", "HDIhigh"), drop = FALSE]
+HDI_intervals_for_interactions <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA) - length(contrasts) + 1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake mass.")
 ```
 
-The code chunk above produced results a credibly different distributions of flake mass between the two phases. In the code chunk below we repeat the same investigation using a frequentist t-test. 
+The code chunk above produced results a credibly different distributions of flake mass between the two phases. In the code chunk below we repeat the same investigation using a frequentist ANOVA. 
 
 ```{r sq_A_chert_flake_metrics_summary_test_nhst}
-sq_a_flake_mass_ttest <- t.test(Weight ~ as.factor(phase), sq_a_flakes)
+fit <- aov(Weight ~ as.factor(phase), sq_a_flakes)
+fit_summary <- summary(fit)
 ```
 
-In the code chunk above we obtain the results of a frequentist t-test which returns a statistically significant result: t = `r unname(sq_a_flake_mass_ttest[[1]])`, df = `r unname(sq_a_flake_mass_ttest[[2]])`, p = `r unname(sq_a_flake_mass_ttest[[3]])`. This shows a statistically significant change in chert flake mass, consistant with what we see in the Bayesian HDI intervals. Flakes get slightly larger in the Holocene period. 
+In the code chunk above we obtain the results of a frequentist t-test which returns a statistically significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. This shows a statistically significant change in chert flake mass, consistant with what we see in the Bayesian HDI intervals. Flakes get slightly larger in the Holocene period. 
 
 The code chunk below produces a summary table of metric attributes of chert complete cores from Jerimalai square A.
 
@@ -1853,7 +1886,7 @@ sq_a_core_metrics <- sq_a_cores_mass %>%
             sd(Thick),
             n = length(Weight))
 sq_a_core_metrics_t <- t(round(sq_a_core_metrics,2))
-colnames(sq_a_core_metrics_t) <- c("phase 1", "phase 2" )
+colnames(sq_a_core_metrics_t) <- c("phase 1", "phase 2", "phase 3", "phase 4" )
 kable(sq_a_core_metrics_t, caption = "Square A: Summary of chert core metrics")
 ```
 
@@ -1892,7 +1925,9 @@ myDataFrame <- data.frame(phase = sq_a_cores_mass$phase, mass = sq_a_cores_mass$
 yName = names(myDataFrame)[2] # mass
 xName = names(myDataFrame)[1] # phase
 contrasts = list(
-  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) )  )
+  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) , 
+  list( c("2") ,  c("3") , compVal=0.0 , ROPE=c(-0.1,0.1) ), 
+  list( c("3") ,  c("4") , compVal=0.0 , ROPE=c(-0.1,0.1) ))
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -1909,15 +1944,16 @@ contrasts = list(
               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions <- summaryInfo_ANOVA[nrow(summaryInfo_ANOVA), c("HDIlow", "HDIhigh"), drop = FALSE]
+HDI_intervals_for_interactions <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA) - length(contrasts) + 1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and core mass.")
 ```
 
 ```{r sq_A_chert_core_metrics_summary_test_nhst}
-sq_a_core_mass_ttest <- t.test(mass ~ as.factor(phase), myDataFrame)
+fit <- aov(mass ~ as.factor(phase), myDataFrame)
+fit_summary <- summary(fit)
 ```
 
-In the code chunk above we obtain the results of a frequentist t-test which returns a statistically non-significant result: t = `r unname(sq_a_core_mass_ttest[[1]])`, df = `r unname(sq_a_core_mass_ttest[[2]])`, p = `r unname(sq_a_core_mass_ttest[[3]])`. This shows a non-significant change in chert core mass. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.  
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically non-significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. This shows a non-significant change in chert core mass. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.  
 
 The code chunk below produces the figures that illustrate the frequency of flake platform categories for chert complete flakes at Jerimalai square A. 
 
@@ -2048,7 +2084,9 @@ xName = names(myDataFrame)[1] # phase
 # too many zero values... makes the mode zero and breaks the model
 myDataFrame  <- myDataFrame[myDataFrame$cortex != 0 & !is.na(myDataFrame$cortex), ]
 contrasts = list(
-  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) )  )
+  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("2") ,  c("3") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+  list( c("3") ,  c("4") , compVal=0.0 , ROPE=c(-0.1,0.1) ) )
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -2064,17 +2102,18 @@ contrasts = list(
 #               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions_f <- summaryInfo_ANOVA[nrow(summaryInfo_ANOVA), c("HDIlow", "HDIhigh"), drop = FALSE]
+HDI_intervals_for_interactions_f <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA) - length(contrasts) + 1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions_f,3), caption = "Square A: Highest density intervals (95%) for the posterior distributions of the interactions between phases and flake cortex")
 ```
 
 The code chunk above produced results that indicate that the HDI include zero, which we interpret as no credible difference. In the code chunk below we repeat the same investigation using a frequentist t-test. 
 
 ```{r sq_A_chert_flake_cortext_summary_test_nhst}
-sq_a_flake_cortex_ttest <- t.test(cortex ~ as.factor(phase), myDataFrame)
+fit <- aov(cortex ~ as.factor(phase), myDataFrame)
+fit_summary <- summary(fit)
 ```
 
-In the code chunk above we obtain the results of a frequentist t-test which returns a statistically non-significant result: t = `r unname(sq_a_flake_cortex_ttest[[1]])`, df = `r unname(sq_a_flake_cortex_ttest[[2]])`, p = `r unname(sq_a_flake_cortex_ttest[[3]])`. This shows a non-significant change in chert flake cortex amount. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.
+In the code chunk above we obtain the results of a frequentist t-test which returns a statistically non-significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. This shows a non-significant change in chert flake cortex amount. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.
 
 In the two code chunks below we repeat the statistical tests above for core cortex.
 
@@ -2084,7 +2123,9 @@ myDataFrame <- myDataFrame[complete.cases(myDataFrame),] # omit NAs
 yName = names(myDataFrame)[2] # cortex
 xName = names(myDataFrame)[1] # phase
 contrasts = list(
-  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) )
+  list( c("1") ,  c("2") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+   list( c("2") ,  c("3") , compVal=0.0 , ROPE=c(-0.1,0.1) ) ,
+   list( c("3") ,  c("4") , compVal=0.0 , ROPE=c(-0.1,0.1) ) )
 # Generate the MCMC chain:
   mcmcCoda_ANOVA = genMCMC_ANOVA(datFrm=myDataFrame , yName=yName , xName=xName ,
                       numSavedSteps=11000 , thinSteps=10 
@@ -2100,20 +2141,21 @@ contrasts = list(
 #               contrasts=contrasts  )
 #   
 # subset summaryInfo to show HDI interval for interactions
-HDI_intervals_for_interactions_c <- summaryInfo_ANOVA[nrow(summaryInfo_ANOVA), c("HDIlow", "HDIhigh"), drop= FALSE]
+HDI_intervals_for_interactions_c <- summaryInfo_ANOVA[c((nrow(summaryInfo_ANOVA) - length(contrasts) + 1):nrow(summaryInfo_ANOVA)), c("HDIlow", "HDIhigh")]
 kable(round(HDI_intervals_for_interactions_c,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and core cortex")
 # combine core and flake HDIs into one table
 HDIs_for_cores_and_flakes <- round(cbind(HDI_intervals_for_interactions_c, HDI_intervals_for_interactions_f),3)
 ```
 
-The code chunk above produced results that indicate that the HDIs for all phases include zero, which we interpret as no credible difference. In the code chunk below we repeat the same investigation using a frequentist t-test.
+The code chunk above produced results that indicate that the HDIs for all phases include zero, which we interpret as no credible difference. In the code chunk below we repeat the same investigation using a frequentist ANOVA.
 
 
 ```{r sq_A_chert_core_cortext_summary_test_nhst}
-sq_a_core_cortex_ttest <- t.test(cortex ~ as.factor(phase), myDataFrame)
+fit <- aov(cortex ~ as.factor(phase), myDataFrame)
+fit_summary <- summary(fit)
 ```
 
-In the code chunk above we obtain the results of a frequentist t-test which returns a statistically non-significant result: t = `r unname(sq_a_core_cortex_ttest[[1]])`, df = `r unname(sq_a_core_cortex_ttest[[2]])`, p = `r unname(sq_a_core_cortex_ttest[[3]])`. This shows a non-significant change in chert core cortex amount. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.
+In the code chunk above we obtain the results of a frequentist t-test which returns a statistically non-significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`.. This shows a non-significant change in chert core cortex amount. This is equivalent to what we see in the Bayesian HDI interval, which includes zero, suggesting no credible difference.
 
 ## Results: Core technology
 
@@ -2235,19 +2277,21 @@ for(i in seq_along(techno_tables)){
 }
 # list to dataframe
 techno_tables_comb <- bind_rows(techno_tables_out) # %>%  View
-techno_tables_comb <- techno_tables_comb[,c(3,1,2)]
-names(techno_tables_comb) <- c("class", "phase 1", "phase 2")
+techno_tables_comb <- techno_tables_comb[,c(5,1,2,3,4)]
+names(techno_tables_comb) <- c("class", "phase 1", "phase 2",  "phase 3", "phase 4")
 
 # how many spits in each phase?
 sq_a_spits_per_phase <- sq_a_allchert %>% 
   group_by(phase) %>% 
   summarise(n_spits = n_distinct(Spit))
 
-sq_a_props <- lapply(seq_along(techno_tables_comb)[2:3],  function(i) techno_tables_comb[,i] / sq_a_spits_per_phase$n_spits[i-1] )
+sq_a_props <- lapply(seq_along(techno_tables_comb)[2:5],  function(i) techno_tables_comb[,i] / sq_a_spits_per_phase$n_spits[i-1] )
 
 techno_tables_comb$`phase 1` <- sq_a_props[[1]]$`phase 1`
 techno_tables_comb$`phase 2` <- sq_a_props[[2]]$`phase 2`
-techno_tables_comb[2:3] <- round(techno_tables_comb[2:3], 2)
+techno_tables_comb$`phase 3` <- sq_a_props[[3]]$`phase 3`
+techno_tables_comb$`phase 4` <- sq_a_props[[4]]$`phase 4`
+techno_tables_comb[2:5] <- round(techno_tables_comb[2:5], 2)
 kable(techno_tables_comb, caption = "Square A: Summary of proportions and classes. Proportions refers to the proportion of spits in each depositional phase containing a given class")
 ```
 
