@@ -1,21 +1,21 @@
 "","V1","V2","V3","V4","V5"
-"phase",1,2,3,4,5
-"median(Length, na.rm = TRUE)",8.59,9.04,7.99,9.22,10.09
-"median(Width, na.rm = TRUE)",8.46,8.53,7.78,8.5,9.52
-"median(Thick, na.rm = TRUE)",2.16,2.15,1.84,2.21,2.47
-"median(Weight, na.rm = TRUE)",0.18,0.18,0.12,0.19,0.28
-"median(Platwid, na.rm = TRUE)",6.46,5.78,5.92,6.46,7.03
-"median(Platthic, na.rm = TRUE)",2.46,2.08,1.68,2.16,2.44
-"median(NoDS, na.rm = TRUE)",4,4,4,4,4
+"phase",1,2,3,4,NA
+"median(Length, na.rm = TRUE)",9,7.99,9.22,10.44,6.46
+"median(Width, na.rm = TRUE)",8.47,7.78,8.5,9.71,6.58
+"median(Thick, na.rm = TRUE)",2.15,1.84,2.21,2.53,2.09
+"median(Weight, na.rm = TRUE)",0.18,0.12,0.19,0.31,0.11
+"median(Platwid, na.rm = TRUE)",6.16,5.92,6.46,7.18,5.84
+"median(Platthic, na.rm = TRUE)",2.21,1.68,2.16,2.53,1.87
+"median(NoDS, na.rm = TRUE)",4,4,4,4,3
 "median(Cortex, na.rm = TRUE)",0,0,0,0,0
-"IQR(Length, na.rm = TRUE)",8.54,7.21,6.61,6.78,8.87
-"IQR(Width, na.rm = TRUE)",6.59,6.96,5.75,6.79,7.88
-"IQR(Thick, na.rm = TRUE)",2.72,2.62,2.02,2.37,2.89
-"IQR(Weight, na.rm = TRUE)",0.55,0.54,0.37,0.55,0.87
-"IQR(Platwid, na.rm = TRUE)",5.79,6.1,4.8,5.35,5.66
-"IQR(Platthic, na.rm = TRUE)",2.61,2.27,1.81,2.08,2.62
-"IQR(NoDS, na.rm = TRUE)",2,2,2,2,3
+"IQR(Length, na.rm = TRUE)",7.81,6.61,6.78,8.95,4.21
+"IQR(Width, na.rm = TRUE)",6.87,5.75,6.79,7.96,5.25
+"IQR(Thick, na.rm = TRUE)",2.7,2.02,2.37,3.06,1.18
+"IQR(Weight, na.rm = TRUE)",0.55,0.37,0.55,0.91,0.19
+"IQR(Platwid, na.rm = TRUE)",5.88,4.8,5.35,5.67,3.22
+"IQR(Platthic, na.rm = TRUE)",2.48,1.81,2.08,2.67,1.32
+"IQR(NoDS, na.rm = TRUE)",2,2,2,3,2
 "IQR(Cortex, na.rm = TRUE)",0,0,0,0,0
-"n",256,219,371,1130,966
-"OHR_n",136,123,198,651,575
-"OHR_perc",53.12,56.16,53.37,57.61,59.52
+"n",475,371,1130,915,51
+"OHR_n",259,198,651,542,33
+"OHR_perc",54.53,53.37,57.61,59.23,64.71

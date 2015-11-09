@@ -9,7 +9,7 @@ LazyData: true
 Imports:
     rjags,
     coda,
-    runjags
+    runjags,
     rmarkdown,
     ggplot2,
     reshape2,
