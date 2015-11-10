@@ -1,6 +1,4 @@
 "Square","Spit","Phase","Type","GIUR","II","perimeter_perc"
-"B",3,4,"Ventral Side",NA,0.16,44.44
-"B",3,4,"Side and End",0.42,0.16,28.7
 "B",4,4,"Double side and end (steep edged)",0.83,0.28,50
 "B",4,4,"Double Side",0.85,0.34,33.04
 "B",5,4,"Side Ventral",NA,0.06,11.94
@@ -15,4 +13,4 @@
 "B",38,3,"Notch (Ventral)",NA,0.06,14.59
 "B",39,3,"Concave Bifacial side and end",0.8,0.56,60.15
 "B",40,2,"Side",0.26,0.09,21.31
-"A",43,2,"Bec",0.52,0.16,29.51
+"A",43,1,"Bec",0.52,0.16,29.51
