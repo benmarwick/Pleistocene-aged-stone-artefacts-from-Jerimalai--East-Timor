@@ -1285,6 +1285,34 @@ names(summaryt_props) <- c("category", "type", "phase I", "phase II", "phase III
 
 kable(summaryt_props, caption = "Summary of proportions and classes. Proportions refers to the proportion of spits in each depositional phase containing a given class")
 
+# figure
+technological_types_table <- read.csv("data/Jerimalai_technological_counts_both_squares.csv")
+
+# spits per phase, both squares
+spits_per_phase <- both_sqs_all_with_phases %>% 
+                      group_by(phase) %>% 
+                      summarize(n_spits=n_distinct(Spit))
+
+perc_spits_techno_class <- technological_types_table %>%
+                              group_by(class) %>%
+                              filter(class %in% c("Retouch", "Bipolar", "Flake cores", "Levallois", "multiplatform")) %>%
+                              summarize(I = sum(Phase.I.total.count, na.rm = TRUE) ,
+                                        II = sum(Phase.II.total.count, na.rm = TRUE),
+                                        III = sum(Phase.III.total.count, na.rm = TRUE),
+                                        IV = sum(Phase.IV.total.count, na.rm = TRUE),
+                                        counts = n())
+
+# divide counts of spits for each class by number of spits per phase
+
+tmp <- perc_spits_techno_class[,-1]
+for(i in seq_along(perc_spits_techno_class$counts)){
+  
+  tmp[,i] <- perc_spits_techno_class[,-1][ ,i] /   perc_spits_techno_class$counts[i]
+  
+}
+
+apply(tmp[,1:4], 1,  function(i) i * spits_per_phase$n)
+
 ```
 
 
