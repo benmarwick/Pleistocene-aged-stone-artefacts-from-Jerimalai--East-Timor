@@ -368,6 +368,7 @@ ggplot(both_sqs_discard, (aes(depth, cubmet, colour = Square))) +
   stat_smooth(span = 0.5, se = FALSE) +
   xlab("Depth below surface (m)") +
   ylab("Number of chert flakes per \ncubic meter of deposit") +
+  theme(axis.text=element_text(size=10)) +
   coord_flip() +
   scale_x_reverse()
 # save plot
@@ -622,6 +623,7 @@ write.csv(metrics, "figures/table_6_flake_metrics.csv")
 metrics <- data.frame(metrics)
 names(metrics) <- c("phase 1", "phase 2", "phase 3", "phase 4")
 kable(metrics[-1,], caption = "Summary of attributes of chert complete flakes from Jerimalai both squares. Each cell contains median ± interquartile range unless otherwise indicated. ")
+
 ```
 
 The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake mass by depositional phase. 
