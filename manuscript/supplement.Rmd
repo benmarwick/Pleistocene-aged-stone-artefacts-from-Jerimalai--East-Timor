@@ -24,9 +24,6 @@ vignette: >
    %\VignetteIndexEntry{Supplement}
    %\VignetteEngine{knitr::rmarkdown}
    
-   
-
-
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
