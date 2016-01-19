@@ -7,10 +7,13 @@ RUN apt-get update \
   && apt-get install -y \
     r-cran-rjags \
     r-cran-coda \
-    
     r-cran-vcd \ 
     
-&& RUN Rscript -e 'install.packages("runjags")' \  ## not available as r-cran-runjags   
+## && RUN Rscript -e 'install.packages("runjags")' \  ## not available as r-cran-runjags   
+
+&& RUN install2.r --error --deps TRUE \
+    runjags  && \
+    rm -rf /tmp/downloaded_packages/ \
     
 && installGithub.r --deps TRUE \
     kenkellner/jagsUI \
