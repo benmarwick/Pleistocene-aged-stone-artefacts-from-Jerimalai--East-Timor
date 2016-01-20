@@ -11,9 +11,10 @@ RUN apt-get update \
     
 ## && RUN Rscript -e 'install.packages("runjags")' \  ## not available as r-cran-runjags   
 
-&& RUN install2.r --error --deps TRUE \
-    runjags  && \
-    rm -rf /tmp/downloaded_packages/ \
+&&  install2.r --error --deps TRUE \
+    runjags  \
+    
+&&  rm -rf /tmp/downloaded_packages/ \
     
 && installGithub.r --deps TRUE \
     kenkellner/jagsUI \
@@ -38,5 +39,5 @@ RUN mv Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor /home/rstudio
 
     
 # How to make the image:
-# docker build -t benmarwick/jerimalaistoneartefacts https://raw.githubusercontent.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/master/docker/Dockerfile
+# docker build -t benmarwick/jerimalaistoneartefacts -no-cache https://raw.githubusercontent.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/master/docker/Dockerfile
 # An 'automated build' on the docker hub
