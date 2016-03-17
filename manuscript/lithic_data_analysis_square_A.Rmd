@@ -160,7 +160,7 @@ kable(round(HDI_intervals_for_interactions,3), caption = "Square A: Highest dens
 sq_A_raw_material_by_phase_nhst <- assocstats(as.matrix(dom[,-1])) 
 ```
 
-The Bayesian test includes zero in the HDI, indicating a non-credible difference. The t-test In the code chunk above we obtain the results of a frequentist t-test which returns a statistically significant result: t = `r unname(sq_A_raw_material_by_phase_nhst[[1]])`, df = `r unname(sq_A_raw_material_by_phase_nhst[[2]])`, p = `r unname(sq_A_raw_material_by_phase_nhst[[3]])`. This shows a statistically significant change in flake raw material, however the low Cramer's V indicates a very small effect size. This is consistant with what we see in the Bayesian HDI intervals, and we interpret these results as an insubstantial increase in the very small proportion of artefacts made from volcanic rock. 
+The Bayesian test includes zero in the HDI, indicating a non-credible difference. The t-test In the code chunk above we obtain the results of a frequentist chisquare test which returns a statistically significant result: chi = `r sq_A_raw_material_by_phase_nhst$chisq_tests[2, 1]`, df = `r sq_A_raw_material_by_phase_nhst$chisq_tests[2, 2]`, p = `r sq_A_raw_material_by_phase_nhst$chisq_tests[2, 3]`. This shows a statistically significant change in flake raw material, however the low Cramer's V indicates a very small effect size. This is consistant with what we see in the Bayesian HDI intervals, and we interpret these results as an insubstantial increase in the very small proportion of artefacts made from volcanic rock. 
 
 ## Results: Discard rates
 
@@ -547,7 +547,7 @@ all_tab <- all_tab[,names(all_tab) != 'NA']
 # plot
 all_tab_m <- melt(all_tab, id.var = 'plat_type')
 # by phase
-plat <- dcast(flakes, Plat ~ phase)
+plat <- dcast(sq_a_flakes, Plat ~ phase)
 rownames(plat) <- plat[,1]
 # get rid of rows with no plat
 plat <- plat[rownames(plat) != "",]
@@ -626,7 +626,7 @@ ggplot(sq_a_flakes_cores_cortex, aes( fill = Artclas, as.factor(phase), Cortex))
 
 The code chunk below uses a Bayesian one-way ANOVA to investigate differences in chert flake cortex by depositional phase in square A. 
 
-```{r sq_a_chert_flake_cortex_test_bayes, eval=FALSE}
+```{r sq_a_chert_flake_cortex_test_bayes}
 myDataFrame <- data.frame(phase = sq_a_flakes$phase, cortex = sq_a_flakes$Cortex)
 yName = names(myDataFrame)[2] # cortex
 xName = names(myDataFrame)[1] # phase

@@ -2,7 +2,7 @@
 title: "Lithic analysis of both squares"
 author: "Ben Marwick"
 date: "November 10, 2015"
-output: word_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
