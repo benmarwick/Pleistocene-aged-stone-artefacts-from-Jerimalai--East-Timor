@@ -845,6 +845,8 @@ techno_tables_comb[2:5] <- round(techno_tables_comb[2:5], 2)
 kable(techno_tables_comb, caption = "Square A: Summary of proportions and classes. Proportions refers to the proportion of spits in each depositional phase containing a given class")
 ```
 
+
+
 # Colophon
 
 This report was generated on `r Sys.time()` using the following computational environment and dependences: 
