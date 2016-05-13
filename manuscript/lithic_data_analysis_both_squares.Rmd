@@ -63,6 +63,7 @@ The code chunk below reproduces Figure 2, the depth-age distribution for radioca
 
 
 ```{r fig_2_chronology, results = 'hide'}
+# if interactive, setwd to this source file location
 sqB_dates <- read.csv("data/Jerimalai_dates_Square_B.csv", as.is = TRUE)
 sqA_dates <- read.csv("data/Jerimalai_dates_Square_A.csv", as.is = TRUE)
 sqA_dates$sq <- "A"
