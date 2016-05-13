@@ -1323,10 +1323,8 @@ apply(tmp[,1:4], 1,  function(i) i * spits_per_phase$n)
 # http://www.nature.com/nature/journal/v441/n7093/fig_tab/nature04618_T1.html
 lb_mm <- read.csv("data/Liang_Bua_and_Mata_Menge_from_Brumm_2006.csv")
 
-
 row.names(lb_mm) <- lb_mm$type
 lb_mm$type <- NULL
-
 
 # chi-square test on counts of artefact types at Liang Bua and Mata Menge
 lb_mm_chi_sq <-  assocstats(as.matrix(lb_mm))
@@ -1376,6 +1374,69 @@ kable(round(HDI_intervals_for_interactions_df,3), caption = "Mata Menge and Lian
 
 ```
 
+
+```{r}
+
+# sudo chmod 777 -R Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor
+lb <- read.csv("data/Liang_Bua_continuities_JHE_2009.csv")
+
+
+row.names(lb) <- lb$ Artifact.Type
+lb$Artifact.Type <- NULL
+lb[is.na(lb)] <-  0
+
+# chi-square test on counts of artefact types at Liang Bua and Mata Menge
+lb_chi_sq <-  assocstats(as.matrix(lb))
+
+lb_ <- lb[(lb$X9 >0 & lb$X7 > 0 & lb$X4 > 0 & lb$X3 > 0 & lb$X2 > 0), ]
+
+# Bayesian Poisson exponential ANOVA
+data <- melt(as.matrix(lb_),  varnames=c("artefact_type", "layer"), value.name="Freq")
+# remove types with zero counts
+# data <- data[data$Freq > 0, ]
+myDataFrame = data
+yName=names(myDataFrame)[3]   # Freq 
+x1Name=names(myDataFrame)[2]  # site
+x2Name=names(myDataFrame)[1]  # artefact_type
+x1contrasts = list( 
+    list( c("X2") , c("X3") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+    list( c("X3") , c("X4") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+    list( c("X4") , c("X7") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+    list( c("X7") , c("X9") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+    list( c("X2") , c("X7") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+    list( c("X3") , c("X9") , compVal=0.0 , ROPE=c(-0.1,0.1) ),
+    list( c("X2") , c("X4") , compVal=0.0 , ROPE=c(-0.1,0.1) )
+    )
+numSavedSteps = 12000 # MCMC parameters
+thinSteps = 10        # MCMC parameters
+
+mcmcCoda = genMCMC_cont_table( datFrm=myDataFrame , 
+                    yName=yName , x1Name=x1Name , x2Name=x2Name ,
+                    numSavedSteps=numSavedSteps , thinSteps=thinSteps 
+                    )
+
+# Get summary statistics of chain:
+summaryInfo = smryMCMC_cont_table( mcmcCoda , 
+                        datFrm=myDataFrame , x1Name=x1Name , x2Name=x2Name
+                        ,   x1contrasts=x1contrasts 
+                         )
+
+# # #  Display posterior information (not easy to read unless using interactively):
+    # plotMCMC_cont_table( mcmcCoda ,
+    #           datFrm=myDataFrame , yName=yName , x1Name=x1Name ,
+    #            x2Name=x2Name ,
+    #           x1contrasts=x1contrasts  
+    #           )
+
+# table of artefacts from Liang Bua 
+kable(lb, caption = "Liang Bua Stone Artifacts by Stratigraphic Unit")
+
+# subset summaryInfo to show HDI interval for interactions
+HDI_intervals_for_interactions <- summaryInfo[c((nrow(summaryInfo) - length(x1contrasts) + 1):nrow(summaryInfo)), c("HDIlow", "HDIhigh")]
+
+kable(round(HDI_intervals_for_interactions,3), caption = "Liang Bua Stone Artifacts by Stratigraphic Unit: Highest density intervals (95%) for the posterior distributions of the interactions between sites and artefact types.")
+
+```
 
 # Colophon
 
