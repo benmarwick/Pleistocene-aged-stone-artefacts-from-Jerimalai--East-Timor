@@ -69,15 +69,11 @@ A Docker image is a lightweight GNU/Linux virtual computer that can be run as a 
 
     docker run -dp 8787:8787 benmarwick/jerimalaistoneartefacts
 
-This will start a server instance of RStudio, which you can access by opening a web broswer at the following URL (username and password are "rstudio"):
+This will start a server instance of RStudio. Then open your web browser at localhost:8787 or or run `docker-machine ip default` in the shell to find the correct IP address, and log in with rstudio/rstudio.
 
-    http://localhost:8787/        ## Linux users
-    http://192.168.59.103:8787/   ## OSX, Windows users
-
-Once logged in, the Files pane (bottom right) will show the `manuscript/` directory where you can find the `supplementary.Rmd` document and execute it. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
+Once logged in, the Files pane (bottom right) will show the `manuscript/` directory where you can find the `supplementary.Rmd` and other documents, and knit them. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
  
 We developed and tested the package on this Docker container, so this is the only platform that We're confident it works on, and so recommend to anyone wanting to use this package to generate the vignette, etc. 
-
 
 ### Licenses:
 
@@ -93,35 +89,9 @@ I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on
 
 Identified using `sessionInfo()`:
 
-R version 3.2.0 (2015-04-16)
-Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Debian GNU/Linux 8 (jessie)
-
-locale:
- [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
- [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
- [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
-[10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
-
-attached base packages:
-[1] parallel  grid      stats     graphics  grDevices utils     datasets  methods   base     
-
-other attached packages:
- [1] JerimalaiStoneArtefacts_0.0.0.9000 data.table_1.9.4                  
- [3] xtable_1.7-4                       BEST_0.2.3                        
- [5] runjags_1.2.1-0                    rjags_3-13                        
- [7] coda_0.16-1                        lattice_0.20-31                   
- [9] vcd_1.3-2                          dplyr_0.4.1                       
-[11] plyr_1.8.2                         reshape2_1.4.1                    
-[13] ggplot2_1.0.1                      rmarkdown_0.5.1                   
-[15] printr_0.0.4                       knitr_1.10                        
-
-loaded via a namespace (and not attached):
- [1] Rcpp_0.11.5      magrittr_1.5     MASS_7.3-40      munsell_0.4.2    colorspace_1.2-6
- [6] highr_0.5        stringr_0.6.2    tools_3.2.0      gtable_0.1.2     DBI_0.3.1       
-[11] htmltools_0.2.6  lazyeval_0.1.10  yaml_2.1.13      digest_0.6.8     assertthat_0.1  
-[16] formatR_1.2      codetools_0.2-11 evaluate_0.7     labeling_0.3     scales_0.2.4    
-[21] chron_2.3-45     proto_0.3-10 
+```{r, echo = FALSE}
+sessionInfo()
+```
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies): 
 

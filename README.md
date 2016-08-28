@@ -56,12 +56,9 @@ A Docker image is a lightweight GNU/Linux virtual computer that can be run as a 
 
     docker run -dp 8787:8787 benmarwick/jerimalaistoneartefacts
 
-This will start a server instance of RStudio, which you can access by opening a web broswer at the following URL (username and password are "rstudio"):
+This will start a server instance of RStudio. Then open your web browser at localhost:8787 or or run `docker-machine ip default` in the shell to find the correct IP address, and log in with rstudio/rstudio.
 
-    http://localhost:8787/        ## Linux users
-    http://192.168.59.103:8787/   ## OSX, Windows users
-
-Once logged in, the Files pane (bottom right) will show the `manuscript/` directory where you can find the `supplementary.Rmd` document and execute it. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
+Once logged in, the Files pane (bottom right) will show the `manuscript/` directory where you can find the `supplementary.Rmd` and other documents, and knit them. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
 
 We developed and tested the package on this Docker container, so this is the only platform that We're confident it works on, and so recommend to anyone wanting to use this package to generate the vignette, etc.
 
@@ -79,28 +76,24 @@ I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on
 
 Identified using `sessionInfo()`:
 
-R version 3.2.0 (2015-04-16) Platform: x86\_64-pc-linux-gnu (64-bit) Running under: Debian GNU/Linux 8 (jessie)
-
-locale: \[1\] LC\_CTYPE=en\_US.UTF-8 LC\_NUMERIC=C LC\_TIME=en\_US.UTF-8
-\[4\] LC\_COLLATE=en\_US.UTF-8 LC\_MONETARY=en\_US.UTF-8 LC\_MESSAGES=en\_US.UTF-8
-\[7\] LC\_PAPER=en\_US.UTF-8 LC\_NAME=C LC\_ADDRESS=C
-\[10\] LC\_TELEPHONE=C LC\_MEASUREMENT=en\_US.UTF-8 LC\_IDENTIFICATION=C
-
-attached base packages: \[1\] parallel grid stats graphics grDevices utils datasets methods base
-
-other attached packages: \[1\] JerimalaiStoneArtefacts\_0.0.0.9000 data.table\_1.9.4
-\[3\] xtable\_1.7-4 BEST\_0.2.3
-\[5\] runjags\_1.2.1-0 rjags\_3-13
-\[7\] coda\_0.16-1 lattice\_0.20-31
-\[9\] vcd\_1.3-2 dplyr\_0.4.1
-\[11\] plyr\_1.8.2 reshape2\_1.4.1
-\[13\] ggplot2\_1.0.1 rmarkdown\_0.5.1
-\[15\] printr\_0.0.4 knitr\_1.10
-
-loaded via a namespace (and not attached): \[1\] Rcpp\_0.11.5 magrittr\_1.5 MASS\_7.3-40 munsell\_0.4.2 colorspace\_1.2-6 \[6\] highr\_0.5 stringr\_0.6.2 tools\_3.2.0 gtable\_0.1.2 DBI\_0.3.1
-\[11\] htmltools\_0.2.6 lazyeval\_0.1.10 yaml\_2.1.13 digest\_0.6.8 assertthat\_0.1
-\[16\] formatR\_1.2 codetools\_0.2-11 evaluate\_0.7 labeling\_0.3 scales\_0.2.4
-\[21\] chron\_2.3-45 proto\_0.3-10
+    #> R version 3.3.1 (2016-06-21)
+    #> Platform: x86_64-w64-mingw32/x64 (64-bit)
+    #> Running under: Windows 7 x64 (build 7601) Service Pack 1
+    #> 
+    #> locale:
+    #> [1] LC_COLLATE=English_Australia.1252  LC_CTYPE=English_Australia.1252   
+    #> [3] LC_MONETARY=English_Australia.1252 LC_NUMERIC=C                      
+    #> [5] LC_TIME=English_Australia.1252    
+    #> 
+    #> attached base packages:
+    #> [1] stats     graphics  grDevices utils     datasets  methods   base     
+    #> 
+    #> loaded via a namespace (and not attached):
+    #>  [1] magrittr_1.5       assertthat_0.1     formatR_1.4       
+    #>  [4] tools_3.3.1        htmltools_0.3.5    yaml_2.1.13       
+    #>  [7] tibble_1.1         Rcpp_0.12.6        stringi_1.1.1     
+    #> [10] rmarkdown_1.0.9010 knitr_1.14         stringr_1.0.0     
+    #> [13] digest_0.6.10      evaluate_0.9
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies):
 
