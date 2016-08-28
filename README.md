@@ -14,21 +14,26 @@ Ben Marwick (<benmarwick@gmail.com>)
 
 ### Published in:
 
-Marwick, B, C. Clarkson, S. O'Connor & S. Collins under review "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia"
+Marwick, B, C. Clarkson, S. O'Connor & S. Collins 2016 "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" *Journal of Human Evolution*
 
 ### Overview of contents
 
-This repository is our research compendium for our analysis of the stone artefacts from Sue O'Connor's excavations at Jerimalai, East Timor. The compendium contains all data, code, and text associated with the publication (which is currently under review). The `supplement.Rmd` file in the `manuscript/` directory contains details of how all the analyses reported in the paper were conducted, as well as instructions on how to rerun the analysis to reproduce the results. The `data/` directory in the `manuscript/` directory contains all the raw data.
+This repository is our research compendium for our analysis of the stone artefacts from Sue O'Connor's excavations at Jerimalai, East Timor. The compendium contains all data, code, and text associated with the publication. The `Rmd` files in the `manuscript/` directory contain details of how all the analyses reported in the paper were conducted, as well as instructions on how to rerun the analysis to reproduce the results. The `data/` directory in the `manuscript/` directory contains all the raw data.
 
 ### The supplementary files
 
-The `manuscript/` directory contains all the data files (in CSV format), the manuscript as submitted (in MS Word format), an supplementary information source file (in R markdown format), an executed version of the supplementary file (in HTML format) and all the figures that are included in the paper.
+The `manuscript/` directory contains:
+
+-   all the data files (in CSV format, in the `data/` directory)
+-   the manuscript as submitted (in MS Word format)
+-   supplementary information source files (in R markdown format)
+-   executed versions of the supplementary files (in HTML format) and all the figures that are included in the paper (in the `figures/` directory)
 
 ### The R package [![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
 
-This repository is organized as an R package, providing functions compute to Bayesian tests of credible difference. These functions are provided as a package because this makes it simpler to resue the functions many times in the paper. It also makes it easier for others to use and adapt these fucntions on their own data. Nevertheless, this package has been written explicitly for this project and may not yet be suitable for more general purpose use.
+This repository is organized as an R package, providing the main functions compute to Bayesian tests of credible difference. These functions are provided as a package because this makes it simpler to reuse the functions many times in the paper. It also makes it easier for others to use and adapt these functions on their own data. Nevertheless, this package has been written explicitly for this project and may not yet be suitable for more general purpose use.
 
-To download the package source as you see it on GitHub, for offline browsing, use this line at the shell prompt:
+To download the package source as you see it on GitHub, for offline browsing, use this line at the shell prompt (assuming you have Git installed on your computer):
 
 ``` r
 git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
@@ -76,31 +81,31 @@ Identified using `sessionInfo()`:
 
 R version 3.2.0 (2015-04-16) Platform: x86\_64-pc-linux-gnu (64-bit) Running under: Debian GNU/Linux 8 (jessie)
 
-locale: [1] LC\_CTYPE=en\_US.UTF-8 LC\_NUMERIC=C LC\_TIME=en\_US.UTF-8
- [4] LC\_COLLATE=en\_US.UTF-8 LC\_MONETARY=en\_US.UTF-8 LC\_MESSAGES=en\_US.UTF-8
- [7] LC\_PAPER=en\_US.UTF-8 LC\_NAME=C LC\_ADDRESS=C
-[10] LC\_TELEPHONE=C LC\_MEASUREMENT=en\_US.UTF-8 LC\_IDENTIFICATION=C
+locale: \[1\] LC\_CTYPE=en\_US.UTF-8 LC\_NUMERIC=C LC\_TIME=en\_US.UTF-8
+\[4\] LC\_COLLATE=en\_US.UTF-8 LC\_MONETARY=en\_US.UTF-8 LC\_MESSAGES=en\_US.UTF-8
+\[7\] LC\_PAPER=en\_US.UTF-8 LC\_NAME=C LC\_ADDRESS=C
+\[10\] LC\_TELEPHONE=C LC\_MEASUREMENT=en\_US.UTF-8 LC\_IDENTIFICATION=C
 
-attached base packages: [1] parallel grid stats graphics grDevices utils datasets methods base
+attached base packages: \[1\] parallel grid stats graphics grDevices utils datasets methods base
 
-other attached packages: [1] JerimalaiStoneArtefacts\_0.0.0.9000 data.table\_1.9.4
- [3] xtable\_1.7-4 BEST\_0.2.3
- [5] runjags\_1.2.1-0 rjags\_3-13
- [7] coda\_0.16-1 lattice\_0.20-31
- [9] vcd\_1.3-2 dplyr\_0.4.1
-[11] plyr\_1.8.2 reshape2\_1.4.1
-[13] ggplot2\_1.0.1 rmarkdown\_0.5.1
-[15] printr\_0.0.4 knitr\_1.10
+other attached packages: \[1\] JerimalaiStoneArtefacts\_0.0.0.9000 data.table\_1.9.4
+\[3\] xtable\_1.7-4 BEST\_0.2.3
+\[5\] runjags\_1.2.1-0 rjags\_3-13
+\[7\] coda\_0.16-1 lattice\_0.20-31
+\[9\] vcd\_1.3-2 dplyr\_0.4.1
+\[11\] plyr\_1.8.2 reshape2\_1.4.1
+\[13\] ggplot2\_1.0.1 rmarkdown\_0.5.1
+\[15\] printr\_0.0.4 knitr\_1.10
 
-loaded via a namespace (and not attached): [1] Rcpp\_0.11.5 magrittr\_1.5 MASS\_7.3-40 munsell\_0.4.2 colorspace\_1.2-6 [6] highr\_0.5 stringr\_0.6.2 tools\_3.2.0 gtable\_0.1.2 DBI\_0.3.1
-[11] htmltools\_0.2.6 lazyeval\_0.1.10 yaml\_2.1.13 digest\_0.6.8 assertthat\_0.1
-[16] formatR\_1.2 codetools\_0.2-11 evaluate\_0.7 labeling\_0.3 scales\_0.2.4
-[21] chron\_2.3-45 proto\_0.3-10
+loaded via a namespace (and not attached): \[1\] Rcpp\_0.11.5 magrittr\_1.5 MASS\_7.3-40 munsell\_0.4.2 colorspace\_1.2-6 \[6\] highr\_0.5 stringr\_0.6.2 tools\_3.2.0 gtable\_0.1.2 DBI\_0.3.1
+\[11\] htmltools\_0.2.6 lazyeval\_0.1.10 yaml\_2.1.13 digest\_0.6.8 assertthat\_0.1
+\[16\] formatR\_1.2 codetools\_0.2-11 evaluate\_0.7 labeling\_0.3 scales\_0.2.4
+\[21\] chron\_2.3-45 proto\_0.3-10
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies):
 
--   pandoc (\>= 1.12.3) <http://johnmacfarlane.net/pandoc>
--   jags (\>= 3.0.0) <http://mcmc-jags.sourceforge.net/>
+-   pandoc (&gt;= 1.12.3) <http://johnmacfarlane.net/pandoc>
+-   jags (&gt;= 3.0.0) <http://mcmc-jags.sourceforge.net/>
 -   GNU make
 
 ### Contact:

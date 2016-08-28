@@ -27,21 +27,26 @@ Ben Marwick (benmarwick@gmail.com)
 
 ### Published in: 
 
-Marwick, B, C. Clarkson, S. O'Connor & S. Collins under review "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" 
+Marwick, B, C. Clarkson, S. O'Connor & S. Collins 2016 "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" _Journal of Human Evolution_ 
 
 ### Overview of contents
 
-This repository is our research compendium for our analysis of the stone artefacts from Sue O'Connor's excavations at Jerimalai, East Timor. The compendium contains all data, code, and text associated with the publication (which is currently under review). The `supplement.Rmd` file in the `manuscript/` directory contains details of how all the analyses reported in the paper were conducted, as well as instructions on how to rerun the analysis to reproduce the results. The `data/` directory in the `manuscript/` directory contains all the raw data. 
+This repository is our research compendium for our analysis of the stone artefacts from Sue O'Connor's excavations at Jerimalai, East Timor. The compendium contains all data, code, and text associated with the publication. The `Rmd` files in the `manuscript/` directory contain details of how all the analyses reported in the paper were conducted, as well as instructions on how to rerun the analysis to reproduce the results. The `data/` directory in the `manuscript/` directory contains all the raw data. 
 
 ### The supplementary files
 
-The `manuscript/` directory contains all the data files (in CSV format), the manuscript as submitted (in MS Word format), an supplementary information source file (in R markdown format), an executed version of the supplementary file (in HTML format) and all the figures that are included in the paper. 
+The `manuscript/` directory contains:
+
+- all the data files (in CSV format, in the `data/` directory)    
+- the manuscript as submitted (in MS Word format)    
+- supplementary information source files (in R markdown format)
+- executed versions of the supplementary files (in HTML format) and all the figures that are included in the paper (in the `figures/` directory)
 
 ### The R package [![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
 
-This repository is organized as an R package, providing functions compute to Bayesian tests of credible difference. These functions are provided as a package because this makes it simpler to resue the functions many times in the paper. It also makes it easier for others to use and adapt these fucntions on their own data. Nevertheless, this package has been written explicitly for this project and may not yet be suitable for more general purpose use. 
+This repository is organized as an R package, providing the main functions compute to Bayesian tests of credible difference. These functions are provided as a package because this makes it simpler to reuse the functions many times in the paper. It also makes it easier for others to use and adapt these functions on their own data. Nevertheless, this package has been written explicitly for this project and may not yet be suitable for more general purpose use. 
 
-To download the package source as you see it on GitHub, for offline browsing, use this line at the shell prompt:
+To download the package source as you see it on GitHub, for offline browsing, use this line at the shell prompt (assuming you have Git installed on your computer):
 
 ```{r eval=FALSE}
 git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git

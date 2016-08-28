@@ -1,7 +1,7 @@
 ---
 title: "Lithic analysis of both squares"
 author: "Ben Marwick"
-date: "November 10, 2015"
+date: "`r format(Sys.Date(), '%d %B %Y')`"
 output: html_document
 ---
 
@@ -186,7 +186,7 @@ names(cortex_type)  <- c("Cortex_type", "Frequency", "Proportion")
 kable(cortex_type, caption = "Cortex type among chert flakes")
 ```
 
-The chunk above also generates the values that are found in this sentence in the manuscript: "The chert artefacts have a combination of rounded cortex (`r filter(cortex_type, Cortex_type == 'Round')$Proportion * 100`%) and angular cortex (`r filter(cortex_type, Cortex_type == 'Angul')$Proportion * 100`%.")
+The chunk above also generates the values that are found in this sentence in the manuscript: "The chert artefacts have a combination of rounded cortex (`r filter(cortex_type, Cortex_type == 'Round')$Proportion * 100`%) and angular cortex (`r filter(cortex_type, Cortex_type == 'Angul')$Proportion * 100`%)."
 
 The code chunk below subsets the stone artefact data so that we only include flakes without any missing mass data. We then assign each flake to a depositional phase based on the spit it was recovered from. There is no visual output from this chunk but the values are stored and used in the following chunks. 
 
@@ -316,7 +316,7 @@ HDI_intervals_for_interactions <- summaryInfo[c((nrow(summaryInfo)-length(x1cont
 kable(round(HDI_intervals_for_interactions,3), caption = "Highest density intervals (95%) for the posterior distributions of the interactions between phases and raw material frequencies in both squares.")
 ```
 
-The code chunk above provides psoterior distributions to evaluate the credibility of differences in raw material frequences over time. The posterior distributions for the phase interactions are close to zero, indicating a small effect. Among the contrast of the phases, all HDIs exclude zero except for phase 2 v. phase 3. This indicates that there are credibly different frequencies of raw material between each phase except for 2 and 3. This is likely are result of small changes in the low frequencies of quartz, quartzite and silcrete in the earlier phases, as shown in the phase by raw material table above. 
+The code chunk above provides posterior distributions to evaluate the credibility of differences in raw material frequences over time. The posterior distributions for the phase interactions are close to zero, indicating a small effect. Among the contrast of the phases, all HDIs exclude zero except for phase 2 v. phase 3. This indicates that there are credibly different frequencies of raw material between each phase except for 2 and 3. This is likely are result of small changes in the low frequencies of quartz, quartzite and silcrete in the earlier phases, as shown in the phase by raw material table above. 
 
 The code chunk below computes a NHST equivalent to the above Bayesian test, in this case a chi-square test. We also compute Cramer's V, a measure of association for nominal variables that ranges from 0 (no association between the variables) to 1 (strong association between the variables).
 
@@ -326,7 +326,7 @@ raw_material_by_phase_nhst <- chisq.test(dom)
 cramers_V <- assocstats(as.matrix(dom)) 
 ```
 
-The code chunk above returns a chi-squared value of `r raw_material_by_phase_nhst$statistic` and a p-value of `r raw_material_by_phase_nhst$p.value`, indicating a signficant difference in raw material frequencies by phase. However, the Cramer's V value of `r cramers_V$cramer` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in raw materials frequencies by phase. 
+The code chunk above returns a chi-squared value of `r round(raw_material_by_phase_nhst$statistic, 2)` and a p-value of `r round(raw_material_by_phase_nhst$p.value, 2)`, indicating a signficant difference in raw material frequencies by phase. However, the Cramer's V value of `r round(cramers_V$cramer, 3)` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in raw materials frequencies by phase. 
 
 # Results: Discard rates
 
@@ -487,7 +487,7 @@ The code chunk below computes the frequentist equivalent, the chi-square test an
 artefact_taphonomy_nhst <- assocstats(as.matrix(breakt))
 ```
 
-The code chunk above returns a chi-squared value of `r artefact_taphonomy_nhst$chisq_tests[2,1]` and a p-value of `r artefact_taphonomy_nhst$chisq_tests[2,3]`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r artefact_taphonomy_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of breakage types by phase. 
+The code chunk above returns a chi-squared value of `r round(artefact_taphonomy_nhst$chisq_tests[2,1], 2)` and a p-value of `r round(artefact_taphonomy_nhst$chisq_tests[2,3], 2)`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r round(artefact_taphonomy_nhst$cramer, 3)` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of breakage types by phase. 
 
 The code chunk below draws a plot of frequencies of complete flakes, transversely broken flakes and longitudinally broken flakes made from chert in each depositional unit at Jerimalai square B.
 
@@ -575,7 +575,7 @@ The code chunk below computes a frequentist chi-square and Cramer's V test for t
 chert_artefacts_heat_nhst <- assocstats(as.matrix(heat))
 ```
 
-The code chunk above returns a chi-squared value of `r chert_artefacts_heat_nhst$chisq_tests[2,1]` and a p-value of `r chert_artefacts_heat_nhst$chisq_tests[2,3]`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r chert_artefacts_heat_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of heat alteration by phase.
+The code chunk above returns a chi-squared value of `r round(chert_artefacts_heat_nhst$chisq_tests[2,1], 2)` and a p-value of `r round(chert_artefacts_heat_nhst$chisq_tests[2,3], 2)`, indicating a signficant difference in frequencies of breakage classes by phase. However, the Cramer's V value of `r round(chert_artefacts_heat_nhst$cramer, 2)` indicates that the effect size is extremely small. We interpret this result to mean that although the test result is statistically significant, there is no substantial significance in the differences in frequencies of heat alteration by phase.
 
 # Results: Metric and technological characteristics of cores and unretouched flakes 
 
@@ -671,7 +671,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake mass both squares.")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. When the interval includes zero, the difference is considered not significant. In this case we see that phase five differs from phase four, equivalent to what we see in the Bayesian HDI intervals. 
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r round(fit_summary[[1]]$'F value'[1], 2)`, df = `r round(fit_summary[[1]]$Df[1], 2)`, p = `r round(fit_summary[[1]]$'Pr(>F)'[1], 3)`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. When the interval includes zero, the difference is considered not significant. In this case we see that phase five differs from phase four, equivalent to what we see in the Bayesian HDI intervals. 
 
 The code chunk below produces a summary table of metric attributes of chert complete cores from Jerimalai square B.
 
@@ -774,7 +774,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of core mass, both squares.")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. In this case we see that only the comparison of phase four to phase two has a significant difference in core mass. Consequtive phases show no signifance difference, which we interpret as evidence of overall no substantial change in core mass. 
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically significant result: F = `r round(fit_summary[[1]]$'F value'[1], 2)`, df = `r round(fit_summary[[1]]$Df[1], 2)`, p = `r round(fit_summary[[1]]$'Pr(>F)'[1], 3)`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. In this case we see that only the comparison of phase four to phase two has a significant difference in core mass. Consequtive phases show no signifance difference, which we interpret as evidence of overall no substantial change in core mass. 
 
 The code chunk below produces the figures that illustrate the frequency of flake platform categories for chert complete flakes at Jerimalai square B. 
 
@@ -945,7 +945,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake cortex, both squares")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. We see the phase 3-4 interaction showing a significant difference. 
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r round(fit_summary[[1]]$'F value'[1], 2)`, df = `r round(fit_summary[[1]]$Df[1], 2)`, p = `r round(fit_summary[[1]]$'Pr(>F)'[1], 3)`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. We see the phase 3-4 interaction showing a significant difference. 
 
 
 In the two code chunks below we repeat the statistical tests above for core cortex.
@@ -993,7 +993,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake cortex, both squares")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in core cortex.
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r round(fit_summary[[1]]$'F value'[1], 2)`, df = `r round(fit_summary[[1]]$Df[1], 2)`, p = `r round(fit_summary[[1]]$'Pr(>F)'[1], 3)`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact masses of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in core cortex.
 
 # Results: Core technology
 
@@ -1165,7 +1165,7 @@ The results of the code chunk above indicates that there are no credible differe
 chert_artefacts_retouch_nhst <- assocstats(as.matrix(rt_tab))
 ```
 
-The code chunk above returns a chi-squared value of `r chert_artefacts_retouch_nhst$chisq_tests[2,1]` and a p-value of `r chert_artefacts_retouch_nhst$chisq_tests[2,3]`, indicating a nonsignficant difference in frequencies of breakage classes by phase. The Cramer's V value of `r chert_artefacts_retouch_nhst$cramer` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in frequencies of retouched flakes by phase.
+The code chunk above returns a chi-squared value of `r round(chert_artefacts_retouch_nhst$chisq_tests[2,1], 2)` and a p-value of `r round(chert_artefacts_retouch_nhst$chisq_tests[2,3], 2)`, indicating a nonsignficant difference in frequencies of breakage classes by phase. The Cramer's V value of `r round(chert_artefacts_retouch_nhst$cramer, 3)` indicates that the effect size is extremely small. We interpret this result to mean that there is no substantial significance in the differences in frequencies of retouched flakes by phase.
 
 The code chunk below investigates changes in the length of the retouched margin of artefacts over time. 
 
@@ -1219,7 +1219,7 @@ tuk <- TukeyHSD(fit)
 kable(round(tuk$`as.factor(phase)`,3), caption = "Tukey's Honest Significant Difference for phase by phase comparisons of flake retouch length, both squares")
 ```
 
-In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r fit_summary[[1]]$'F value'[1]`, df = `r fit_summary[[1]]$Df[1]`, p = `r fit_summary[[1]]$'Pr(>F)'[1]`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact retouch length of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake retouch length.
+In the code chunk above we obtain the results of a frequentist ANOVA which returns a statistically nonsignificant result: F = `r round(fit_summary[[1]]$'F value'[1], 2)`, df = `r round(fit_summary[[1]]$Df[1], 2)`, p = `r round(fit_summary[[1]]$'Pr(>F)'[1], 3)`. The Tukey's Honest Significant Difference test shows confidence intervals on the differences between the means artefact retouch length of a phase. None of the interactions show a significant difference. We interpret this as evidence of overall no change in flake retouch length.
 
 In the code chunk below we compute a Bayesian t-test to investigate differences in the mass of retouched and non-retouched flakes.
 
@@ -1234,7 +1234,7 @@ In the code chunk below we perform a frequentist t-test on flake mass of retouch
 retouch_nonretouch_flake_mass_nhst <- t.test(flakes_retouch_size[flakes_retouch_size$Artclas == "flake", ]$Weight, flakes_retouch_size[flakes_retouch_size$Artclas == "retf", ]$Weight)
 ```
 
-The code chunk above returns the result of the frequentist t-test as follows: t = `r retouch_nonretouch_flake_mass_nhst$statistic`, df = `r unname(retouch_nonretouch_flake_mass_nhst$parameter)` and p = `r retouch_nonretouch_flake_mass_nhst$p.value`.
+The code chunk above returns the result of the frequentist t-test as follows: t = `r round(retouch_nonretouch_flake_mass_nhst$statistic, 2)`, df = `r round(unname(retouch_nonretouch_flake_mass_nhst$parameter), 2)` and p = `r round(retouch_nonretouch_flake_mass_nhst$p.value, 3)`.
 
 The code chunk below makes a table the summarises retouch indices for retouched pieces recovered from Jerimalai. GIUR = Geometric Index of Unifacial Retouch, II = Index of Invasiveness, % = percent of perimeter with retouch
 
