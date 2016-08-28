@@ -103,9 +103,10 @@ plot(ages_predict,
      main="",
      xlab='Age (cal years BP)',
      ylab='Depth (m)',
-     las=1 ) #, 
+     las=1, 
+     dateHeight = 0.1) #, 
      #asp=0.6)
-
+  
 # add phases
 
 phases <- data.frame(phase = 1:4,
