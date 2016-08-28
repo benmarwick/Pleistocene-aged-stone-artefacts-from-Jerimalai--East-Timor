@@ -118,6 +118,10 @@ names(tbl_one_dates) <- c("Square",
                           "Calibrated 2.5% Credible interval",
                           "Calibrated 97.5% Credible interval",
                           "Lab code")
+
+tbl_one_dates <- tbl_one_dates %>% 
+                  arrange(Square, Spit)
+
 write.csv(tbl_one_dates, "figures/table_1_radiocarbon_dates.csv")
 ```
 

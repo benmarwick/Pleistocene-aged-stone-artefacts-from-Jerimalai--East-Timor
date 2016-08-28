@@ -189,6 +189,10 @@ names(tbl_one_dates) &lt;- c(&quot;Square&quot;,
                           &quot;Calibrated 2.5% Credible interval&quot;,
                           &quot;Calibrated 97.5% Credible interval&quot;,
                           &quot;Lab code&quot;)
+
+tbl_one_dates &lt;- tbl_one_dates %&gt;% 
+                  arrange(Square, Spit)
+
 write.csv(tbl_one_dates, &quot;figures/table_1_radiocarbon_dates.csv&quot;)</code></pre>
 <pre class="r"><code>kable(tbl_one_dates, caption = &quot;Radiocarbon dates for Jerimalai square A and B. Dates calibrated using the IntCal13 curve (Reimer et al. 2013) by BChron 4.1.2.&quot;)</code></pre>
 <table>
@@ -4080,7 +4084,7 @@ kable(round(HDI_intervals_for_interactions,3), caption = &quot;Liang Bua Stone A
 </div>
 <div id="colophon" class="section level1">
 <h1>Colophon</h1>
-<p>This report was generated on 2016-08-28 09:44:44 using the following computational environment and dependences:</p>
+<p>This report was generated on 2016-08-28 10:40:41 using the following computational environment and dependences:</p>
 <pre class="r"><code># which R packages and versions?
 sessionInfo()</code></pre>
 <pre><code>R version 3.3.1 (2016-06-21)
@@ -4130,7 +4134,7 @@ c(needs$depends$SystemRequirements[needs$depends$SystemRequirements != &quot;NUL
 <pre class="r"><code># what commit is this file at?
 repo &lt;- repository(path = &quot;../&quot;)
 last_commit &lt;- commits(repo)[[1]]</code></pre>
-<p>The current git commit of this file is 21c94fbc2e369031d35c6b3946fdb95d5fbf9c59, which is on the master branch and was made by Ben Marwick on 2016-08-28 09:31:25. The current commit message is “ls home”.</p>
+<p>The current git commit of this file is 213df13732a9090e5944308c39c7b845ecd46c05, which is on the master branch and was made by Ben Marwick on 2016-08-28 10:33:34. The current commit message is “explore the docker fs”.</p>
 </div>
 
 
