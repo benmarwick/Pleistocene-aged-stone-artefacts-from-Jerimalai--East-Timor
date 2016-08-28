@@ -118,7 +118,7 @@ names(tbl_one_dates) <- c("Square",
                           "Calibrated 2.5% Credible interval",
                           "Calibrated 97.5% Credible interval",
                           "Lab code")
-write.csv("figures/table_1_radiocarbon_dates.csv")
+write.csv(tbl_one_dates, "figures/table_1_radiocarbon_dates.csv")
 ```
 
 ```{r tab_1_chronology_show}
