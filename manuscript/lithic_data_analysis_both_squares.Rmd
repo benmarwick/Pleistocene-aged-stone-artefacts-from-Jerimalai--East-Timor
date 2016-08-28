@@ -62,27 +62,72 @@ Here we combine stone artefacts from both squares.
 The code chunk below reproduces Figure 2, the depth-age distribution for radiocarbon dates from Jerimalai square B. 
 
 
-```{r fig_2_chronology, results = 'hide'}
+```{r tab_1_chronology, results = 'hide'}
 # if interactive, setwd to this source file location
 sqB_dates <- read.csv("data/Jerimalai_dates_Square_B.csv", as.is = TRUE)
 sqA_dates <- read.csv("data/Jerimalai_dates_Square_A.csv", as.is = TRUE)
 sqA_dates$sq <- "A"
 sqB_dates$sq <- "B"
-both_sqs_dates <- rbind(sqB_dates, sqA_dates)
+both_sqs_dates <- rbind(sqA_dates, sqB_dates)
 
 # we have to put in order to let the calibration work...
 both_sqs_dates <- both_sqs_dates %>%
                    arrange(depth_bs) 
 
- # ages <- BchronCalibrate(ages = dates$age,
- #                     ageSds = dates$error,
- #                     positions = dates$depth_bs, 
- #                     calCurves = rep("intcal13",  
- #                                  length(dates$age)))
+ages <- BchronCalibrate(ages = both_sqs_dates$age,
+                    ageSds = both_sqs_dates$error,
+                    positions = both_sqs_dates$depth_bs, 
+                    calCurves = rep("intcal13",  
+                                length(both_sqs_dates$age)))
 # show tables of calibrated age ranges for each date
 # summary(ages)
 
-# plot(ages, xlab='Age (cal years BP)', withPositions = TRUE)
+## credible intervals for each date
+# # create age samples for each date
+age_samples = lapply(ages, function(x) sample(x$ageGrid,size=2000,replace=TRUE,prob=x$densities))
+# Now summaries them with quantiles - this gives a 95% credible interval
+credible_intervals <- ldply(age_samples,
+                            quantile,
+                            prob=c(0.025,0.975))
+credible_intervals[, 2:3] <- apply(credible_intervals[, 2:3], 2, round, 0)
+
+# for the table
+tbl_one_dates <- 
+  cbind(both_sqs_dates, 
+        credible_intervals)
+
+tbl_one_dates <- tbl_one_dates %>% 
+                  select(sq, 
+                         spit,
+                         depth_bs,
+                         material,
+                         age,
+                         error,
+                         `2.5%`,
+                         `97.5%`,
+                         lab_code)
+
+
+
+names(tbl_one_dates) <- c("Square",
+                          "Spit",
+                          "Depth below surface (m)",
+                          "Material",
+                          "Radiocarbon Age",
+                          "Radiocarbon Error",
+                          "Calibrated 2.5% Credible interval",
+                          "Calibrated 97.5% Credible interval",
+                          "Lab code")
+```
+
+```{r tab_1_chronology_show}
+
+kable(tbl_one_dates, caption = "Radiocarbon dates for Jerimalai square A and B. Dates calibrated using the IntCal13 curve (Reimer et al. 2013) by BChron 4.1.2.")
+
+```
+
+
+```{r fig_2_chronology, results = 'hide'}
 
 
 ages_predict = Bchronology(ages = both_sqs_dates$age,
@@ -137,7 +182,9 @@ dev.off()
 #                     calCurves = rep("intcal13", length(dates$age)))
 
 # plot(ages_densities, xlab='Age (cal years BP)', withPositions = TRUE)
+```
 
+```{r fig_2_chronology_show}
 # and show the plot when this document is knited
 bchron_plot()
 ```
