@@ -28,7 +28,7 @@ RUN apt-get update \
 RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git \
 
 ## make it writable
-&& sudo chmod 777 -R Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
+&& chmod 777 -R Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 
 ## move project directory to home so it's easy to interact with
 && cp -R /Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/* /home/rstudio/ \
