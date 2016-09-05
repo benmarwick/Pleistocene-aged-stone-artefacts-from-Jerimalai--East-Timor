@@ -30,18 +30,10 @@ RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-fro
 ## make it writable
 && chmod 777 -R Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 
-## move project directory to home so it's easy to interact with
-&& cp -R /Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/* /home/rstudio/ \
-
-## put the user at this mansuscript directory, ready to inspect, run, etc.
-&& cd /home/rstudio/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/ \
-
 ## generate HTML files from Rmd (~30 min)
-&& Rscript -e 'rmarkdown::render("/home/rstudio/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/Bayesian_Motivations.Rmd")' \
+&& Rscript -e 'rmarkdown::render("/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/Bayesian_Motivations.Rmd")' \
 
-&& Rscript -e 'rmarkdown::render("/home/rstudio/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/lithic_data_analysis_both_squares.Rmd")' 
-
-
+&& Rscript -e 'rmarkdown::render("/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/lithic_data_analysis_both_squares.Rmd")' 
 
 
     
