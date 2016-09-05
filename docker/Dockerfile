@@ -36,7 +36,7 @@ RUN mv Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor /home/rstudio
 ## generate HTML files from Rmd (~30 min)
 && Rscript -e 'rmarkdown::render("/home/rstudio/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/Bayesian_Motivations.Rmd")' \
 
-&& Rscript -e 'rmarkdown::render("/home/rstudio/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/Lithic_data_analysis_both_squares.Rmd")' 
+&& Rscript -e 'rmarkdown::render("/home/rstudio/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/lithic_data_analysis_both_squares.Rmd")' 
 
 
 
