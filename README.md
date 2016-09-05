@@ -58,7 +58,7 @@ A Docker image is a lightweight GNU/Linux virtual computer that can be run as a 
 
 This will start a server instance of RStudio. Then open your web browser at localhost:8787 or or run `docker-machine ip default` in the shell to find the correct IP address, and log in with rstudio/rstudio.
 
-Once logged in, the Files pane (bottom right) will show the `manuscript/` directory where you can find the R markdown documents, and knit them. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
+Once logged in, use the Files pane (bottom right) to navigate to `/` (the root directory), then open the folder for this project, and open the `.Rproj` file for this project. Once that's open, you'll see the `manuscript/` directory in the Files pane where you can find the R markdown documents, and knit them to produce the results in the paper. More information about using RStudio in Docker is avaiable at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
 
 We developed and tested the package on this Docker container, so this is the only platform that We're confident it works on, and so recommend to anyone wanting to use this package to generate the vignette, etc.
 
@@ -92,7 +92,7 @@ Identified using `sessionInfo()`:
     #>  [1] magrittr_1.5       assertthat_0.1     formatR_1.4       
     #>  [4] tools_3.3.1        htmltools_0.3.5    yaml_2.1.13       
     #>  [7] tibble_1.1         Rcpp_0.12.6        stringi_1.1.1     
-    #> [10] rmarkdown_1.0.9010 knitr_1.14         stringr_1.0.0     
+    #> [10] rmarkdown_1.0.9013 knitr_1.14         stringr_1.0.0     
     #> [13] digest_0.6.10      evaluate_0.9
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies):
