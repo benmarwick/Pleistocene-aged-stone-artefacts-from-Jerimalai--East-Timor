@@ -25,10 +25,13 @@ RUN apt-get update \
     benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor 
 
 ## get full copy of my package & compendium   
-RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git
+RUN git clone https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.git \
+
+## make it writable
+&& sudo chmod 777 -R Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor \
 
 ## move project directory to home so it's easy to interact with
-RUN mv Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor /home/rstudio/ \
+&& cp -R /Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/* /home/rstudio/ \
 
 ## put the user at this mansuscript directory, ready to inspect, run, etc.
 && cd /home/rstudio/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor/manuscript/ \
