@@ -1,12 +1,12 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-Research compendium for a report on the stone artefacts from Jerimalai, East Timor
-----------------------------------------------------------------------------------
+Research compendium for a report on the stone artefacts from Jerimalai, East Timor [![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor) [![Circle CI](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor) [![DOI](https://img.shields.io/badge/DOI-10.6084%2Fm9.figshare.985406-blue.svg)](http://dx.doi.org/10.6084/m9.figshare.985406)
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### Compendium DOI:
 
 <http://dx.doi.org/10.6084/m9.figshare.985406>
 
-The files at the URL above will generate the results as found in the publication. The files hosted at github.com are the development versions and may have changed since the report was published
+The files at the URL above will generate the results as found in the publication. The files hosted at <https://github.com/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor> are the development versions and may have changed since the report was published
 
 ### Author of this repository:
 
@@ -14,7 +14,7 @@ Ben Marwick (<benmarwick@gmail.com>)
 
 ### Published in:
 
-Marwick, B, C. Clarkson, S. O'Connor & S. Collins 2016 "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" *Journal of Human Evolution*
+Marwick, B, C. Clarkson, S. O'Connor & S. Collins 2016 "Pleistocene-aged stone artefacts from Jerimalai, East Timor: Long term conservatism in early modern human technology in island Southeast Asia" *Journal of Human Evolution* pre-print: <https://osf.io/63zey/>
 
 ### Overview of contents
 
@@ -29,7 +29,7 @@ The `manuscript/` directory contains:
 -   supplementary information source files (in R markdown format)
 -   executed versions of the supplementary files (in HTML format) and all the figures that are included in the paper (in the `figures/` directory)
 
-### The R package [![Travis-CI Build Status](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.png?branch=master)](https://travis-ci.org/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
+### The R package
 
 This repository is organized as an R package, providing the main functions compute to Bayesian tests of credible difference. These functions are provided as a package because this makes it simpler to reuse the functions many times in the paper. It also makes it easier for others to use and adapt these functions on their own data. Nevertheless, this package has been written explicitly for this project and may not yet be suitable for more general purpose use.
 
@@ -50,7 +50,7 @@ devtools::install_github("benmarwick/Pleistocene-aged-stone-artefacts-from-Jerim
 
 The package has a number of dependencies on other R packages, and programs outside of R. These are listed at the bottom of this README. Installing these can be time-consuming and complicated, so to simpify access to the compendium we also provide at Docker image that includes all the necessary software, code and data to run our analysis.
 
-### The Docker image [![Circle CI](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/benmarwick/Pleistocene-aged-stone-artefacts-from-Jerimalai--East-Timor)
+### The Docker image
 
 A Docker image is a lightweight GNU/Linux virtual computer that can be run as a piece of software on Windows and OSX (and other Linux systems). To capture the complete computational environment used for this project we have a Dockerfile that specifies how to make the Docker image that we developed this project in. The Docker image includes all of the software dependencies needed to run the code in this project, as well as the R package and other compendium files. To launch the Docker image for this project, first, [install Docker](https://docs.docker.com/installation/) on your computer. OSX & Windows users should launch [`boot2docker`](http://boot2docker.io/) to access the Docker terminal, Linux users can just open any terminal). At the Docker prompt, enter:
 
@@ -91,8 +91,8 @@ Identified using `sessionInfo()`:
     #> loaded via a namespace (and not attached):
     #>  [1] magrittr_1.5       assertthat_0.1     formatR_1.4       
     #>  [4] tools_3.3.1        htmltools_0.3.5    yaml_2.1.13       
-    #>  [7] tibble_1.1         Rcpp_0.12.6        stringi_1.1.1     
-    #> [10] rmarkdown_1.0.9013 knitr_1.14         stringr_1.0.0     
+    #>  [7] tibble_1.2         Rcpp_0.12.7        stringi_1.1.1     
+    #> [10] rmarkdown_1.0.9013 knitr_1.14         stringr_1.1.0     
     #> [13] digest_0.6.10      evaluate_0.9
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies):
