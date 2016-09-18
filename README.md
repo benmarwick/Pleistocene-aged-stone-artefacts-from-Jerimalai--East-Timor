@@ -76,24 +76,33 @@ I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on
 
 Identified using `sessionInfo()`:
 
-    #> R version 3.3.1 (2016-06-21)
-    #> Platform: x86_64-w64-mingw32/x64 (64-bit)
-    #> Running under: Windows 7 x64 (build 7601) Service Pack 1
-    #> 
-    #> locale:
-    #> [1] LC_COLLATE=English_Australia.1252  LC_CTYPE=English_Australia.1252   
-    #> [3] LC_MONETARY=English_Australia.1252 LC_NUMERIC=C                      
-    #> [5] LC_TIME=English_Australia.1252    
-    #> 
-    #> attached base packages:
-    #> [1] stats     graphics  grDevices utils     datasets  methods   base     
-    #> 
-    #> loaded via a namespace (and not attached):
-    #>  [1] magrittr_1.5       assertthat_0.1     formatR_1.4       
-    #>  [4] tools_3.3.1        htmltools_0.3.5    yaml_2.1.13       
-    #>  [7] tibble_1.2         Rcpp_0.12.7        stringi_1.1.1     
-    #> [10] rmarkdown_1.0.9013 knitr_1.14         stringr_1.1.0     
-    #> [13] digest_0.6.10      evaluate_0.9
+    #> Session info --------------------------------------------------------------
+    #>  setting  value                       
+    #>  version  R version 3.3.1 (2016-06-21)
+    #>  system   x86_64, mingw32             
+    #>  ui       RTerm                       
+    #>  language (EN)                        
+    #>  collate  English_Australia.1252      
+    #>  tz       America/Los_Angeles         
+    #>  date     2016-09-18
+    #> Packages ------------------------------------------------------------------
+    #>  package    * version  date       source                            
+    #>  assertthat   0.1      2013-12-06 CRAN (R 3.2.2)                    
+    #>  devtools     1.12.0   2016-06-24 CRAN (R 3.3.1)                    
+    #>  digest       0.6.10   2016-08-02 CRAN (R 3.3.1)                    
+    #>  evaluate     0.9      2016-04-29 CRAN (R 3.3.0)                    
+    #>  formatR      1.4      2016-05-09 CRAN (R 3.3.0)                    
+    #>  htmltools    0.3.5    2016-03-21 CRAN (R 3.2.4)                    
+    #>  knitr        1.14     2016-08-13 CRAN (R 3.3.1)                    
+    #>  magrittr     1.5      2014-11-22 CRAN (R 3.3.1)                    
+    #>  memoise      1.0.0    2016-01-29 CRAN (R 3.2.5)                    
+    #>  Rcpp         0.12.7   2016-09-05 CRAN (R 3.3.1)                    
+    #>  rmarkdown    1.0.9013 2016-09-16 Github (rstudio/rmarkdown@5d05a39)
+    #>  stringi      1.1.1    2016-05-27 CRAN (R 3.3.0)                    
+    #>  stringr      1.1.0    2016-08-19 CRAN (R 3.3.1)                    
+    #>  tibble       1.2      2016-08-26 CRAN (R 3.3.1)                    
+    #>  withr        1.0.2    2016-06-20 CRAN (R 3.3.0)                    
+    #>  yaml         2.1.13   2014-06-12 CRAN (R 3.2.2)
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies):
 

@@ -91,7 +91,7 @@ I used [RStudio](http://www.rstudio.com/products/rstudio/) (version 0.98.953) on
 Identified using `sessionInfo()`:
 
 ```{r, echo = FALSE}
-sessionInfo()
+devtools::session_info()
 ```
 
 Other system dependencies identified using [`dependencies::needs()`](https://github.com/ropensci/dependencies): 
